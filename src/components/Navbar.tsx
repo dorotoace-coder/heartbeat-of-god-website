@@ -10,12 +10,12 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-xl shadow-purple-900/5 dark:shadow-none transition-colors duration-300">
+    <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-xl shadow-xl shadow-sky-900/5 transition-colors duration-300 border-b border-slate-100">
       <nav className="flex justify-between items-center px-8 py-3 max-w-screen-2xl mx-auto">
         {/* Brand Identity */}
         <Link href="/" className="flex items-center gap-3 group">
           <img src="/hbg-logo.png" alt="HBG Logo" className="h-10 w-auto group-hover:scale-105 transition-transform" />
-          <span className="text-xl font-light italic tracking-tight text-purple-dark dark:text-lilac font-serif hidden sm:inline">
+          <span className="text-xl font-light italic tracking-tight text-midnight font-serif hidden sm:inline">
             Heartbeat of God
           </span>
         </Link>
@@ -23,31 +23,31 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-10">
           <Link 
-            className={`${pathname === "/" ? "text-purple-dark dark:text-lilac border-b-2 border-lilac/50 pb-1" : "text-slate-600 dark:text-slate-400 hover:text-purple-dark dark:hover:text-lilac"} font-medium transition-all`} 
+            className={`${pathname === "/" ? "text-sky border-b-2 border-sky/50 pb-1" : "text-slate-600 hover:text-sky"} font-medium transition-all`} 
             href="/"
           >
             Home
           </Link>
           <Link 
-            className={`${pathname === "/about" ? "text-purple-dark dark:text-lilac border-b-2 border-lilac/50 pb-1" : "text-slate-600 dark:text-slate-400 hover:text-purple-dark dark:hover:text-lilac"} font-medium transition-all`} 
+            className={`${pathname === "/about" ? "text-sky border-b-2 border-sky/50 pb-1" : "text-slate-600 hover:text-sky"} font-medium transition-all`} 
             href="/about"
           >
             About
           </Link>
           <Link 
-            className={`${pathname === "/programs" ? "text-purple-dark dark:text-lilac border-b-2 border-lilac/50 pb-1" : "text-slate-600 dark:text-slate-400 hover:text-purple-dark dark:hover:text-lilac"} font-medium transition-all`} 
+            className={`${pathname === "/programs" ? "text-sky border-b-2 border-sky/50 pb-1" : "text-slate-600 hover:text-sky"} font-medium transition-all`} 
             href="/programs"
           >
             Programs
           </Link>
           <Link 
-            className={`${pathname === "/media" ? "text-purple-dark dark:text-lilac border-b-2 border-lilac/50 pb-1" : "text-slate-600 dark:text-slate-400 hover:text-purple-dark dark:hover:text-lilac"} font-medium transition-all`} 
+            className={`${pathname === "/media" ? "text-sky border-b-2 border-sky/50 pb-1" : "text-slate-600 hover:text-sky"} font-medium transition-all`} 
             href="/media"
           >
             Media
           </Link>
           <Link 
-            className={`${pathname === "/departments" ? "text-purple-dark dark:text-lilac border-b-2 border-lilac/50 pb-1" : "text-slate-600 dark:text-slate-400 hover:text-purple-dark dark:hover:text-lilac"} font-medium transition-all`} 
+            className={`${pathname === "/departments" ? "text-sky border-b-2 border-sky/50 pb-1" : "text-slate-600 hover:text-sky"} font-medium transition-all`} 
             href="/departments"
           >
             Departments
@@ -56,10 +56,10 @@ export default function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-4">
-          <Link href="/give" className="px-5 py-2 rounded-xl text-purple-dark font-medium hover:bg-lilac-light/50 dark:hover:bg-slate-800 transition-all duration-300 active:scale-95">
+          <Link href="/give" className="px-5 py-2 rounded-xl text-midnight font-medium hover:bg-slate-50 transition-all duration-300 active:scale-95 border border-transparent hover:border-slate-200">
             Give
           </Link>
-          <Link href="/watch" className="px-6 py-2.5 bg-gradient-to-r from-purple-dark to-purple text-white rounded-lg font-medium shadow-lg shadow-purple/20 active:scale-95 transition-all text-center hover:shadow-purple/30">
+          <Link href="/watch" className="px-6 py-2.5 bg-gradient-to-r from-sky to-sky-dark text-white rounded-lg font-medium shadow-lg shadow-sky/20 active:scale-95 transition-all text-center hover:shadow-sky/40">
             Watch Live
           </Link>
         </div>
@@ -82,20 +82,20 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 overflow-hidden"
+            className="lg:hidden bg-white border-t border-slate-100 overflow-hidden"
           >
             <div className="flex flex-col px-8 py-6 gap-6">
-              <Link onClick={() => setIsOpen(false)} className="text-purple-dark dark:text-lilac font-medium text-lg" href="/">Home</Link>
-              <Link onClick={() => setIsOpen(false)} className="text-slate-600 dark:text-slate-400 text-lg" href="/about">About</Link>
-              <Link onClick={() => setIsOpen(false)} className="text-slate-600 dark:text-slate-400 text-lg" href="/programs">Programs</Link>
-              <Link onClick={() => setIsOpen(false)} className="text-slate-600 dark:text-slate-400 text-lg" href="/media">Media</Link>
-              <Link onClick={() => setIsOpen(false)} className="text-slate-600 dark:text-slate-400 text-lg" href="/departments">Departments</Link>
+              <Link onClick={() => setIsOpen(false)} className="text-sky font-medium text-lg" href="/">Home</Link>
+              <Link onClick={() => setIsOpen(false)} className="text-slate-600 text-lg" href="/about">About</Link>
+              <Link onClick={() => setIsOpen(false)} className="text-slate-600 text-lg" href="/programs">Programs</Link>
+              <Link onClick={() => setIsOpen(false)} className="text-slate-600 text-lg" href="/media">Media</Link>
+              <Link onClick={() => setIsOpen(false)} className="text-slate-600 text-lg" href="/departments">Departments</Link>
               
-              <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <Link href="/give" onClick={() => setIsOpen(false)} className="w-full px-5 py-3 rounded-xl border border-purple/20 text-purple-dark text-center dark:text-lilac font-medium active:scale-95 transition-all">
+              <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-slate-100">
+                <Link href="/give" onClick={() => setIsOpen(false)} className="w-full px-5 py-3 rounded-xl border border-slate-200 text-midnight text-center font-medium active:scale-95 transition-all">
                   Give
                 </Link>
-                <Link href="/watch" onClick={() => setIsOpen(false)} className="w-full px-6 py-3 bg-gradient-to-r from-purple-dark to-purple text-white rounded-lg font-medium shadow-lg active:scale-95 transition-all text-center">
+                <Link href="/watch" onClick={() => setIsOpen(false)} className="w-full px-6 py-3 bg-gradient-to-r from-sky to-sky-dark text-white rounded-lg font-medium shadow-lg active:scale-95 transition-all text-center">
                   Watch Live
                 </Link>
               </div>

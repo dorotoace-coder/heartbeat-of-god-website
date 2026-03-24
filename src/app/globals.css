@@ -49,12 +49,12 @@
   --color-outline-variant: #c4c6cf;
   --color-surface-container-highest: #e1e3e4;
 
-  --color-lilac: #C8A2D0;
-  --color-lilac-light: #E8D5ED;
-  --color-lilac-dark: #9B6BA6;
-  --color-purple: #7B5EA7;
-  --color-purple-dark: #5A3D7A;
-  --color-purple-deep: #3D1F56;
+  /* New Sharp & Clean Palette */
+  --color-midnight: #0A142F;
+  --color-midnight-light: #112240;
+  --color-sky: #0EA5E9;
+  --color-sky-light: #E0F2FE;
+  --color-sky-dark: #0284C7;
 
   --font-headline: 'Newsreader', serif;
   --font-body: 'Manrope', sans-serif;
@@ -63,7 +63,7 @@
 
 @layer base {
   body {
-    background-color: var(--color-surface);
+    background-color: var(--color-midnight);
     color: var(--color-on-surface);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -75,10 +75,10 @@
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 .sacred-gradient {
-  background: linear-gradient(135deg, #1a0a2e 0%, #0d0620 40%, #000613 100%);
+  background: linear-gradient(135deg, #0A142F 0%, #112240 50%, #0A142F 100%);
 }
 .divine-glow {
-  background: radial-gradient(circle at top right, rgba(200, 162, 208, 0.08) 0%, rgba(123, 94, 167, 0.04) 40%, transparent 70%);
+  background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.05) 40%, transparent 70%);
 }
 .glass-nav {
   backdrop-filter: blur(24px);

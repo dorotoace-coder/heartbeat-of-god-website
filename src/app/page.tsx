@@ -55,8 +55,8 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden sacred-gradient divine-glow">
           {/* Immersive Motion Background Substitute */}
           <motion.div style={{ y: yBg }} className="absolute inset-0 z-0 select-none pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-lilac/10 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-purple/8 blur-[150px] rounded-full"></div>
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-sky/10 blur-[120px] rounded-full"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-sky-light/5 blur-[150px] rounded-full"></div>
             <motion.img
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 0.3 }}
@@ -85,7 +85,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
-                className="inline-block px-4 py-1.5 mb-8 bg-surface-container-highest/10 border border-white/10 rounded-full text-secondary-fixed-dim text-[0.6875rem] font-medium tracking-[0.1em] uppercase shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                className="inline-block px-4 py-1.5 mb-8 bg-surface-container-highest/10 border border-white/10 rounded-full text-sky-dark text-[0.6875rem] font-medium tracking-[0.1em] uppercase shadow-[0_0_15px_rgba(255,255,255,0.05)]"
               >
                 A Global Movement for Spiritual Awakening
               </motion.span>
@@ -97,7 +97,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
               className="font-headline text-5xl md:text-7xl lg:text-8xl text-white font-light tracking-tight leading-[1.1] mb-10"
             >
-              Bringing Men to the <span className="italic text-lilac">Consciousness</span> of God’s Presence
+              Bringing Men to the <span className="italic text-sky">Consciousness</span> of God’s Presence
             </motion.h1>
             
             <motion.div
@@ -106,11 +106,11 @@ export default function Home() {
               transition={{ delay: 0.7, duration: 0.8 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12"
             >
-              <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-lilac text-purple-deep rounded-xl font-semibold shadow-[0_0_15px_rgba(200,162,208,0.4)] hover:scale-105 transition-all duration-300 hover:bg-lilac-light">
+              <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-sky text-white rounded-xl font-semibold shadow-[0_0_15px_rgba(14,165,233,0.4)] hover:scale-105 transition-all duration-300 hover:bg-sky-dark">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 Watch Live
               </Link>
-              <Link href="/give" className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/20 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <Link href="/about" className="group flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
                 Give Now
               </Link>
               <Link href="/departments" className="text-white/80 hover:text-white transition-colors font-medium flex items-center gap-2 group">
@@ -155,24 +155,24 @@ export default function Home() {
               className="grid grid-cols-1 md:grid-cols-3 gap-8"
             >
               <Link href="/give" className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64 hover:-translate-y-2">
-                <div className="w-12 h-12 rounded-xl bg-primary-container/5 flex items-center justify-center text-primary-container group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-midnight/5 flex items-center justify-center text-midnight group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-3xl">volunteer_activism</span>
                 </div>
                 <div>
-                  <h3 className="font-headline text-2xl text-primary-container mb-2">Giving</h3>
+                  <h3 className="font-headline text-2xl text-midnight mb-2">Giving</h3>
                   <p className="text-on-surface-variant leading-relaxed">Partner with us in spreading the word across nations.</p>
                 </div>
               </Link>
               <motion.div onClick={() => window.location.href='/departments'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64 hover:-translate-y-2">
-                <div className="w-12 h-12 rounded-xl bg-secondary-container/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-sky-light/10 flex items-center justify-center text-sky group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-3xl">groups</span>
                 </div>
                 <div>
-                  <h3 className="font-headline text-2xl text-primary-container mb-2">Join Department</h3>
+                  <h3 className="font-headline text-2xl text-midnight mb-2">Join Department</h3>
                   <p className="text-on-surface-variant leading-relaxed">Discover your purpose by serving in our diverse teams.</p>
                 </div>
               </motion.div>
-              <motion.div onClick={() => window.location.href='/watch'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative hover:-translate-y-2 transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-primary-container to-primary text-white shadow-primary-container/20'}`}>
+              <motion.div onClick={() => window.location.href='/watch'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative hover:-translate-y-2 transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-midnight to-primary text-white shadow-midnight/20'}`}>
                 <motion.div 
                   initial={{ rotate: 0 }}
                   whileHover={{ rotate: 15, scale: 1.1 }}
@@ -185,7 +185,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-headline text-2xl mb-2">{pulse?.isLive ? 'LIVE NOW' : 'Watch Live'}</h3>
-                  <p className="text-on-primary-container leading-relaxed break-words line-clamp-2 mix-blend-plus-lighter">{pulse?.isLive ? `Join ${pulse.activeEvent} happening now!` : 'Join our ongoing session and feel the atmosphere of glory.'}</p>
+                  <p className="text-white leading-relaxed break-words line-clamp-2 mix-blend-plus-lighter">{pulse?.isLive ? `Join ${pulse.activeEvent} happening now!` : 'Join our ongoing session and feel the atmosphere of glory.'}</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -213,13 +213,13 @@ export default function Home() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <button 
                   onClick={() => openModal("Video Message")}
-                  className="w-20 h-20 rounded-full bg-lilac text-purple-deep flex items-center justify-center shadow-[0_0_30px_rgba(200,162,208,0.4)] group-hover:scale-110 group-hover:shadow-[0_0_50px_rgba(200,162,208,0.6)] transition-all duration-300"
+                  className="w-20 h-20 rounded-full bg-sky text-white flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.4)] group-hover:scale-110 group-hover:shadow-[0_0_50px_rgba(14,165,233,0.6)] transition-all duration-300"
                 >
                   <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 </button>
               </div>
               <div className="absolute bottom-8 left-8 right-8 transform group-hover:translate-y-[-5px] transition-transform duration-300">
-                <span className="text-secondary-fixed text-xs font-bold tracking-widest uppercase mb-2 block">Word of the Day</span>
+                <span className="text-sky text-xs font-bold tracking-widest uppercase mb-2 block">Word of the Day</span>
                 <h2 className="font-headline text-3xl text-white leading-tight">{pulse ? pulse.sermonOfTheDay.title : 'Loading...'}</h2>
                 <div className="flex items-center gap-2 mt-2 text-white/70 text-sm">
                   <span className="material-symbols-outlined text-sm">person</span>
@@ -234,39 +234,37 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="w-full lg:w-2/5 space-y-8"
             >
-              <h2 className="font-headline text-4xl text-primary-container leading-tight">Engage with the Living Word</h2>
+              <h2 className="font-headline text-4xl text-midnight leading-tight">Engage with the Living Word</h2>
               <p className="text-on-surface-variant text-lg leading-relaxed">
                 Every message is a conduit for transformation. Explore our library of teachings designed to awaken the spirit of man to the divine reality.
               </p>
               <div className="space-y-6 pt-4">
                 <div className="flex items-start gap-4">
-                  <motion.span whileHover={{ scale: 1.2, rotate: 360 }} transition={{ duration: 0.5 }} className="material-symbols-outlined text-secondary pt-1 cursor-default">check_circle</motion.span>
+                  <motion.span whileHover={{ scale: 1.2, rotate: 360 }} transition={{ duration: 0.5 }} className="material-symbols-outlined text-sky pt-1 cursor-default">check_circle</motion.span>
                   <div>
-                    <p className="font-bold text-primary-container">Biblical Authority</p>
+                    <p className="font-bold text-midnight">Biblical Authority</p>
                     <p className="text-on-surface-variant text-sm">Rooted in the uncompromised word of God.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <motion.span whileHover={{ scale: 1.2, rotate: 360 }} transition={{ duration: 0.5 }} className="material-symbols-outlined text-secondary pt-1 cursor-default">check_circle</motion.span>
+                  <motion.span whileHover={{ scale: 1.2, rotate: 360 }} transition={{ duration: 0.5 }} className="material-symbols-outlined text-sky pt-1 cursor-default">check_circle</motion.span>
                   <div>
-                    <p className="font-bold text-primary-container">Spiritual Depth</p>
+                    <p className="font-bold text-midnight">Spiritual Depth</p>
                     <p className="text-on-surface-variant text-sm">Exploring the mysteries of the Kingdom.</p>
                   </div>
                 </div>
               </div>
-              <Link href="/media" className="px-8 py-3 border border-outline-variant rounded-lg font-semibold hover:bg-primary-container hover:text-white hover:border-transparent transition-all hover:scale-[1.02] inline-block text-center">
+              <Link href="/media" className="px-8 py-3 border border-outline-variant rounded-lg font-semibold hover:bg-midnight hover:text-white hover:border-transparent transition-all hover:scale-[1.02] inline-block text-center">
                 Browse Media Archive
               </Link>
             </motion.div>
           </div>
         </section>
 
-        {/* Heart Beat Television - Prominent Link */}
-        <section className="py-24 px-8 bg-slate-950 relative overflow-hidden group">
-          {/* Decorative Elements */}
-          <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-lilac/10 blur-[150px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
+        {/* Heart Beat Television Section using Deep Midnight for Contrast */}
+        <section className="py-24 px-8 bg-midnight text-white relative flex items-center justify-center text-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-1/2 left-1/2 w-full max-w-4xl h-[400px] bg-sky/10 blur-[100px] -translate-x-1/2 -translate-y-1/2 rounded-[100%]" />
           </div>
           
           <div className="max-w-7xl mx-auto relative z-10">
@@ -307,7 +305,7 @@ export default function Home() {
                   <span className="text-red-500 font-bold tracking-widest text-sm uppercase">Broadcasting Live</span>
                 </div>
                 <h2 className="font-headline text-5xl md:text-6xl mb-8 leading-tight">
-                  Heart Beat <span className="text-lilac">Television</span>
+                  Heart Beat <span className="text-sky">Television</span>
                 </h2>
                 <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-xl">
                   Experience the message of the Kingdom 24/7. Tune in to our global television channel for uplifting music, revelatory teachings, and live encounters from across the world.
@@ -315,7 +313,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-6">
                   <Link 
                     href="/watch" 
-                    className="px-10 py-5 bg-white text-slate-950 rounded-2xl font-bold flex items-center gap-3 hover:bg-secondary-fixed hover:text-on-secondary-fixed hover:scale-105 transition-all duration-300"
+                    className="px-10 py-5 bg-white text-slate-950 rounded-2xl font-bold flex items-center gap-3 hover:bg-sky hover:text-on-sky hover:scale-105 transition-all duration-300"
                   >
                     <span className="material-symbols-outlined">live_tv</span>
                     Watch Channel Now
@@ -343,10 +341,10 @@ export default function Home() {
               className="flex justify-between items-end mb-16"
             >
               <div>
-                <span className="text-secondary font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don't Miss Out</span>
-                <h2 className="font-headline text-5xl text-primary-container mt-2">Upcoming Encounters</h2>
+                <span className="text-sky font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don't Miss Out</span>
+                <h2 className="font-headline text-5xl text-midnight mt-2">Upcoming Encounters</h2>
               </div>
-              <Link className="text-primary-container font-semibold border-b border-primary-container pb-1 hover:text-secondary hover:border-secondary transition-colors" href="/programs">View Calendar</Link>
+              <Link className="text-midnight font-semibold border-b border-midnight pb-1 hover:text-sky hover:border-sky transition-colors" href="/programs">View Calendar</Link>
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               
@@ -359,14 +357,14 @@ export default function Home() {
                   <div className="p-8 h-full flex flex-col justify-between">
                     <div>
                       <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
-                      <h3 className="font-headline text-3xl text-primary-container mb-3">{upcomingEvents[0].name}</h3>
+                      <h3 className="font-headline text-3xl text-midnight mb-3">{upcomingEvents[0].name}</h3>
                       <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
                           {new Date(upcomingEvents[0].event_date).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
                       </p>
                     </div>
                     <button 
                       onClick={() => openModal("Event Reminder Notification")}
-                      className="flex items-center gap-2 text-primary-container font-bold text-sm"
+                      className="flex items-center gap-2 text-midnight font-bold text-sm"
                     >
                       <span className="material-symbols-outlined text-sm">notifications_active</span>
                       <span>Set Reminder</span>
@@ -383,12 +381,12 @@ export default function Home() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       src={event.image_url || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"}
                     />
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-primary-container shadow-sm">
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">
                       {new Date(event.event_date).toLocaleDateString([], { month: 'short', day: '2-digit' }).toUpperCase()}
                     </div>
                   </div>
                   <div className="p-8">
-                    <h3 className="font-headline text-2xl text-primary-container mb-3 group-hover:text-secondary transition-colors line-clamp-1">{event.name}</h3>
+                    <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors line-clamp-1">{event.name}</h3>
                     <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2">{event.description}</p>
                     <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
                       <span className="material-symbols-outlined text-sm">schedule</span>
