@@ -55,8 +55,8 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden sacred-gradient divine-glow">
           {/* Immersive Motion Background Substitute */}
           <motion.div style={{ y: yBg }} className="absolute inset-0 z-0 select-none pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-secondary-container/10 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-on-primary-container/5 blur-[150px] rounded-full"></div>
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-lilac/10 blur-[120px] rounded-full"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-purple/8 blur-[150px] rounded-full"></div>
             <motion.img
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 0.3 }}
@@ -97,7 +97,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
               className="font-headline text-5xl md:text-7xl lg:text-8xl text-white font-light tracking-tight leading-[1.1] mb-10"
             >
-              Bringing Men to the <span className="italic text-secondary-fixed">Consciousness</span> of God’s Presence
+              Bringing Men to the <span className="italic text-lilac">Consciousness</span> of God’s Presence
             </motion.h1>
             
             <motion.div
@@ -106,7 +106,7 @@ export default function Home() {
               transition={{ delay: 0.7, duration: 0.8 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12"
             >
-              <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-secondary-fixed text-on-secondary-fixed rounded-xl font-semibold shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:scale-105 transition-all duration-300">
+              <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-lilac text-purple-deep rounded-xl font-semibold shadow-[0_0_15px_rgba(200,162,208,0.4)] hover:scale-105 transition-all duration-300 hover:bg-lilac-light">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 Watch Live
               </Link>
@@ -213,7 +213,7 @@ export default function Home() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <button 
                   onClick={() => openModal("Video Message")}
-                  className="w-20 h-20 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-[0_0_30px_rgba(255,224,136,0.3)] group-hover:scale-110 group-hover:shadow-[0_0_50px_rgba(255,224,136,0.5)] transition-all duration-300"
+                  className="w-20 h-20 rounded-full bg-lilac text-purple-deep flex items-center justify-center shadow-[0_0_30px_rgba(200,162,208,0.4)] group-hover:scale-110 group-hover:shadow-[0_0_50px_rgba(200,162,208,0.6)] transition-all duration-300"
                 >
                   <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 </button>
@@ -265,8 +265,8 @@ export default function Home() {
         <section className="py-24 px-8 bg-slate-950 relative overflow-hidden group">
           {/* Decorative Elements */}
           <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-red-600/10 blur-[150px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple/20 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-lilac/10 blur-[150px] rounded-full -translate-x-1/2 translate-y-1/2"></div>
           </div>
           
           <div className="max-w-7xl mx-auto relative z-10">
@@ -307,7 +307,7 @@ export default function Home() {
                   <span className="text-red-500 font-bold tracking-widest text-sm uppercase">Broadcasting Live</span>
                 </div>
                 <h2 className="font-headline text-5xl md:text-6xl mb-8 leading-tight">
-                  Heart Beat <span className="text-secondary-fixed">Television</span>
+                  Heart Beat <span className="text-lilac">Television</span>
                 </h2>
                 <p className="text-slate-400 text-lg leading-relaxed mb-10 max-w-xl">
                   Experience the message of the Kingdom 24/7. Tune in to our global television channel for uplifting music, revelatory teachings, and live encounters from across the world.

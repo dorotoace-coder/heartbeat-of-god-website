@@ -49,6 +49,13 @@
   --color-outline-variant: #c4c6cf;
   --color-surface-container-highest: #e1e3e4;
 
+  --color-lilac: #C8A2D0;
+  --color-lilac-light: #E8D5ED;
+  --color-lilac-dark: #9B6BA6;
+  --color-purple: #7B5EA7;
+  --color-purple-dark: #5A3D7A;
+  --color-purple-deep: #3D1F56;
+
   --font-headline: 'Newsreader', serif;
   --font-body: 'Manrope', sans-serif;
   --font-label: 'Manrope', sans-serif;
@@ -68,10 +75,10 @@
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 .sacred-gradient {
-  background: linear-gradient(135deg, #001f3f 0%, #000613 100%);
+  background: linear-gradient(135deg, #1a0a2e 0%, #0d0620 40%, #000613 100%);
 }
 .divine-glow {
-  background: radial-gradient(circle at top right, rgba(254, 214, 91, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle at top right, rgba(200, 162, 208, 0.08) 0%, rgba(123, 94, 167, 0.04) 40%, transparent 70%);
 }
 .glass-nav {
   backdrop-filter: blur(24px);

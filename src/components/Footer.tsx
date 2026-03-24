@@ -15,9 +15,12 @@ export default function Footer() {
     <footer className="bg-slate-50 dark:bg-slate-950 w-full py-20 tonal-shift">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto text-left">
         <div className="col-span-1 md:col-span-1">
-          <div className="text-3xl font-light italic text-blue-900 dark:text-blue-50 font-serif mb-6">
-            Heartbeat of God
-          </div>
+          <Link href="/" className="inline-block mb-6 group">
+            <img src="/hbg-logo.png" alt="HBG Logo" className="h-16 w-auto group-hover:scale-105 transition-transform" />
+            <div className="text-2xl font-light italic text-purple-dark dark:text-lilac font-serif mt-3">
+              Heartbeat of God
+            </div>
+          </Link>
           <p className="text-slate-500 text-sm leading-relaxed mb-8">
             An apostolic ministry committed to raising a generation of Christ-conscious believers globally.
           </p>
