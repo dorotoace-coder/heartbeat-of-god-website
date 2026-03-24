@@ -262,10 +262,13 @@ export function EventsView() {
     setSaving(true);
     try {
       if (editingEvent) {
+        // For recurring events, the ID is concatenated with a date string (uuid_datestring)
+        // We only want the base UUID to update the parent record in Supabase
+        const baseId = editingEvent.id.split('_')[0];
         const { error } = await supabase
           .from("events")
           .update({ name: data.name, event_date: data.event_date, location: data.location, description: data.description })
-          .eq("id", editingEvent.id);
+          .eq("id", baseId);
         if (error) throw error;
         showToast(`✓ "${data.name}" updated.`);
       } else {
@@ -289,8 +292,10 @@ export function EventsView() {
   // ── Delete ─────────────────────────────────────────────
   const handleDelete = async (id: string) => {
     try {
+      // Extract base UUID for recurring events
+      const baseId = id.split('_')[0];
       const ev = events.find(e => e.id === id);
-      const { error } = await supabase.from("events").delete().eq("id", id);
+      const { error } = await supabase.from("events").delete().eq("id", baseId);
       if (error) throw error;
       showToast(`"${ev?.name}" deleted.`);
       await fetchEvents();
