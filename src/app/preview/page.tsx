@@ -1,55 +1,41 @@
-import React from 'react';
+"use client";
 
-// Preview page showing ministry department accounts, conferencing platform, and member chat
-// Data is sourced from the mcp_config.json configuration (hard‑coded here for preview purposes).
-
-const previewData = {
-  departmentAccounts: {
-    "Pastoral leadership": "pastoral@heartbeat.org",
-    "Evangelism / Outreach": "outreach@heartbeat.org",
-    "Prayer / Intercession": "prayer@heartbeat.org",
-    "Teaching / Discipleship": "teaching@heartbeat.org",
-    "Media / Music": "media@heartbeat.org",
-  },
-  conferencingPlatform: {
-    name: "Zoom",
-    url: "https://zoom.us/heartbeat",
-  },
-  memberChat: {
-    platform: "Discord",
-    inviteLink: "https://discord.gg/heartbeat",
-  },
-};
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 export default function PreviewPage() {
   return (
-    <main className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Ministry Configuration Preview</h1>
+    <>
+      <Navbar />
+      <main className="min-h-screen pt-32 pb-20 px-8 flex items-center justify-center bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
+        
+        {/* Decorative Background */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-secondary-container/20 blur-[150px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary-container/10 blur-[120px] rounded-full pointer-events-none translate-y-1/3 -translate-x-1/3"></div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Department Accounts</h2>
-        <ul className="list-disc pl-6 space-y-2">
-          {Object.entries(previewData.departmentAccounts).map(([dept, email]) => (
-            <li key={dept}>
-              <strong>{dept}:</strong> <a href={`mailto:${email}`} className="text-blue-600 hover:underline">{email}</a>
-            </li>
-          ))}
-        </ul>
-      </section>
+        <div className="max-w-6xl w-full mx-auto grid grid-cols-1 gap-16 relative z-10">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center text-center justify-center"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-xs font-bold tracking-widest uppercase w-max">
+              <Sparkles size={14} className="fill-blue-500 text-blue-500" /> Preview
+            </span>
+            <h1 className="font-headline text-5xl md:text-7xl text-slate-900 dark:text-white mb-6 leading-[1.1]">
+              Coming <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-amber-400 dark:to-orange-500 italic">Soon</span>
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
+              We are working hard to bring you something amazing. Check back in the future to see what we've been building!
+            </p>
+          </motion.div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Conferencing Platform</h2>
-        <p>
-          <strong>{previewData.conferencingPlatform.name}</strong>: <a href={previewData.conferencingPlatform.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{previewData.conferencingPlatform.url}</a>
-        </p>
-      </section>
-
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Member Chat</h2>
-        <p>
-          <strong>{previewData.memberChat.platform}</strong>: <a href={previewData.memberChat.inviteLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Join Chat</a>
-        </p>
-      </section>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }

@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login/
+Disallow: /preview/
 
 Sitemap: https://heartbeatofgod.org/sitemap.xml

@@ -89,5 +89,41 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+-- ─── Write Policies for Authenticated Users ───────────────
+
+-- Sermons: authenticated users can insert, update, delete
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated write access for sermons') THEN
+    CREATE POLICY "Authenticated write access for sermons" ON sermons FOR INSERT TO authenticated WITH CHECK (true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated update access for sermons') THEN
+    CREATE POLICY "Authenticated update access for sermons" ON sermons FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated delete access for sermons') THEN
+    CREATE POLICY "Authenticated delete access for sermons" ON sermons FOR DELETE TO authenticated USING (true);
+  END IF;
+END $$;
+
+-- Events: authenticated users can insert, update, delete
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated write access for events') THEN
+    CREATE POLICY "Authenticated write access for events" ON events FOR INSERT TO authenticated WITH CHECK (true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated update access for events') THEN
+    CREATE POLICY "Authenticated update access for events" ON events FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated delete access for events') THEN
+    CREATE POLICY "Authenticated delete access for events" ON events FOR DELETE TO authenticated USING (true);
+  END IF;
+END $$;
+
 -- Insert Initial Pulse State
 INSERT INTO pulse (id, is_live) VALUES (1, false) ON CONFLICT (id) DO NOTHING;
