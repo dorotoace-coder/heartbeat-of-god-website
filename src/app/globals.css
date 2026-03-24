@@ -49,12 +49,12 @@
   --color-outline-variant: #c4c6cf;
   --color-surface-container-highest: #e1e3e4;
 
-  /* Beautiful Purple Palette */
-  --color-midnight: #1C0A2D; /* Deep royal purple for backgrounds */
+  /* Beautiful Lilac Palette */
+  --color-midnight: #1C0A2D; /* Deep royal purple for high-contrast backgrounds */
   --color-midnight-light: #2A1143;
-  --color-sky: #A855F7; /* Vibrant amethyst for accents */
-  --color-sky-light: #D8B4FE;
-  --color-sky-dark: #7E22CE;
+  --color-sky: #C8A2D0; /* Clear, bright lilac for accents */
+  --color-sky-light: #E8D5ED;
+  --color-sky-dark: #9B6BA6;
 
   --font-headline: 'Newsreader', serif;
   --font-body: 'Manrope', sans-serif;
@@ -78,7 +78,7 @@
   background: linear-gradient(135deg, #1C0A2D 0%, #2A1143 50%, #1C0A2D 100%);
 }
 .divine-glow {
-  background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.15) 0%, rgba(126, 34, 206, 0.05) 40%, transparent 70%);
+  background: radial-gradient(circle at top right, rgba(200, 162, 208, 0.15) 0%, rgba(155, 107, 166, 0.05) 40%, transparent 70%);
 }
 .glass-nav {
   backdrop-filter: blur(24px);
