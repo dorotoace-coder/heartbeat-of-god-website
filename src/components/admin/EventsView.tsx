@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Calendar, Plus, MapPin, Clock, Users, ArrowRight, MoreVertical, X, Edit3, Trash2, ChevronDown, Megaphone, Loader2 } from "lucide-react";
 import { useAdminRole, canPerformAction } from "@/lib/permissions";
 import { supabase } from "@/lib/supabase";
-import { generateRecurringEvents, getNextEvent, formatEventDate, formatEventTime } from './generateRecurringEvents';
+import { generateRecurringEvents, type RecurringEventInstance } from './generateRecurringEvents';
 interface EventItem {
   id: string;
   name: string;
@@ -20,7 +20,7 @@ interface EventItem {
 // ─── Event Action Dropdown ───────────────────────────────
 function EventActionDropdown({ onEdit, onDelete }: {
   onEdit: () => void;
-  onDelete: () => void;x
+  onDelete: () => void;
 }) {
   const role = useAdminRole();
   const canEdit = canPerformAction(role, "events.edit");
@@ -209,6 +209,19 @@ export function EventsView() {
   const role = useAdminRole();
   const canCreate = canPerformAction(role, "events.create");
 
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
   const fetchEvents = useCallback(async () => {
     setLoading(true);
     try {
@@ -223,7 +236,7 @@ export function EventsView() {
       const allEvents = generateRecurringEvents(data || [], 12);
 
       // Convert back to EventItem format for display
-      setEvents(allEvents.map(e => ({
+      setEvents(allEvents.map((e: RecurringEventInstance) => ({
         id: e.id,
         name: e.name,
         event_date: e.instance_date.toISOString(),
