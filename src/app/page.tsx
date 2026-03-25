@@ -373,7 +373,7 @@ export default function Home() {
 
                   <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                     <div className="relative h-64 overflow-hidden">
-                      <img alt="Salvation Challenge" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation-challenge.jpg" />
+                      <img alt="Salvation Challenge" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation.jpg" />
                       <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">MAR 28-29</div>
                     </div>
                     <div className="p-8">

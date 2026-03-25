@@ -21,5 +21,5 @@ ON CONFLICT DO NOTHING;
 INSERT INTO events (name, description, event_date, location, image_url, is_highlighted)
 VALUES 
 ('Sunday Celebration Service', 'Our main weekly gathering focusing on the Word and the Spirit.', '2026-03-29 09:00:00+00', 'Main Sanctuary & Online', 'https://images.unsplash.com/photo-1437603565262-7bf121c4245e?q=80&w=2070&auto=format&fit=crop', true),
-('Salvation Challenge', 'A dedicated time of intense prayer and soul winning. Sessions: March 28th at 4:00 PM and March 29th at 9:00 AM.', '2026-03-28 16:00:00+00', 'City Center Stadium', '/salvation-challenge.jpg', false)
+('Salvation Challenge', 'A dedicated time of intense prayer and soul winning. Sessions: March 28th at 4:00 PM and March 29th at 9:00 AM.', '2026-03-28 16:00:00+00', 'City Center Stadium', '/salvation.jpg', false)
 ON CONFLICT DO NOTHING;
