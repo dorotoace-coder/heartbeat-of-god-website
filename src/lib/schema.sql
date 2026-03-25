@@ -61,6 +61,18 @@ CREATE TABLE IF NOT EXISTS departments (
   display_order INTEGER DEFAULT 0
 );
 
+-- 6. Donations Table
+CREATE TABLE IF NOT EXISTS donations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  currency TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  frequency TEXT NOT NULL,
+  payment_method TEXT NOT NULL,
+  status TEXT DEFAULT 'completed',
+  reference TEXT
+);
+
 ALTER TABLE sermons ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read access for sermons') THEN
@@ -86,6 +98,13 @@ ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read access for departments') THEN
     CREATE POLICY "Public read access for departments" ON departments FOR SELECT USING (true);
+  END IF;
+END $$;
+
+ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public insert access for donations') THEN
+    CREATE POLICY "Public insert access for donations" ON donations FOR INSERT WITH CHECK (true);
   END IF;
 END $$;
 

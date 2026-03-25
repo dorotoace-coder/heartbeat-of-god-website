@@ -110,7 +110,7 @@ export default function Home() {
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 Watch Live
               </Link>
-              <Link href="/about" className="group flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <Link href="/give" className="group flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
                 Give Now
               </Link>
               <Link href="/departments" className="text-white/80 hover:text-white transition-colors font-medium flex items-center gap-2 group">
@@ -349,58 +349,99 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               
               {/* Highlighted Next Event Card - Automated via Pulse OS */}
-              {upcomingEvents.length > 0 && (
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group bg-blue-50 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border-2 border-blue-100 dark:border-blue-900/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
-                  <div className="absolute top-0 right-0 p-6 text-blue-200 dark:text-blue-900/30 -z-10 group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-9xl">event</span>
-                  </div>
-                  <div className="p-8 h-full flex flex-col justify-between">
-                    <div>
-                      <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
-                      <h3 className="font-headline text-3xl text-midnight mb-3">{upcomingEvents[0].name}</h3>
-                      <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
-                          {new Date(upcomingEvents[0].event_date).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
-                      </p>
+              {upcomingEvents.length === 0 ? (
+                // Hardcoded Fallback for Preview Perfection
+                <>
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group bg-blue-50 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border-2 border-blue-100 dark:border-blue-900/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
+                    <div className="absolute top-0 right-0 p-6 text-blue-200 dark:text-blue-900/30 -z-10 group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-9xl">event</span>
                     </div>
-                    <button 
-                      onClick={() => openModal("Event Reminder Notification")}
-                      className="flex items-center gap-2 text-midnight font-bold text-sm"
-                    >
-                      <span className="material-symbols-outlined text-sm">notifications_active</span>
-                      <span>Set Reminder</span>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-              
-              {upcomingEvents.slice(1, 3).map((event, i) => (
-                <motion.div key={event.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + (i * 0.1) }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      alt={event.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      src={event.image_url || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"}
-                    />
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">
-                      {new Date(event.event_date).toLocaleDateString([], { month: 'short', day: '2-digit' }).toUpperCase()}
+                    <div className="p-8 h-full flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
+                        <h3 className="font-headline text-3xl text-midnight mb-3">Sunday Celebration Service</h3>
+                        <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
+                            Sunday, March 29, 2026 at 9:00 AM
+                        </p>
+                      </div>
+                      <button onClick={() => openModal("Event Reminder")} className="flex items-center gap-2 text-midnight font-bold text-sm">
+                        <span className="material-symbols-outlined text-sm">notifications_active</span>
+                        <span>Set Reminder</span>
+                      </button>
                     </div>
-                  </div>
-                  <div className="p-8">
-                    <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors line-clamp-1">{event.name}</h3>
-                    <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2">{event.description}</p>
-                    <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
-                      <span className="material-symbols-outlined text-sm">schedule</span>
-                      <span>{new Date(event.event_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {event.location}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
 
-              {upcomingEvents.length === 0 && (
-                // Fallback / Placeholder cards
-                [1, 2, 3].map(i => (
-                  <div key={i} className="bg-surface-container-low animate-pulse rounded-xl h-96"></div>
-                ))
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    <div className="relative h-64 overflow-hidden">
+                      <img alt="Salvation Challenge" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation-challenge.jpg" />
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">MAR 28-29</div>
+                    </div>
+                    <div className="p-8">
+                      <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors line-clamp-1">Salvation Challenge</h3>
+                      <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2 italic">Unlocking Hearts through the Courts of Heaven</p>
+                      <div className="flex flex-col gap-1 text-on-surface-variant text-xs font-semibold">
+                        <div className="flex items-center gap-2">
+                           <span className="material-symbols-outlined text-sm">schedule</span>
+                           <span>March 28th, 4:00 PM</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <span className="material-symbols-outlined text-sm">schedule</span>
+                           <span>March 29th, 9:00 AM</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <div className="bg-surface-container-low animate-pulse rounded-xl h-96 flex items-center justify-center text-slate-300 text-xs uppercase tracking-widest italic">Scheduling...</div>
+                </>
+              ) : (
+                <>
+                  {/* Highlighted Next Event Card */}
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group bg-blue-50 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border-2 border-blue-100 dark:border-blue-900/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
+                    <div className="absolute top-0 right-0 p-6 text-blue-200 dark:text-blue-900/30 -z-10 group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-9xl">event</span>
+                    </div>
+                    <div className="p-8 h-full flex flex-col justify-between">
+                      <div>
+                        <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
+                        <h3 className="font-headline text-3xl text-midnight mb-3">{upcomingEvents[0].name}</h3>
+                        <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
+                            {new Date(upcomingEvents[0].event_date).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => openModal("Event Reminder Notification")}
+                        className="flex items-center gap-2 text-midnight font-bold text-sm"
+                      >
+                        <span className="material-symbols-outlined text-sm">notifications_active</span>
+                        <span>Set Reminder</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                  
+                  {upcomingEvents.slice(1, 3).map((event, i) => (
+                    <motion.div key={event.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + (i * 0.1) }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                      <div className="relative h-64 overflow-hidden">
+                        <img
+                          alt={event.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          src={event.image_url || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"}
+                        />
+                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">
+                          {new Date(event.event_date).toLocaleDateString([], { month: 'short', day: '2-digit' }).toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="p-8">
+                        <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors line-clamp-1">{event.name}</h3>
+                        <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2">{event.description}</p>
+                        <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
+                          <span className="material-symbols-outlined text-sm">schedule</span>
+                          <span>{new Date(event.event_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {event.location}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </>
               )}
             </div>
           </div>

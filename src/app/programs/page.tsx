@@ -8,11 +8,21 @@ import ComingSoonModal from "@/components/ComingSoonModal";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 
+interface EventItem {
+  id: string;
+  name: string;
+  description: string;
+  event_date: string;
+  location: string;
+  image_url?: string;
+  is_highlighted?: boolean;
+}
+
 export default function ProgramsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
-  const [events, setEvents] = useState<any[]>([]);
-  const [highlightedEvent, setHighlightedEvent] = useState<any>(null);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [highlightedEvent, setHighlightedEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0 });
 
@@ -26,10 +36,10 @@ export default function ProgramsPage() {
           .order('event_date', { ascending: true });
         
         if (error) throw error;
-        setEvents(data || []);
+        setEvents((data as EventItem[]) || []);
         
-        const highlighted = data?.find(e => e.is_highlighted) || data?.[0];
-        setHighlightedEvent(highlighted);
+        const highlighted = (data as EventItem[])?.find(e => e.is_highlighted) || (data as EventItem[])?.[0];
+        setHighlightedEvent(highlighted || null);
       } catch (err) {
         console.error('Error fetching events:', err);
       } finally {
@@ -43,20 +53,29 @@ export default function ProgramsPage() {
   useEffect(() => {
     if (!highlightedEvent) return;
 
-    const timer = setInterval(() => {
+    // Compute initial countdown immediately
+    const computeCountdown = () => {
       const target = new Date(highlightedEvent.event_date).getTime();
       const now = new Date().getTime();
       const diff = target - now;
 
       if (diff <= 0) {
-        setCountdown({ days: 0, hours: 0, mins: 0 });
+        return { days: 0, hours: 0, mins: 0 };
+      }
+      return {
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      };
+    };
+
+    setCountdown(computeCountdown());
+
+    const timer = setInterval(() => {
+      const result = computeCountdown();
+      setCountdown(result);
+      if (result.days === 0 && result.hours === 0 && result.mins === 0) {
         clearInterval(timer);
-      } else {
-        setCountdown({
-          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        });
       }
     }, 60000);
 
@@ -86,41 +105,41 @@ export default function ProgramsPage() {
         {/* Featured Program: Dynamic Highlight */}
         <section className="px-8 max-w-7xl mx-auto mb-32">
           {loading ? (
-             <div className="bg-primary-container/20 animate-pulse rounded-[3rem] h-[500px]"></div>
+             <div className="bg-midnight/10 animate-pulse rounded-[3rem] h-[500px]"></div>
           ) : highlightedEvent && (
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-primary rounded-[3rem] p-12 lg:p-24 text-white relative overflow-hidden"
+              className="bg-midnight rounded-[3rem] p-12 lg:p-24 text-white relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-secondary-fixed/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                  <span className="text-secondary font-bold text-sm tracking-[0.2em] uppercase mb-6 inline-block">Flagship Event</span>
+                  <span className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-6 inline-block">Flagship Event</span>
                   <h1 className="font-headline text-5xl md:text-7xl mb-8 leading-tight">{highlightedEvent.name}</h1>
                   <p className="text-white/70 text-lg md:text-xl mb-12 leading-relaxed">
                     {highlightedEvent.description}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center">
                     <div className="flex flex-col">
-                      <span className="text-secondary text-xs font-bold uppercase tracking-widest mb-1">Upcoming Date</span>
+                      <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Upcoming Date</span>
                       <span className="text-2xl font-headline">
                         {new Date(highlightedEvent.event_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
                       </span>
                     </div>
                     <div className="hidden sm:block w-px h-12 bg-white/20"></div>
                     <div className="flex flex-col">
-                      <span className="text-secondary text-xs font-bold uppercase tracking-widest mb-1">Location</span>
+                      <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Location</span>
                       <span className="text-2xl font-headline">{highlightedEvent.location}</span>
                     </div>
                   </div>
-                  <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-primary rounded-2xl font-bold hover:bg-secondary hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center">
+                  <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center">
                     Register for Free
                   </Link>
                 </div>
                 <div className="hidden lg:block relative">
                    <div className="aspect-square bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 flex flex-col items-center justify-center p-12 text-center">
-                      <span className="text-secondary font-bold text-xl uppercase tracking-widest mb-4">Countdown</span>
+                      <span className="text-sky font-bold text-xl uppercase tracking-widest mb-4">Countdown</span>
                       <div className="flex gap-6">
                          <div className="flex flex-col">
                             <span className="text-5xl font-headline">{String(countdown.days).padStart(2, '0')}</span>
@@ -147,7 +166,7 @@ export default function ProgramsPage() {
         {/* Core Ministry Programs */}
         <section className="px-8 max-w-7xl mx-auto mb-32">
           <div className="text-center mb-16">
-            <h2 className="font-headline text-4xl text-primary-container mb-4">Ministry Rhythm</h2>
+            <h2 className="font-headline text-4xl text-midnight mb-4">Ministry Rhythm</h2>
             <p className="text-on-surface-variant max-w-2xl mx-auto">Explore our consistent patterns of spiritual engagement designed to keep your focus on the Kingdom.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -158,11 +177,11 @@ export default function ProgramsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="group p-8 bg-white dark:bg-slate-900 border border-outline-variant/30 rounded-2xl hover:border-secondary hover:shadow-xl hover:shadow-secondary/5 transition-all"
+                className="group p-8 bg-white border border-outline-variant/30 rounded-2xl hover:border-sky hover:shadow-xl hover:shadow-sky/5 transition-all"
               >
-                <h3 className="font-headline text-xl text-primary-container mb-4 group-hover:text-secondary transition-colors">{prog.name}</h3>
+                <h3 className="font-headline text-xl text-midnight mb-4 group-hover:text-sky transition-colors">{prog.name}</h3>
                 <p className="text-on-surface-variant text-sm mb-6 leading-relaxed opacity-70">{prog.desc}</p>
-                <div className="flex items-center gap-2 text-label-small font-bold text-secondary uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-label-small font-bold text-sky uppercase tracking-widest">
                   <span className="material-symbols-outlined text-sm">schedule</span>
                   {prog.time}
                 </div>
@@ -173,9 +192,9 @@ export default function ProgramsPage() {
 
         {/* Global Rhythm */}
         <section className="px-8 max-w-7xl mx-auto py-24 mb-32 bg-surface-container-high rounded-[3rem] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-midnight/5 to-transparent"></div>
           <div className="relative z-10">
-            <h2 className="font-headline text-4xl text-primary-container mb-16 text-center">Annual Ministry Calendar</h2>
+            <h2 className="font-headline text-4xl text-midnight mb-16 text-center">Annual Ministry Calendar</h2>
             <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
               {[
                 { months: "Jan – Feb", focus: "Prayer, Consecration, Alignment", details: "Beginning the year with fasting and spiritual alignment." },
@@ -184,10 +203,10 @@ export default function ProgramsPage() {
                 { months: "Aug – Sep", focus: "Deep Prayer Seasons & Major Gatherings", details: "Intensive 21-day prayer cycles and annual ministry conferences." },
                 { months: "Oct – Dec", focus: "Celebration, Outreach, Thanksgiving", details: "End-of-year missions, charity work, and corporate praise." }
               ].map((period) => (
-                <div key={period.months} className="flex flex-col md:flex-row items-center justify-between p-8 bg-white dark:bg-slate-900 rounded-2xl border border-outline-variant/10 hover:border-primary/20 transition-all group">
+                <div key={period.months} className="flex flex-col md:flex-row items-center justify-between p-8 bg-white rounded-2xl border border-outline-variant/10 hover:border-sky/20 transition-all group">
                   <div className="mb-4 md:mb-0">
-                    <span className="font-bold text-secondary text-sm uppercase tracking-[0.2em] mb-2 block">{period.months}</span>
-                    <span className="text-primary-container font-headline text-2xl group-hover:text-primary transition-colors">{period.focus}</span>
+                    <span className="font-bold text-sky text-sm uppercase tracking-[0.2em] mb-2 block">{period.months}</span>
+                    <span className="text-midnight font-headline text-2xl group-hover:text-sky-dark transition-colors">{period.focus}</span>
                   </div>
                   <p className="text-on-surface-variant text-sm max-w-xs text-center md:text-right opacity-60 italic leading-relaxed">
                     {period.details}
@@ -200,10 +219,10 @@ export default function ProgramsPage() {
 
         {/* Bottom CTA */}
         <section className="px-8 max-w-4xl mx-auto text-center pb-20">
-           <h3 className="font-headline text-3xl text-primary-container mb-8">Need the detailed schedule?</h3>
+           <h3 className="font-headline text-3xl text-midnight mb-8">Need the detailed schedule?</h3>
            <button 
              onClick={() => openModal("Ministry Calendar PDF")}
-             className="px-8 py-4 bg-primary-container text-white rounded-xl font-bold hover:shadow-2xl hover:shadow-primary-container/20 transition-all"
+             className="px-8 py-4 bg-midnight text-white rounded-xl font-bold hover:shadow-2xl hover:shadow-midnight/20 transition-all"
            >
              Download Full PDF Calendar
            </button>

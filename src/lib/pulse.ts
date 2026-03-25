@@ -36,7 +36,7 @@ export function getAutonomousPulse(): PulseState {
   let activeEvent = null;
   
   if (isLive) {
-    activeEvent = "Sunday Glory Service";
+    activeEvent = "Sunday Celebration Service";
     nextEventDateObj = setMinutes(setHours(nextSunday(now), 9), 0);
   } else {
     // If it's Sunday before 9am, it's today at 9am. Otherwise, next Sunday.
@@ -59,7 +59,7 @@ export function getAutonomousPulse(): PulseState {
     isLive,
     activeEvent,
     nextEventDate: nextEventDateObj.toISOString(),
-    nextEventName: "Sunday Glory Service",
+    nextEventName: "Sunday Celebration Service",
     sermonOfTheDay: SERMON_ARCHIVE[sermonIndex],
     globalMetrics: {
       activeUsers: baseUsers + timeMod,

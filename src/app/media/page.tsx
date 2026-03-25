@@ -7,11 +7,21 @@ import ComingSoonModal from "@/components/ComingSoonModal";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface Sermon {
+  id: string;
+  title: string;
+  preacher: string;
+  category: string;
+  date_preached: string;
+  duration: string;
+  thumbnail_url?: string;
+}
+
 export default function MediaPage() {
   const [activeCategory, setActiveCategory] = useState("All Messages");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
-  const [sermons, setSermons] = useState<any[]>([]);
+  const [sermons, setSermons] = useState<Sermon[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +36,7 @@ export default function MediaPage() {
 
         const { data, error } = await query;
         if (error) throw error;
-        setSermons(data || []);
+        setSermons((data as Sermon[]) || []);
       } catch (err) {
         console.error('Error fetching sermons:', err);
       } finally {
@@ -42,8 +52,6 @@ export default function MediaPage() {
     setIsModalOpen(true);
   };
   const categories = ["All Messages", "Spiritual Growth", "The Holy Spirit", "Evangelism", "Prayer"];
-  
-  const filteredSermons = sermons;
 
   return (
     <>
@@ -53,14 +61,14 @@ export default function MediaPage() {
           <motion.span 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-secondary font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block"
+            className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block"
           >
             Media Library
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-headline text-5xl md:text-7xl text-primary-container mb-8"
+            className="font-headline text-5xl md:text-7xl text-midnight mb-8"
           >
             Digital Archive
           </motion.h1>
@@ -71,7 +79,7 @@ export default function MediaPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-6 py-2 rounded-full font-medium transition-all ${
                   activeCategory === cat 
-                    ? "bg-primary-container text-white shadow-lg shadow-primary-container/20" 
+                    ? "bg-midnight text-white shadow-lg shadow-midnight/20" 
                     : "bg-surface-container-high text-on-surface-variant hover:bg-outline-variant/20"
                 }`}
               >
@@ -96,7 +104,7 @@ export default function MediaPage() {
                     <div className="h-4 bg-surface-container-high rounded-full w-1/2"></div>
                   </div>
                 ))
-              ) : filteredSermons.map((sermon: any) => (
+              ) : sermons.map((sermon) => (
                 <motion.div 
                   key={sermon.id}
                   layout
@@ -106,18 +114,18 @@ export default function MediaPage() {
                   transition={{ duration: 0.3 }}
                   className="group cursor-pointer"
                 >
-                  <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-200 mb-6 group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-500">
-                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-[2px] transition-all duration-500 z-10">
+                  <div className="relative aspect-video rounded-3xl overflow-hidden bg-surface-container-high mb-6 group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-500">
+                    <div className="absolute inset-0 bg-midnight/20 flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-[2px] transition-all duration-500 z-10">
                       <div className="flex gap-4">
                          <button 
                            onClick={(e) => { e.stopPropagation(); openModal(`Video: ${sermon.title}`); }}
-                           className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center hover:bg-white hover:text-primary transition-all"
+                           className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center hover:bg-white hover:text-midnight transition-all"
                          >
                            <span className="material-symbols-outlined">play_arrow</span>
                          </button>
                          <button 
                            onClick={(e) => { e.stopPropagation(); openModal(`Audio: ${sermon.title}`); }}
-                           className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center hover:bg-white hover:text-primary transition-all"
+                           className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center hover:bg-white hover:text-midnight transition-all"
                          >
                            <span className="material-symbols-outlined">headphones</span>
                          </button>
@@ -128,9 +136,9 @@ export default function MediaPage() {
                       alt={sermon.title} 
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                     />
-                    <div className="absolute bottom-4 right-4 bg-primary/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded z-20">{sermon.duration}</div>
+                    <div className="absolute bottom-4 right-4 bg-midnight/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded z-20">{sermon.duration}</div>
                   </div>
-                  <h3 className="font-headline text-2xl text-primary-container mb-2 group-hover:text-secondary transition-colors line-clamp-2">
+                  <h3 className="font-headline text-2xl text-midnight mb-2 group-hover:text-sky transition-colors line-clamp-2">
                     {sermon.title}
                   </h3>
                   <p className="text-on-surface-variant text-sm mb-4">{sermon.preacher} • {sermon.date_preached ? new Date(sermon.date_preached).toLocaleDateString() : 'Recent'}</p>
@@ -139,23 +147,23 @@ export default function MediaPage() {
             </AnimatePresence>
           </motion.div>
           
-          {!loading && filteredSermons.length > 0 && (
+          {!loading && sermons.length > 0 && (
             <div className="mt-24 text-center">
               <button 
                 onClick={() => openModal("Load More Messages")}
-                className="px-8 py-4 border border-outline-variant rounded-xl font-bold hover:bg-primary-container hover:text-white hover:border-transparent transition-all"
+                className="px-8 py-4 border border-outline-variant rounded-xl font-bold hover:bg-midnight hover:text-white hover:border-transparent transition-all"
               >
                 Load More Messages
               </button>
             </div>
           )}
 
-          {!loading && filteredSermons.length === 0 && (
+          {!loading && sermons.length === 0 && (
             <div className="py-40 text-center">
               <p className="text-on-surface-variant text-xl">No messages found in this category.</p>
               <button 
                 onClick={() => setActiveCategory("All Messages")}
-                className="mt-6 text-secondary font-bold underline"
+                className="mt-6 text-sky font-bold underline"
               >
                 Clear Filters
               </button>

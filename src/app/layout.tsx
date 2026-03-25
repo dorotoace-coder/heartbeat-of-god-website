@@ -24,21 +24,21 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://heartbeatofgod.org",
+    url: "https://heartbeatofgod.ca",
     siteName: "Heartbeat of God Ministry",
     title: "Heartbeat of God Ministry",
     description: "Raising a generation of Christ-conscious believers globally.",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Heartbeat of God Ministry" }]
+    images: [{ url: "/hbg-logo.png", width: 1200, height: 630, alt: "Heartbeat of God Ministry" }]
   },
   twitter: {
     card: "summary_large_image",
     title: "Heartbeat of God Ministry",
     description: "Raising a generation of Christ-conscious believers globally.",
-    images: ["/og-image.jpg"]
+    images: ["/hbg-logo.png"]
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png"
+    apple: "/apple-touch-icon.svg"
   }
 };
 
@@ -55,7 +55,10 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-midnight focus:text-white focus:rounded-lg">Skip to content</a>
+        {children}
+      </body>
     </html>
   );
 }

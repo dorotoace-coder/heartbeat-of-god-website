@@ -18,7 +18,7 @@ export default function WatchPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-slate-950 text-white flex flex-col items-center justify-center px-8">
+      <main className="min-h-screen pt-32 pb-20 bg-midnight text-white flex flex-col items-center justify-center px-8">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -32,8 +32,8 @@ export default function WatchPage() {
             Live Stream
           </span>
           
-          <div className="relative aspect-video bg-white/5 rounded-3xl border border-white/10 overflow-hidden flex items-center justify-center group mb-12 shadow-2xl shadow-blue-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent"></div>
+          <div className="relative aspect-video bg-white/5 rounded-3xl border border-white/10 overflow-hidden flex items-center justify-center group mb-12 shadow-2xl shadow-sky/10">
+            <div className="absolute inset-0 bg-gradient-to-br from-sky/10 to-transparent"></div>
             
             {isPlaying ? (
               <iframe 
@@ -50,7 +50,7 @@ export default function WatchPage() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsPlaying(true)}
-                  className="relative z-10 w-24 h-24 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-xl"
+                  className="relative z-10 w-24 h-24 rounded-full bg-sky text-white flex items-center justify-center shadow-xl shadow-sky/30"
                 >
                   <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 </motion.button>

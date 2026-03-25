@@ -5,4 +5,4 @@ Disallow: /api/
 Disallow: /login/
 Disallow: /preview/
 
-Sitemap: https://heartbeatofgod.org/sitemap.xml
+Sitemap: https://heartbeatofgod.ca/sitemap.xml

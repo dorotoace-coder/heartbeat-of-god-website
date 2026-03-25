@@ -66,7 +66,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Toggle Button */}
         <button 
-          className="lg:hidden p-2 text-primary-container dark:text-blue-50 focus:outline-none"
+          className="lg:hidden p-2 text-midnight focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
           <span className="material-symbols-outlined text-3xl">

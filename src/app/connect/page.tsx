@@ -49,8 +49,8 @@ export default function ConnectPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <span className="text-secondary font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block">Get In Touch</span>
-            <h1 className="font-headline text-5xl md:text-7xl text-primary-container mb-8">
+            <span className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block">Get In Touch</span>
+            <h1 className="font-headline text-5xl md:text-7xl text-midnight mb-8">
               Connect With Us
             </h1>
             <p className="text-on-surface-variant text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
@@ -66,37 +66,37 @@ export default function ConnectPage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1 space-y-8"
           >
-            <div className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-outline-variant/30 shadow-sm">
-              <h3 className="font-headline text-2xl text-primary-container mb-8">Ministry Channels</h3>
+            <div className="p-8 bg-white rounded-3xl border border-outline-variant/30 shadow-sm">
+              <h3 className="font-headline text-2xl text-midnight mb-8">Ministry Channels</h3>
               
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-secondary-fixed/10 text-secondary-fixed flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
                     <Mail size={24} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-secondary uppercase tracking-widest mb-1">Email</p>
-                    <p className="text-primary-container font-medium">administration@heartbeat.org</p>
+                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Email</p>
+                    <p className="text-midnight font-medium">administration@heartbeat.org</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-secondary-fixed/10 text-secondary-fixed flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
                     <Phone size={24} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-secondary uppercase tracking-widest mb-1">Phone</p>
-                    <p className="text-primary-container font-medium">+1 (555) 789-0123</p>
+                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Phone</p>
+                    <p className="text-midnight font-medium">+1 (555) 789-0123</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-secondary-fixed/10 text-secondary-fixed flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
                     <MapPin size={24} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-secondary uppercase tracking-widest mb-1">Global Headquarters</p>
-                    <p className="text-primary-container font-medium leading-relaxed">Divine Grace Plaza, Suite 402<br />Abuja, Nigeria</p>
+                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Global Headquarters</p>
+                    <p className="text-midnight font-medium leading-relaxed">Divine Grace Plaza, Suite 402<br />Abuja, Nigeria</p>
                   </div>
                 </div>
               </div>
@@ -116,25 +116,25 @@ export default function ConnectPage() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 lg:p-16 border border-outline-variant/30 shadow-xl relative overflow-hidden">
+            <div className="bg-white rounded-[3rem] p-10 lg:p-16 border border-outline-variant/30 shadow-xl relative overflow-hidden">
                {/* Success Overlay */}
                <AnimatePresence>
                  {formStep === "success" && (
                    <motion.div 
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
-                     className="absolute inset-0 z-20 bg-white/95 dark:bg-slate-900/95 flex flex-col items-center justify-center text-center p-12"
+                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-12"
                    >
-                     <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mb-8">
+                     <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-8">
                        <CheckCircle2 size={48} />
                      </div>
-                     <h2 className="font-headline text-4xl text-primary-container mb-4">Message Received!</h2>
+                     <h2 className="font-headline text-4xl text-midnight mb-4">Message Received!</h2>
                      <p className="text-on-surface-variant text-lg max-w-md mx-auto mb-10">
                         Thank you for reaching out. A coordinator from the relevant department will review your message and connect with you shortly.
                      </p>
                      <button 
                        onClick={() => setFormStep("idle")}
-                       className="px-8 py-3 bg-secondary-fixed text-on-secondary-fixed rounded-xl font-bold hover:scale-105 transition-all"
+                       className="px-8 py-3 bg-sky text-white rounded-xl font-bold hover:scale-105 transition-all"
                      >
                        Send Another Message
                      </button>
@@ -147,18 +147,18 @@ export default function ConnectPage() {
                    <motion.div 
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
-                     className="absolute inset-0 z-20 bg-white/95 dark:bg-slate-900/95 flex flex-col items-center justify-center text-center p-12"
+                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-12"
                    >
-                     <div className="w-24 h-24 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mb-8">
+                     <div className="w-24 h-24 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-8">
                        <AlertCircle size={48} />
                      </div>
-                     <h2 className="font-headline text-4xl text-primary-container mb-4">Oops!</h2>
+                     <h2 className="font-headline text-4xl text-midnight mb-4">Oops!</h2>
                      <p className="text-on-surface-variant text-lg max-w-md mx-auto mb-10">
                         Something went wrong while sending your message. Please check your connection or try again later.
                      </p>
                      <button 
                        onClick={() => setFormStep("idle")}
-                       className="px-8 py-3 bg-primary-container text-white rounded-xl font-bold hover:scale-105 transition-all"
+                       className="px-8 py-3 bg-midnight text-white rounded-xl font-bold hover:scale-105 transition-all"
                      >
                        Try Again
                      </button>
@@ -169,35 +169,35 @@ export default function ConnectPage() {
                <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                       <label className="text-sm font-bold text-primary-container uppercase tracking-widest ml-1">Full Name</label>
+                       <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Full Name</label>
                        <input 
                          required 
                          type="text" 
                          value={formData.name}
                          onChange={(e) => setFormData({...formData, name: e.target.value})}
                          placeholder="John Doe" 
-                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-secondary rounded-2xl px-6 py-4 focus:outline-none transition-all" 
+                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all" 
                        />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-sm font-bold text-primary-container uppercase tracking-widest ml-1">Email Address</label>
+                       <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Email Address</label>
                        <input 
                          required 
                          type="email" 
                          value={formData.email}
                          onChange={(e) => setFormData({...formData, email: e.target.value})}
                          placeholder="john@example.com" 
-                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-secondary rounded-2xl px-6 py-4 focus:outline-none transition-all" 
+                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all" 
                        />
                     </div>
                  </div>
 
                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-primary-container uppercase tracking-widest ml-1">Inquiry Type</label>
+                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Inquiry Type</label>
                     <select 
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
-                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-secondary rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
+                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
                     >
                       <option>General Inquiry</option>
                       <option>Prayer Request</option>
@@ -209,21 +209,21 @@ export default function ConnectPage() {
                  </div>
 
                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-primary-container uppercase tracking-widest ml-1">Your Message</label>
+                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Your Message</label>
                     <textarea 
                       required 
                       rows={6} 
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       placeholder="How can we help or partner with you?" 
-                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-secondary rounded-2xl px-6 py-4 focus:outline-none transition-all resize-none" 
+                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all resize-none" 
                     />
                  </div>
 
                  <button 
                    disabled={formStep === "sending"}
                    type="submit" 
-                   className="w-full py-5 bg-primary-container text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-primary-container/20 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                   className="w-full py-5 bg-midnight text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-midnight/20 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                    {formStep === "sending" ? (
                      <span className="animate-pulse">Sending Message...</span>

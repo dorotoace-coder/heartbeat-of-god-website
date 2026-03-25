@@ -14,7 +14,7 @@ export default function AboutPage() {
           <motion.span 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-secondary font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block"
+            className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block"
           >
             Our Identity
           </motion.span>
@@ -22,7 +22,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-headline text-5xl md:text-7xl text-primary-container mb-8"
+            className="font-headline text-5xl md:text-7xl text-midnight mb-8"
           >
             Heartbeat of God Ministry
           </motion.h1>
@@ -45,13 +45,13 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="space-y-8"
             >
-              <h2 className="font-headline text-4xl text-primary-container leading-tight">Our Vision</h2>
+              <h2 className="font-headline text-4xl text-midnight leading-tight">Our Vision</h2>
               <p className="text-on-surface-variant text-lg leading-relaxed">
-                To bring men to the sense of God’s divine presence. We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
+                To bring men to the sense of God's divine presence. We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
               </p>
               <div className="pt-8 border-t border-outline-variant">
-                <p className="font-headline text-2xl text-primary-container mb-2">Founder & Lead Pastor</p>
-                <p className="text-secondary font-bold text-lg">Pastor Amos Unogwu</p>
+                <p className="font-headline text-2xl text-midnight mb-2">Founder & Lead Pastor</p>
+                <p className="text-sky font-bold text-lg">Pastor Amos Unogwu</p>
               </div>
             </motion.div>
             <motion.div 
@@ -60,13 +60,13 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl group"
             >
-              <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+              <div className="absolute inset-0 bg-midnight/10 mix-blend-overlay"></div>
               <img 
-                src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop" 
-                alt="Pastor Amos Unogwu - Lead Pastor" 
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                src="/pastor-amos.png" 
+                alt="Pastor Amos Unogwu - Founder and Lead Pastor of Heartbeat of God Ministry" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>
               <div className="absolute bottom-10 left-10">
                 <p className="text-white font-headline text-3xl">Pst. Amos Unogwu</p>
                 <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Leading the Vision</p>
@@ -78,8 +78,8 @@ export default function AboutPage() {
         {/* Mission Model: Win Build Send */}
         <section className="px-8 py-32 max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="font-headline text-4xl text-primary-container mb-4">The Mission Model</h2>
-            <div className="text-5xl md:text-6xl font-headline text-secondary-fixed opacity-50 tracking-widest mt-4">
+            <h2 className="font-headline text-4xl text-midnight mb-4">The Mission Model</h2>
+            <div className="text-5xl md:text-6xl font-headline text-sky/50 tracking-widest mt-4">
               WIN • BUILD • SEND
             </div>
           </div>
@@ -108,10 +108,10 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2 }}
-                className="p-12 bg-white dark:bg-slate-900 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-outline-variant/30"
+                className="p-12 bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all border border-outline-variant/30"
               >
-                <span className="material-symbols-outlined text-5xl text-secondary mb-8">{step.icon}</span>
-                <h3 className="font-headline text-3xl text-primary-container mb-4">{step.title}</h3>
+                <span className="material-symbols-outlined text-5xl text-sky mb-8">{step.icon}</span>
+                <h3 className="font-headline text-3xl text-midnight mb-4">{step.title}</h3>
                 <p className="text-on-surface-variant leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
@@ -119,8 +119,8 @@ export default function AboutPage() {
         </section>
 
         {/* Core Emphasis */}
-        <section className="px-8 py-32 bg-primary text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-secondary-fixed/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+        <section className="px-8 py-32 bg-midnight text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="max-w-7xl mx-auto relative z-10">
             <h2 className="font-headline text-4xl md:text-5xl mb-16 text-center">Spiritual Foundation</h2>
