@@ -124,7 +124,11 @@ export default function ProgramsPage() {
                     <div className="flex flex-col">
                       <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Upcoming Date</span>
                       <span className="text-2xl font-headline">
-                        {new Date(highlightedEvent.event_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+                        {(() => {
+                          const d = new Date(highlightedEvent.event_date);
+                          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                          return `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+                        })()}
                       </span>
                     </div>
                     <div className="hidden sm:block w-px h-12 bg-white/20"></div>

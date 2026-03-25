@@ -406,7 +406,15 @@ export default function Home() {
                         <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
                         <h3 className="font-headline text-3xl text-midnight mb-3">{upcomingEvents[0].name}</h3>
                         <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
-                            {new Date(upcomingEvents[0].event_date).toLocaleString([], { dateStyle: 'full', timeStyle: 'short' })}
+                            {(() => {
+                              const d = new Date(upcomingEvents[0].event_date);
+                              // Extract UTC components to show the "intended" time regardless of local offset
+                              const hours = d.getUTCHours();
+                              const minutes = d.getUTCMinutes().toString().padStart(2, '0');
+                              const ampm = hours >= 12 ? 'PM' : 'AM';
+                              const h12 = hours % 12 || 12;
+                              return `${d.toLocaleDateString([], { dateStyle: 'full' })} at ${h12}:${minutes} ${ampm}`;
+                            })()}
                         </p>
                       </div>
                       <button 
@@ -436,7 +444,16 @@ export default function Home() {
                         <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2">{event.description}</p>
                         <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
                           <span className="material-symbols-outlined text-sm">schedule</span>
-                          <span>{new Date(event.event_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {event.location}</span>
+                          <span>
+                            {(() => {
+                              const d = new Date(event.event_date);
+                              const hours = d.getUTCHours();
+                              const minutes = d.getUTCMinutes().toString().padStart(2, '0');
+                              const ampm = hours >= 12 ? 'PM' : 'AM';
+                              const h12 = hours % 12 || 12;
+                              return `${h12}:${minutes} ${ampm}`;
+                            })()} • {event.location}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
