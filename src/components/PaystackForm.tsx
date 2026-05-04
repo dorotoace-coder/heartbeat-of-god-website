@@ -1,7 +1,6 @@
 "use client";
 
 import { CreditCard, Landmark, CheckCircle2, AlertCircle, Copy, Check } from "lucide-react";
-import { usePaystackPayment } from "react-paystack";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -10,7 +9,6 @@ const BANK_DETAILS = {
   bankName: "— (add your bank name)",
   accountNumber: "— (add account number)",
   accountName: "Heartbeat of God Ministry",
-  sortCode: "",
 };
 
 type PaystackFormProps = {
@@ -35,8 +33,7 @@ type PaystackFormProps = {
   handleCurrencyChange: (c: any) => void;
 };
 
-function CardPayment({ config, amount, customAmount, email, frequency, symbols, setStep, setLoading }: any) {
-  const initializePayment = usePaystackPayment(config);
+function CardPayment({ amount, customAmount, email, frequency, symbols, publicKey, setStep, setLoading }: any) {
   const [err, setErr] = useState("");
 
   const handlePay = () => {
@@ -51,31 +48,45 @@ function CardPayment({ config, amount, customAmount, email, frequency, symbols, 
       return;
     }
 
-    const onSuccess = async (reference: any) => {
-      setLoading(true);
-      try {
-        await supabase.from("donations").insert({
-          currency: config.currency || "NGN",
-          amount: finalAmount,
-          frequency,
-          payment_method: "Card",
-          status: "completed",
-          reference: reference.reference,
-          donor_email: email,
-        });
-      } catch (e) {
-        console.error("Supabase record failed:", e);
-      } finally {
-        setLoading(false);
-        setStep(2);
-      }
+    const launchPaystack = () => {
+      const handler = (window as any).PaystackPop.setup({
+        key: publicKey,
+        email,
+        amount: Math.round(finalAmount * 100),
+        currency: "NGN",
+        ref: `hbg-${Date.now()}`,
+        callback: async (response: any) => {
+          setLoading(true);
+          try {
+            await supabase.from("donations").insert({
+              currency: "NGN",
+              amount: finalAmount,
+              frequency,
+              payment_method: "Card",
+              status: "completed",
+              reference: response.reference,
+              donor_email: email,
+            });
+          } catch (e) {
+            console.error("Supabase record failed:", e);
+          } finally {
+            setLoading(false);
+            setStep(2);
+          }
+        },
+        onClose: () => {},
+      });
+      handler.openIframe();
     };
 
-    const onClose = () => {
-      console.log("Paystack modal closed");
-    };
-
-    initializePayment({ onSuccess, onClose });
+    if ((window as any).PaystackPop) {
+      launchPaystack();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.onload = launchPaystack;
+      document.head.appendChild(script);
+    }
   };
 
   return (
@@ -220,7 +231,8 @@ export default function PaystackForm({
   setStep, setLoading, handleCurrencyChange,
 }: PaystackFormProps) {
   const [activeMethod, setActiveMethod] = useState<"card" | "transfer">("card");
-  const hasValidKey = config.publicKey && !config.publicKey.includes("placeholder");
+  const publicKey = config.publicKey;
+  const hasValidKey = publicKey && !publicKey.includes("placeholder");
 
   if (step === 2) {
     return (
@@ -322,12 +334,12 @@ export default function PaystackForm({
       {activeMethod === "card" && (
         hasValidKey ? (
           <CardPayment
-            config={config}
             amount={amount}
             customAmount={customAmount}
             email={email}
             frequency={frequency}
             symbols={symbols}
+            publicKey={publicKey}
             setStep={setStep}
             setLoading={setLoading}
           />
@@ -336,7 +348,7 @@ export default function PaystackForm({
             <AlertCircle size={18} className="shrink-0 mt-0.5 text-amber-500" />
             <div>
               <p className="font-bold mb-1">Paystack card payments coming soon</p>
-              <p className="text-amber-700">Add your Paystack live key to Vercel to activate card payments. In the meantime, use Bank Transfer below.</p>
+              <p className="text-amber-700">Add your Paystack live key to activate card payments. In the meantime, use Bank Transfer below.</p>
             </div>
           </div>
         )

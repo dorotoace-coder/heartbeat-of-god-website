@@ -142,8 +142,8 @@ export default function GivePage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-midnight/5 blur-[120px] rounded-full pointer-events-none translate-y-1/3 -translate-x-1/3" />
 
         <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
-          {/* Left — messaging */}
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col justify-center">
+          {/* Left — messaging (order-2 on mobile so payment panel shows first) */}
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col justify-center order-2 lg:order-1">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 bg-sky/10 text-sky-dark rounded-full text-xs font-bold tracking-widest uppercase w-max">
               <Heart size={14} className="fill-sky text-sky" /> Kingdom Partnership
             </span>
@@ -172,8 +172,8 @@ export default function GivePage() {
             </div>
           </motion.div>
 
-          {/* Right — payment panel */}
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          {/* Right — payment panel (order-1 on mobile so it shows first) */}
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="order-1 lg:order-2">
             <AnimatePresence>
               {showSuccess && (
                 <motion.div
