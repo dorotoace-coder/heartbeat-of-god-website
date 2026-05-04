@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Youtube, Instagram, Facebook, Twitter } from "lucide-react";
+import { Youtube, Instagram } from "lucide-react";
+
+const TikTokIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+  </svg>
+);
 export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
 
@@ -39,6 +45,16 @@ export default function Footer() {
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/connect">Partner With Us</Link></li>
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/connect">Contact Us</Link></li>
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/give">Giving Portal</Link></li>
+            <li>
+              <a
+                href="https://ilpc.heartbeatofgod.ca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-400/70 hover:text-amber-300 hover:underline decoration-amber-400/30 underline-offset-4 transition-all font-semibold"
+              >
+                ILPC 2026 →
+              </a>
+            </li>
           </ul>
         </div>
         <div>
@@ -62,17 +78,14 @@ export default function Footer() {
             )}
           </div>
           <div className="flex gap-4 mt-8">
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-red-600 hover:text-white transition-all cursor-pointer">
+            <a href="https://youtube.com/@HBG_tv" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-red-600 hover:text-white transition-all cursor-pointer">
               <Youtube size={20} />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-pink-600 hover:text-white transition-all cursor-pointer">
+            <a href="https://instagram.com/hbgministries" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-pink-600 hover:text-white transition-all cursor-pointer">
               <Instagram size={20} />
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
-              <Facebook size={20} />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-sky-dark hover:text-white transition-all cursor-pointer">
-              <Twitter size={20} />
+            <a href="https://tiktok.com/@hbgministries" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:bg-sky-dark hover:text-white transition-all cursor-pointer">
+              <TikTokIcon />
             </a>
           </div>
         </div>

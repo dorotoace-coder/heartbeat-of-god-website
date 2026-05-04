@@ -67,56 +67,108 @@ export default function Home() {
             />
           </motion.div>
           
-          <div className="relative z-10 max-w-5xl px-8 text-center mt-20">
-            {pulse?.isLive ? (
-              <motion.span
+          <div className="relative z-10 w-full max-w-7xl px-8 mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            {/* Text Column */}
+            <div className="flex-1 text-center lg:text-left">
+              {pulse?.isLive ? (
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="inline-flex items-center gap-2 px-5 py-2 mb-8 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-bold tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                  </span>
+                  Live Event: {pulse.activeEvent}
+                </motion.span>
+              ) : (
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.8 }}
+                  className="inline-block px-4 py-1.5 mb-8 bg-surface-container-highest/10 border border-white/10 rounded-full text-sky-dark text-[0.6875rem] font-medium tracking-[0.1em] uppercase shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                >
+                  A Global Movement for Spiritual Awakening
+                </motion.span>
+              )}
+
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
+                className="font-headline text-5xl md:text-6xl lg:text-7xl text-white font-light tracking-tight leading-[1.1] mb-10"
+              >
+                Bringing Men to the <span className="italic text-sky">Consciousness</span> of God’s Presence
+              </motion.h1>
+
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-5 py-2 mb-8 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-bold tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+                transition={{ delay: 0.7, duration: 0.8 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mt-12"
               >
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                </span>
-                Live Event: {pulse.activeEvent}
-              </motion.span>
-            ) : (
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-                className="inline-block px-4 py-1.5 mb-8 bg-surface-container-highest/10 border border-white/10 rounded-full text-sky-dark text-[0.6875rem] font-medium tracking-[0.1em] uppercase shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-              >
-                A Global Movement for Spiritual Awakening
-              </motion.span>
-            )}
-            
-            <motion.h1
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
-              className="font-headline text-5xl md:text-7xl lg:text-8xl text-white font-light tracking-tight leading-[1.1] mb-10"
-            >
-              Bringing Men to the <span className="italic text-sky">Consciousness</span> of God’s Presence
-            </motion.h1>
-            
+                <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-sky text-white rounded-xl font-semibold shadow-[0_0_15px_rgba(200,162,208,0.4)] hover:scale-105 transition-all duration-300 hover:bg-sky-dark">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "’FILL’ 1" }}>play_arrow</span>
+                  Watch Live
+                </Link>
+                <Link href="/give" className="group flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                  Give Now
+                </Link>
+                <Link href="/departments" className="text-white/80 hover:text-white transition-colors font-medium flex items-center gap-2 group">
+                  Join the Movement
+                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Pastor Photo Column */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12"
+              initial={{ opacity: 0, x: 40, scale: 0.96 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+              className="flex-shrink-0 relative hidden lg:block"
             >
-              <Link href="/watch" className="group flex items-center gap-3 px-8 py-4 bg-sky text-white rounded-xl font-semibold shadow-[0_0_15px_rgba(14,165,233,0.4)] hover:scale-105 transition-all duration-300 hover:bg-sky-dark">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                Watch Live
-              </Link>
-              <Link href="/give" className="group flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                Give Now
-              </Link>
-              <Link href="/departments" className="text-white/80 hover:text-white transition-colors font-medium flex items-center gap-2 group">
-                Join the Movement
-                <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </Link>
+              {/* Glow ring behind photo */}
+              <div className="absolute inset-0 rounded-3xl bg-sky/20 blur-3xl scale-110 -z-10" />
+
+              {/* Photo frame */}
+              <div className="relative w-72 h-[420px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-midnight/60">
+                <img
+                  src="/pastor-amos.png"
+                  alt="Pastor Amos Unogwu"
+                  className="w-full h-full object-cover object-top"
+                />
+                {/* Subtle gradient fade at bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight/70 via-transparent to-transparent" />
+
+                {/* Name badge */}
+                <div className="absolute bottom-5 left-0 right-0 text-center">
+                  <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs font-semibold tracking-widest uppercase">
+                    Pastor Amos Unogwu
+                  </span>
+                </div>
+              </div>
+
+              {/* Floating accent: nations */}
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                className="absolute -top-4 -right-4 px-3 py-2 bg-midnight-light/90 backdrop-blur border border-white/10 rounded-xl shadow-xl"
+              >
+                <p className="text-white/50 text-[10px] uppercase tracking-widest mb-0.5">Reaching</p>
+                <p className="text-white text-xs font-bold">🇳🇬 🇨🇦 🇩🇪</p>
+              </motion.div>
+
+              {/* Floating accent: ministry years */}
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+                className="absolute -bottom-4 -left-4 px-3 py-2 bg-midnight-light/90 backdrop-blur border border-white/10 rounded-xl shadow-xl"
+              >
+                <p className="text-white/50 text-[10px] uppercase tracking-widest mb-0.5">In Ministry</p>
+                <p className="text-white text-xs font-bold">10+ Years</p>
+              </motion.div>
             </motion.div>
           </div>
           
@@ -136,6 +188,68 @@ export default function Home() {
             </motion.span>
             <div className="w-px h-16 bg-gradient-to-b from-white/40 to-transparent"></div>
           </motion.div>
+        </section>
+
+        {/* ILPC 2026 Announcement Banner */}
+        <section className="relative overflow-hidden py-16 px-8" style={{ background: "linear-gradient(135deg, #1C0A2D 0%, #2A1143 50%, #1C0A2D 100%)" }}>
+          {/* Subtle glow */}
+          <div className="absolute top-0 right-1/4 w-96 h-64 rounded-full bg-amber-400/5 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/4 w-64 h-64 rounded-full bg-sky/5 blur-3xl pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            {/* Left: event info */}
+            <div className="flex items-center gap-6">
+              <div className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border border-amber-400/30" style={{ background: "rgba(212,160,23,0.12)" }}>
+                <span className="material-symbols-outlined text-3xl" style={{ color: "#D4A017" }}>celebration</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#D4A017" }}>Annual Conference</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400/15 border border-amber-400/30" style={{ color: "#D4A017" }}>31 Days Away</span>
+                </div>
+                <h3 className="font-headline text-2xl md:text-3xl text-white font-light">
+                  ILPC 2026 — <span className="italic" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</span>
+                </h3>
+                <div className="flex flex-wrap items-center gap-4 mt-2">
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>calendar_month</span>
+                    June 5–7, 2026
+                  </span>
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>location_on</span>
+                    Akute, Nigeria
+                  </span>
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>person</span>
+                    Host: Pastor Amos Unogwu
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: CTA */}
+            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
+              <a
+                href="https://ilpc.heartbeatofgod.ca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-7 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 hover:shadow-xl whitespace-nowrap"
+                style={{ background: "linear-gradient(135deg, #D4A017, #F0C842)", color: "#1C0A2D", boxShadow: "0 8px 24px rgba(212,160,23,0.3)" }}
+              >
+                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_reg</span>
+                Register Free
+              </a>
+              <a
+                href="https://ilpc.heartbeatofgod.ca/#schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-7 py-3.5 rounded-xl font-semibold text-sm transition-all hover:bg-white/10 whitespace-nowrap text-center"
+                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}
+              >
+                View Schedule
+              </a>
+            </div>
+          </div>
         </section>
 
         {/* Quick Access Bento Grid */}
@@ -352,47 +466,65 @@ export default function Home() {
               {upcomingEvents.length === 0 ? (
                 // Hardcoded Fallback for Preview Perfection
                 <>
-                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group bg-blue-50 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border-2 border-blue-100 dark:border-blue-900/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative">
-                    <div className="absolute top-0 right-0 p-6 text-blue-200 dark:text-blue-900/30 -z-10 group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined text-9xl">event</span>
+                  {/* ILPC 2026 — Featured event card */}
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative col-span-1" style={{ background: "linear-gradient(135deg, #1C0A2D 0%, #2A1143 100%)", border: "2px solid rgba(212,160,23,0.3)" }}>
+                    <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity -z-10">
+                      <span className="material-symbols-outlined text-9xl text-amber-400">celebration</span>
                     </div>
                     <div className="p-8 h-full flex flex-col justify-between">
                       <div>
-                        <div className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full mb-6 uppercase tracking-wider">Next On Schedule</div>
-                        <h3 className="font-headline text-3xl text-midnight mb-3">Sunday Celebration Service</h3>
-                        <p className="text-on-surface-variant font-medium text-lg leading-relaxed mb-6">
-                            Sunday, March 29, 2026 at 9:00 AM
+                        <div className="inline-block px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider" style={{ background: "rgba(212,160,23,0.15)", color: "#D4A017", border: "1px solid rgba(212,160,23,0.3)" }}>
+                          Signature Event · June 5–7
+                        </div>
+                        <h3 className="font-headline text-3xl text-white mb-2">ILPC 2026</h3>
+                        <p className="italic mb-4" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</p>
+                        <p className="text-white/50 text-sm leading-relaxed mb-6">
+                          International Leaders & Pastors Conference · Akute, Nigeria
                         </p>
                       </div>
-                      <button onClick={() => openModal("Event Reminder")} className="flex items-center gap-2 text-midnight font-bold text-sm">
-                        <span className="material-symbols-outlined text-sm">notifications_active</span>
-                        <span>Set Reminder</span>
-                      </button>
+                      <a
+                        href="https://ilpc.heartbeatofgod.ca"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all hover:scale-105"
+                        style={{ background: "linear-gradient(135deg, #D4A017, #F0C842)", color: "#1C0A2D" }}
+                      >
+                        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_reg</span>
+                        Register Free
+                      </a>
                     </div>
                   </motion.div>
 
                   <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                     <div className="relative h-64 overflow-hidden">
-                      <img alt="Salvation Challenge" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation.jpg" />
-                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">MAR 28-29</div>
+                      <img alt="Sunday Service" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation.jpg" />
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">WEEKLY</div>
                     </div>
                     <div className="p-8">
-                      <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors line-clamp-1">Salvation Challenge</h3>
-                      <p className="text-on-surface-variant mb-6 text-sm leading-relaxed line-clamp-2 italic">Unlocking Hearts through the Courts of Heaven</p>
-                      <div className="flex flex-col gap-1 text-on-surface-variant text-xs font-semibold">
-                        <div className="flex items-center gap-2">
-                           <span className="material-symbols-outlined text-sm">schedule</span>
-                           <span>March 28th, 4:00 PM</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                           <span className="material-symbols-outlined text-sm">schedule</span>
-                           <span>March 29th, 9:00 AM</span>
-                        </div>
+                      <h3 className="font-headline text-2xl text-midnight mb-3 group-hover:text-sky transition-colors">Sunday Celebration Service</h3>
+                      <p className="text-on-surface-variant mb-6 text-sm leading-relaxed">Praise, worship, and the Word — every Sunday</p>
+                      <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
+                        <span className="material-symbols-outlined text-sm">schedule</span>
+                        <span>Sundays · 10:00 AM</span>
                       </div>
                     </div>
                   </motion.div>
 
-                  <div className="bg-surface-container-low animate-pulse rounded-xl h-96 flex items-center justify-center text-slate-300 text-xs uppercase tracking-widest italic">Scheduling...</div>
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    <div className="p-8 h-full flex flex-col justify-between">
+                      <div>
+                        <div className="w-12 h-12 rounded-xl bg-sky/10 flex items-center justify-center text-sky mb-6">
+                          <span className="material-symbols-outlined">bedtime</span>
+                        </div>
+                        <h3 className="font-headline text-2xl text-midnight mb-3">Night of Prayer</h3>
+                        <p className="text-on-surface-variant text-sm leading-relaxed mb-6">All-night intercession and encounter with God.</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
+                        <span className="material-symbols-outlined text-sm">schedule</span>
+                        <span>Fridays · 10:00 PM</span>
+                      </div>
+                    </div>
+                  </motion.div>
                 </>
               ) : (
                 <>
