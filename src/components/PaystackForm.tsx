@@ -46,16 +46,12 @@ export default function PaystackForm({
       <form id="give-form" onSubmit={handlePaymentSubmit}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-midnight">Choose Give Amount</h2>
-          <select 
-            value={currency} 
+          <select
+            value={currency}
             onChange={(e) => handleCurrencyChange(e.target.value as any)}
             className="bg-surface-container-high border-none text-midnight text-sm font-bold rounded-lg py-2 pl-4 pr-8 focus:ring-2 focus:ring-sky cursor-pointer"
           >
             <option value="NGN">NGN (₦)</option>
-            <option value="HZ">HZ (1k ₦)</option>
-            <option value="USD">USD ($)</option>
-            <option value="CAD">CAD (C$)</option>
-            <option value="EUR">EUR (€)</option>
           </select>
         </div>
         
@@ -111,10 +107,10 @@ export default function PaystackForm({
               One Time
             </div>
           </label>
-          <label className="flex-1 cursor-pointer">
+          <label className="flex-1 cursor-pointer" title="Monthly partnership via Paystack — please contact us to set up your recurring giving plan">
             <input type="radio" name="frequency" value="Monthly Partner" checked={frequency === "Monthly Partner"} onChange={(e) => setFrequency(e.target.value)} className="peer sr-only" />
-            <div className="text-center py-3 rounded-xl border-2 border-outline-variant font-medium text-on-surface-variant peer-checked:border-sky peer-checked:text-sky-dark peer-checked:bg-sky/5 transition-all">
-              Monthly Partner
+            <div className="text-center py-3 rounded-xl border-2 border-outline-variant font-medium text-on-surface-variant peer-checked:border-sky peer-checked:text-sky-dark peer-checked:bg-sky/5 transition-all text-sm">
+              Monthly Pledge
             </div>
           </label>
         </div>

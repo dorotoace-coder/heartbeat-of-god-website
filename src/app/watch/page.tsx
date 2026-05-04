@@ -36,17 +36,17 @@ export default function WatchPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-sky/10 to-transparent"></div>
             
             {isPlaying ? (
-              <iframe 
+              <iframe
                 className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1" 
-                title="Heartbeat of God Living Stream" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                src="https://www.youtube.com/embed/live_stream?channel=UCwlSi6aHBXj9MHhpWLUfXuA&autoplay=1"
+                title="HBG TV — Heartbeat of God Live Stream"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
-              ></iframe>
+              />
             ) : (
               <>
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsPlaying(true)}
@@ -55,8 +55,17 @@ export default function WatchPage() {
                   <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 </motion.button>
                 <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 text-sm font-medium tracking-widest uppercase">
-                  Heartbeat TV Official Stream
+                  HBG TV — @HBG_tv
                 </p>
+                <a
+                  href="https://youtube.com/@HBG_tv"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-all backdrop-blur"
+                >
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
+                  Open on YouTube
+                </a>
               </>
             )}
           </div>
