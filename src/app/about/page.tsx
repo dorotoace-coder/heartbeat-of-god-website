@@ -61,10 +61,10 @@ export default function AboutPage() {
               className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl group"
             >
               <div className="absolute inset-0 bg-midnight/10 mix-blend-overlay"></div>
-              <img 
-                src="/pastor-amos.png" 
-                alt="Pastor Amos Unogwu - Founder and Lead Pastor of Heartbeat of God Ministry" 
-                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+              <img
+                src="/pastor-amos-pro.jpg"
+                alt="Pastor Amos Unogwu - Founder and Lead Pastor of Heartbeat of God Ministry"
+                className="w-full h-full object-cover object-top group-hover:scale-105 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>
               <div className="absolute bottom-10 left-10">

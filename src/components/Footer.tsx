@@ -22,7 +22,7 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto text-left">
         <div className="col-span-1 md:col-span-1">
           <Link href="/" className="inline-block mb-6 group">
-            <img src="/hbg-logo.png" alt="HBG Logo" className="h-16 w-auto group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+            <img src="/hbg-logo.svg" alt="HBG Logo" className="h-16 w-auto group-hover:scale-105 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
             <div className="text-2xl font-light italic text-white font-serif mt-3">
               Heartbeat of God
             </div>

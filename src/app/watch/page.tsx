@@ -72,24 +72,28 @@ export default function WatchPage() {
 
           <h1 className="font-headline text-4xl md:text-5xl mb-6">Atmosphere of Glory</h1>
           <p className="text-white/60 text-lg leading-relaxed max-w-2xl mx-auto mb-12">
-            Experience the unfiltered presence of God through our 24/7 broadcast. If the stream doesn't start automatically, please click the play button.
+            Join us live every <strong className="text-white/80">Sunday at 9:00 AM</strong> and <strong className="text-white/80">Wednesday at 6:00 PM</strong>. If the stream doesn't load automatically, click the play button or open directly on YouTube.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <button 
-              onClick={() => openModal("Detailed Program Guide")}
-              className="px-8 py-4 bg-white/10 border border-white/20 rounded-xl font-bold hover:bg-white/20 transition-all flex items-center gap-2"
+            <a
+              href="https://youtube.com/@HBG_tv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-red-900/30"
             >
-              <span className="material-symbols-outlined">schedule</span>
-              Program Guide
-            </button>
-            <button 
-              onClick={() => openModal("Real-time Fellowship Chat")}
-              className="px-8 py-4 bg-white/10 border border-white/20 rounded-xl font-bold hover:bg-white/20 transition-all flex items-center gap-2"
+              <span className="material-symbols-outlined">play_circle</span>
+              Watch on YouTube
+            </a>
+            <a
+              href="https://us06web.zoom.us/meeting/register/ISNaNBhoTWWu4PmQiEsyDg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-900/30"
             >
-              <span className="material-symbols-outlined">chat</span>
-              Live Chat
-            </button>
+              <span className="material-symbols-outlined">video_call</span>
+              Join on Zoom
+            </a>
           </div>
         </motion.div>
       </main>

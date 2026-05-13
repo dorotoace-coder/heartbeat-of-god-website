@@ -76,7 +76,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Email</p>
-                    <p className="text-midnight font-medium">administration@heartbeat.org</p>
+                    <p className="text-midnight font-medium">heartbeatofgodf@gmail.com</p>
                   </div>
                 </div>
                 
@@ -86,7 +86,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Phone</p>
-                    <p className="text-midnight font-medium">+1 (555) 789-0123</p>
+                    <p className="text-midnight font-medium">WhatsApp us via heartbeatofgodf@gmail.com</p>
                   </div>
                 </div>
 
@@ -96,7 +96,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Global Headquarters</p>
-                    <p className="text-midnight font-medium leading-relaxed">Divine Grace Plaza, Suite 402<br />Abuja, Nigeria</p>
+                    <p className="text-midnight font-medium leading-relaxed">200 Akute Rd, opp. Royal Prince Supermarket<br />Akute, Nigeria</p>
                   </div>
                 </div>
               </div>
@@ -203,6 +203,7 @@ export default function ConnectPage() {
                       <option>Prayer Request</option>
                       <option>Testimony Submission</option>
                       <option>Department Application</option>
+                      <option>ILPC 2026 Registration</option>
                       <option>Event Registration</option>
                       <option>Media/Sound Inquiry</option>
                     </select>
