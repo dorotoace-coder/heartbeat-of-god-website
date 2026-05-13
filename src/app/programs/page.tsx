@@ -30,15 +30,21 @@ export default function ProgramsPage() {
     async function fetchEvents() {
       setLoading(true);
       try {
+        const now = new Date().toISOString();
         const { data, error } = await supabase
           .from('events')
           .select('*')
+          .gte('event_date', now)
           .order('event_date', { ascending: true });
-        
+
         if (error) throw error;
         setEvents((data as EventItem[]) || []);
-        
-        const highlighted = (data as EventItem[])?.find(e => e.is_highlighted) || (data as EventItem[])?.[0];
+
+        // Prefer explicitly highlighted, then ILPC, then next upcoming
+        const highlighted =
+          (data as EventItem[])?.find(e => e.is_highlighted) ||
+          (data as EventItem[])?.find(e => e.name.toLowerCase().includes('ilpc')) ||
+          (data as EventItem[])?.[0];
         setHighlightedEvent(highlighted || null);
       } catch (err) {
         console.error('Error fetching events:', err);
@@ -137,9 +143,20 @@ export default function ProgramsPage() {
                       <span className="text-2xl font-headline">{highlightedEvent.location}</span>
                     </div>
                   </div>
-                  <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center">
-                    Register for Free
-                  </Link>
+                  {highlightedEvent.name.toLowerCase().includes('ilpc') ? (
+                    <a
+                      href="https://ilpc.heartbeatofgod.ca"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center"
+                    >
+                      Register Free — ILPC 2026 →
+                    </a>
+                  ) : (
+                    <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center">
+                      Register for Free
+                    </Link>
+                  )}
                 </div>
                 <div className="hidden lg:block relative">
                    <div className="aspect-square bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 flex flex-col items-center justify-center p-12 text-center">

@@ -505,7 +505,7 @@ export default function Home() {
                       <p className="text-on-surface-variant mb-6 text-sm leading-relaxed">Praise, worship, and the Word — every Sunday</p>
                       <div className="flex items-center gap-2 text-on-surface-variant text-xs font-semibold">
                         <span className="material-symbols-outlined text-sm">schedule</span>
-                        <span>Sundays · 10:00 AM</span>
+                        <span>Sundays · 9:00 AM</span>
                       </div>
                     </div>
                   </motion.div>
