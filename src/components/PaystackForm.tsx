@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const BANK_DETAILS = {
-  bankName: "— (add your bank name)",
-  accountNumber: "— (add account number)",
+  bankName: "Moniepoint",
+  accountNumber: "5460639284",
   accountName: "Heartbeat of God Ministry",
 };
 

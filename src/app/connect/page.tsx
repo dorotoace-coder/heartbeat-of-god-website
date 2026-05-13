@@ -86,7 +86,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Phone</p>
-                    <p className="text-midnight font-medium">WhatsApp us via heartbeatofgodf@gmail.com</p>
+                    <p className="text-midnight font-medium">+234 813 093 8682</p>
                   </div>
                 </div>
 
