@@ -337,7 +337,7 @@ export default function GivePage() {
                         <div className="bg-white border border-outline-variant rounded-xl px-4 py-3 flex items-center justify-between">
                           <div>
                             <p className="text-xs text-on-surface-variant mb-0.5">Transfer to this email</p>
-                            <p className="font-bold text-midnight text-sm">heartbeatofgodf@gmail.com</p>
+                            <p className="font-bold text-midnight text-sm">Dorotoace@gmail.com</p>
                           </div>
                           <Mail size={18} className="text-sky shrink-0" />
                         </div>
