@@ -26,25 +26,48 @@ export default function ProgramsPage() {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0 });
 
+  // Compute next occurrence of a given weekday (0=Sun, 3=Wed)
+  const getNextWeekday = (weekday: number) => {
+    const now = new Date();
+    const day = now.getDay();
+    const diff = (weekday - day + 7) % 7 || 7;
+    const next = new Date(now);
+    next.setDate(now.getDate() + diff);
+    next.setHours(weekday === 0 ? 9 : 18, 0, 0, 0);
+    return next.toISOString();
+  };
+
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
       try {
-        const now = new Date().toISOString();
         const { data, error } = await supabase
           .from('events')
           .select('*')
-          .gte('event_date', now)
           .order('event_date', { ascending: true });
 
         if (error) throw error;
-        setEvents((data as EventItem[]) || []);
 
-        // Prefer explicitly highlighted, then ILPC, then next upcoming
+        // Fix recurring past events: update their date to next occurrence
+        const fixed = (data as EventItem[])?.map(e => {
+          const isPast = new Date(e.event_date) < new Date();
+          if (isPast && e.name.toLowerCase().includes('sunday')) {
+            return { ...e, event_date: getNextWeekday(0), location: '200 Akute Rd, Akute & Online' };
+          }
+          if (isPast && e.name.toLowerCase().includes('wednesday')) {
+            return { ...e, event_date: getNextWeekday(3), location: '200 Akute Rd, Akute & Online' };
+          }
+          return e;
+        }) || [];
+
+        setEvents(fixed);
+
+        // Prefer explicitly highlighted → ILPC → next upcoming
         const highlighted =
-          (data as EventItem[])?.find(e => e.is_highlighted) ||
-          (data as EventItem[])?.find(e => e.name.toLowerCase().includes('ilpc')) ||
-          (data as EventItem[])?.[0];
+          fixed.find(e => e.is_highlighted) ||
+          fixed.find(e => e.name.toLowerCase().includes('ilpc')) ||
+          fixed.find(e => new Date(e.event_date) >= new Date()) ||
+          fixed[0];
         setHighlightedEvent(highlighted || null);
       } catch (err) {
         console.error('Error fetching events:', err);
@@ -113,49 +136,107 @@ export default function ProgramsPage() {
           {loading ? (
              <div className="bg-midnight/10 animate-pulse rounded-[3rem] h-[500px]"></div>
           ) : highlightedEvent && (
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="bg-midnight rounded-[3rem] p-12 lg:p-24 text-white relative overflow-hidden"
+              style={{ boxShadow: '0 0 0 1px rgba(212,175,55,0.15), 0 32px 80px rgba(28,10,45,0.5)' }}
             >
-              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+              {/* Animated ambient blobs */}
+              <motion.div
+                animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.14, 0.08] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              />
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.1, 0.06] }}
+                transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+                className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky/30 rounded-full blur-[100px] -translate-x-1/3 translate-y-1/3 pointer-events-none"
+              />
+              {/* Gold top border shimmer */}
+              <motion.div
+                animate={{ backgroundPosition: ['0% center', '200% center'] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[3rem]"
+                style={{ background: 'linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent)', backgroundSize: '200%' }}
+              />
+
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                  <span className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-6 inline-block">Flagship Event</span>
-                  <h1 className="font-headline text-5xl md:text-7xl mb-8 leading-tight">{highlightedEvent.name}</h1>
-                  <p className="text-white/70 text-lg md:text-xl mb-12 leading-relaxed">
+                  <motion.span
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-6 inline-block"
+                  >
+                    Flagship Event
+                  </motion.span>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="font-headline text-5xl md:text-7xl mb-8 leading-tight"
+                  >
+                    {highlightedEvent.name}
+                  </motion.h1>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.45 }}
+                    className="text-white/70 text-lg md:text-xl mb-12 leading-relaxed"
+                  >
                     {highlightedEvent.description}
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center">
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.55 }}
+                    className="flex flex-col sm:flex-row gap-8 items-start sm:items-center"
+                  >
                     <div className="flex flex-col">
                       <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Upcoming Date</span>
                       <span className="text-2xl font-headline">
                         {(() => {
                           const d = new Date(highlightedEvent.event_date);
-                          const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                          return `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+                          const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                          return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
                         })()}
                       </span>
                     </div>
-                    <div className="hidden sm:block w-px h-12 bg-white/20"></div>
+                    <div className="hidden sm:block w-px h-12 bg-white/20" />
                     <div className="flex flex-col">
                       <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Location</span>
                       <span className="text-2xl font-headline">{highlightedEvent.location}</span>
                     </div>
-                  </div>
+                  </motion.div>
                   {highlightedEvent.name.toLowerCase().includes('ilpc') ? (
-                    <a
+                    <motion.a
                       href="https://ilpc.heartbeatofgod.ca"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl shadow-white/10 inline-block text-center"
+                      style={{ boxShadow: '0 0 0 2px rgba(212,175,55,0.4), 0 12px 32px rgba(255,255,255,0.08)' }}
                     >
                       Register Free — ILPC 2026 →
-                    </a>
+                    </motion.a>
                   ) : (
-                    <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold hover:bg-sky hover:text-white transition-all shadow-xl shadow-white/5 inline-block text-center">
-                      Register for Free
-                    </Link>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl inline-block text-center">
+                        Register for Free
+                      </Link>
+                    </motion.div>
                   )}
                 </div>
                 <div className="hidden lg:block relative">
