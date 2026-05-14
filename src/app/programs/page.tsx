@@ -54,10 +54,10 @@ export default function ProgramsPage() {
         const fixed = (data as EventItem[])?.map(e => {
           const isPast = new Date(e.event_date) < new Date();
           if (isPast && e.name.toLowerCase().includes('sunday')) {
-            return { ...e, event_date: getNextWeekday(0), location: '200 Akute Rd, Akute & Online' };
+            return { ...e, event_date: getNextWeekday(0), location: '100/102 Akute Rd, Martins Bus Stop, Akute & Online' };
           }
           if (isPast && e.name.toLowerCase().includes('wednesday')) {
-            return { ...e, event_date: getNextWeekday(3), location: '200 Akute Rd, Akute & Online' };
+            return { ...e, event_date: getNextWeekday(3), location: '100/102 Akute Rd, Martins Bus Stop, Akute & Online' };
           }
           return e;
         }) || [];

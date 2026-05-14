@@ -96,7 +96,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Global Headquarters</p>
-                    <p className="text-midnight font-medium leading-relaxed">200 Akute Rd, opp. Royal Prince Supermarket<br />Akute, Nigeria</p>
+                    <p className="text-midnight font-medium leading-relaxed">100/102 Akute Road, Martins Bus Stop<br />opp. Royal Prince Supermarket, Akute, Ogun State</p>
                   </div>
                 </div>
               </div>
