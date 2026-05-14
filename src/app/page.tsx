@@ -5,13 +5,17 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
+import TiltCard from "@/components/TiltCard";
+import StatsStrip from "@/components/StatsStrip";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
 
 export default function Home() {
   const { scrollY } = useScroll();
-  const yBg = useTransform(scrollY, [0, 1000], [0, 300]);
+  const yBg  = useTransform(scrollY, [0, 1000], [0, 300]);   // deepest — moves fastest
+  const yMid = useTransform(scrollY, [0, 1000], [0, 150]);   // mid depth
+  const yNear = useTransform(scrollY, [0, 1000], [0, 60]);   // near — barely moves
   const [pulse, setPulse] = useState<PulseState | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
@@ -53,18 +57,51 @@ export default function Home() {
       <main>
         {/* Hero Section: The Sacred Interface */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden sacred-gradient divine-glow">
-          {/* Immersive Motion Background Substitute */}
+          {/* ── DEPTH LAYER 1: Deep nebula — moves fastest (full parallax) ── */}
           <motion.div style={{ y: yBg }} className="absolute inset-0 z-0 select-none pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-sky/10 blur-[120px] rounded-full"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-sky-light/5 blur-[150px] rounded-full"></div>
             <motion.img
-              initial={{ scale: 1.1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 0.3 }}
-              transition={{ duration: 2, ease: "easeOut" }}
-              alt="Abstract light waves and cosmic depth"
+              initial={{ scale: 1.15, opacity: 0 }}
+              animate={{ scale: 1.05, opacity: 0.25 }}
+              transition={{ duration: 2.5, ease: "easeOut" }}
+              alt="Cosmic depth background"
               className="w-full h-full object-cover mix-blend-overlay"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFGc5ooAMR80HyOsFXacyDRBG5jYKB3Gb_oz8G6TQtLEMC9eIXpQ5S-oyyAVYpPsw2RY5jLtyndVME9dGEysD5GL25ovSNZ7U7IwPgcmQH15DoaTfPPUOs4OvQNuNkWIzW0RFeFPabwtcMais4Onz9KjtUYfuX7TlKzLcSIi5DLpDO06XfSU1G8YsxzvSw8GyFJffM2smvAkD3NICiXLpbEAr83lDejar1_PPb5DFwwRPULqAJGJQVFYxgneM3FQ9PkR93uEN6Fo4W"
             />
+          </motion.div>
+
+          {/* ── DEPTH LAYER 2: Mid — glowing orbs at half-speed ── */}
+          <motion.div style={{ y: yMid }} className="absolute inset-0 z-[1] pointer-events-none">
+            <motion.div
+              animate={{ scale: [1, 1.12, 1], opacity: [0.12, 0.22, 0.12] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/4 left-1/3 w-[600px] h-[600px] rounded-full blur-[140px]"
+              style={{ background: "radial-gradient(circle, rgba(200,162,208,0.35) 0%, transparent 70%)" }}
+            />
+            <motion.div
+              animate={{ scale: [1, 1.18, 1], opacity: [0.06, 0.14, 0.06] }}
+              transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+              className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px]"
+              style={{ background: "radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%)" }}
+            />
+          </motion.div>
+
+          {/* ── DEPTH LAYER 3: Near — floating gold dust, barely moves ── */}
+          <motion.div style={{ y: yNear }} className="absolute inset-0 z-[2] pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{ y: [0, -18, 0], opacity: [0.4, 0.9, 0.4] }}
+                transition={{ duration: 5 + i * 1.3, repeat: Infinity, ease: "easeInOut", delay: i * 0.8 }}
+                className="absolute rounded-full"
+                style={{
+                  width: `${4 + i * 2}px`, height: `${4 + i * 2}px`,
+                  left: `${12 + i * 14}%`, top: `${20 + (i % 3) * 22}%`,
+                  background: i % 2 === 0 ? "rgba(212,175,55,0.6)" : "rgba(200,162,208,0.5)",
+                  filter: "blur(1px)",
+                  boxShadow: i % 2 === 0 ? "0 0 8px rgba(212,175,55,0.8)" : "0 0 6px rgba(200,162,208,0.7)",
+                }}
+              />
+            ))}
           </motion.div>
           
           <div className="relative z-10 w-full max-w-7xl px-8 mt-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -316,7 +353,8 @@ export default function Home() {
               }}
               className="grid grid-cols-1 md:grid-cols-3 gap-8"
             >
-              <Link href="/give" className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64 hover:-translate-y-2">
+              <TiltCard className="rounded-2xl" glowColor="rgba(212,175,55,0.15)">
+              <Link href="/give" className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64">
                 <div className="w-12 h-12 rounded-xl bg-midnight/5 flex items-center justify-center text-midnight group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-3xl">volunteer_activism</span>
                 </div>
@@ -325,7 +363,9 @@ export default function Home() {
                   <p className="text-on-surface-variant leading-relaxed">Partner with us in spreading the word across nations.</p>
                 </div>
               </Link>
-              <motion.div onClick={() => window.location.href='/departments'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64 hover:-translate-y-2">
+              </TiltCard>
+              <TiltCard className="rounded-2xl" glowColor="rgba(200,162,208,0.18)">
+              <motion.div onClick={() => window.location.href='/departments'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64">
                 <div className="w-12 h-12 rounded-xl bg-sky-light/10 flex items-center justify-center text-sky group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-3xl">groups</span>
                 </div>
@@ -334,7 +374,9 @@ export default function Home() {
                   <p className="text-on-surface-variant leading-relaxed">Discover your purpose by serving in our diverse teams.</p>
                 </div>
               </motion.div>
-              <motion.div onClick={() => window.location.href='/watch'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative hover:-translate-y-2 transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-midnight to-primary text-white shadow-midnight/20'}`}>
+              </TiltCard>
+              <TiltCard className="rounded-2xl" glowColor="rgba(255,255,255,0.12)" intensity={8}>
+              <motion.div onClick={() => window.location.href='/watch'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-midnight to-primary text-white shadow-midnight/20'}`}>
                 <motion.div 
                   initial={{ rotate: 0 }}
                   whileHover={{ rotate: 15, scale: 1.1 }}
@@ -350,19 +392,29 @@ export default function Home() {
                   <p className="text-white leading-relaxed break-words line-clamp-2 mix-blend-plus-lighter">{pulse?.isLive ? `Join ${pulse.activeEvent} happening now!` : 'Join our ongoing session and feel the atmosphere of glory.'}</p>
                 </div>
               </motion.div>
+              </TiltCard>
             </motion.div>
           </div>
         </section>
 
+        {/* ── Ministry Stats Strip ── */}
+        <StatsStrip />
+
         {/* Latest Message Section */}
         <section className="py-32 px-8 bg-surface-container-low relative overflow-hidden">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-              className="w-full lg:w-3/5 group relative aspect-video bg-primary rounded-2xl overflow-hidden shadow-2xl"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ x: { duration: 0.8 }, opacity: { duration: 0.8 }, y: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
+              className="w-full lg:w-3/5 group relative aspect-video bg-primary rounded-3xl overflow-hidden"
+              whileHover={{ scale: 1.02, rotateY: 2, rotateX: -1 }}
+              style={{
+                transformStyle: "preserve-3d",
+                boxShadow: "0 24px 80px rgba(28,10,45,0.5), 0 8px 32px rgba(200,162,208,0.12), 0 0 0 1px rgba(255,255,255,0.06)"
+              }}
             >
               {pulse && (
                 <img
@@ -490,6 +542,80 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
+          </div>
+        </section>
+
+        {/* ── 3D Scripture Depth Block ── */}
+        <section className="relative py-32 px-8 overflow-hidden" style={{ background: "linear-gradient(180deg, #1C0A2D 0%, #0d0518 50%, #1C0A2D 100%)" }}>
+          {/* Ambient deep glow */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <motion.div
+              animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.14, 0.06] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="w-[700px] h-[400px] rounded-full blur-[120px]"
+              style={{ background: "radial-gradient(ellipse, rgba(212,175,55,0.5) 0%, transparent 70%)" }}
+            />
+          </div>
+
+          <div className="relative max-w-4xl mx-auto text-center" style={{ perspective: "1200px" }}>
+            {/* LAYER 3 — Deepest: glowing reference text (behind everything) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 1 }}
+              style={{ translateZ: "-60px" }}
+              className="text-[11px] font-black tracking-[0.35em] uppercase mb-6 pointer-events-none"
+            >
+              <span style={{ color: "rgba(212,175,55,0.35)", filter: "blur(0.5px)" }}>Psalm 46 : 10</span>
+            </motion.div>
+
+            {/* LAYER 2 — Mid: the verse itself */}
+            <motion.h2
+              initial={{ opacity: 0, y: 40, rotateX: 12 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.25, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="font-headline leading-tight mb-10"
+              style={{
+                fontSize: "clamp(28px, 5vw, 56px)",
+                color: "rgba(255,255,255,0.92)",
+                textShadow: "0 0 60px rgba(212,175,55,0.15)",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              &ldquo;Be still, and{" "}
+              <motion.span
+                animate={{ color: ["#d4af37", "#f0d060", "#d4af37"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                style={{ display: "inline-block" }}
+              >
+                know
+              </motion.span>{" "}
+              that I am God.&rdquo;
+            </motion.h2>
+
+            {/* LAYER 1 — Closest: floating reference pill */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              animate={{ y: [0, -6, 0] }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "10px",
+                padding: "10px 24px",
+                background: "rgba(212,175,55,0.12)",
+                border: "1.5px solid rgba(212,175,55,0.35)",
+                borderRadius: "100px",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 8px 32px rgba(212,175,55,0.15), 0 0 0 1px rgba(212,175,55,0.1)",
+              }}
+            >
+              <span style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", color: "#d4af37" }}>
+                Psalm 46 : 10
+              </span>
+            </motion.div>
           </div>
         </section>
 

@@ -5,6 +5,8 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
+import TiltCard from "@/components/TiltCard";
+import FlipClock from "@/components/FlipClock";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 
@@ -240,25 +242,13 @@ export default function ProgramsPage() {
                   )}
                 </div>
                 <div className="hidden lg:block relative">
-                   <div className="aspect-square bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 flex flex-col items-center justify-center p-12 text-center">
-                      <span className="text-sky font-bold text-xl uppercase tracking-widest mb-4">Countdown</span>
-                      <div className="flex gap-6">
-                         <div className="flex flex-col">
-                            <span className="text-5xl font-headline">{String(countdown.days).padStart(2, '0')}</span>
-                            <span className="text-[10px] uppercase tracking-tighter opacity-50">Days</span>
-                         </div>
-                         <div className="text-5xl font-headline opacity-20">:</div>
-                         <div className="flex flex-col">
-                            <span className="text-5xl font-headline">{String(countdown.hours).padStart(2, '0')}</span>
-                            <span className="text-[10px] uppercase tracking-tighter opacity-50">Hrs</span>
-                         </div>
-                         <div className="text-5xl font-headline opacity-20">:</div>
-                         <div className="flex flex-col">
-                            <span className="text-5xl font-headline">{String(countdown.mins).padStart(2, '0')}</span>
-                            <span className="text-[10px] uppercase tracking-tighter opacity-50">Min</span>
-                         </div>
-                      </div>
-                   </div>
+                  <div className="flex flex-col items-center gap-6">
+                    <span className="text-sky font-black text-xs uppercase tracking-[0.22em]">Countdown</span>
+                    <FlipClock
+                      targetDate={highlightedEvent ? new Date(highlightedEvent.event_date) : new Date()}
+                      accentColor="#C8A2D0"
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -273,13 +263,13 @@ export default function ProgramsPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {corePrograms.map((prog, i) => (
-              <motion.div 
-                key={prog.name}
+              <TiltCard key={prog.name} className="rounded-2xl" glowColor="rgba(200,162,208,0.15)">
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="group p-8 bg-white border border-outline-variant/30 rounded-2xl hover:border-sky hover:shadow-xl hover:shadow-sky/5 transition-all"
+                className="group p-8 bg-white border border-outline-variant/30 rounded-2xl hover:border-sky hover:shadow-xl hover:shadow-sky/5 transition-all h-full"
               >
                 <h3 className="font-headline text-xl text-midnight mb-4 group-hover:text-sky transition-colors">{prog.name}</h3>
                 <p className="text-on-surface-variant text-sm mb-6 leading-relaxed opacity-70">{prog.desc}</p>
@@ -288,6 +278,7 @@ export default function ProgramsPage() {
                   {prog.time}
                 </div>
               </motion.div>
+              </TiltCard>
             ))}
           </div>
         </section>
