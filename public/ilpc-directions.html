@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>How to Get to ILPC 2026 — Heartbeat of God</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --midnight:#1C0A2D;--sky:#C8A2D0;--gold:#d4af37;--gold2:#f0d060;
+      --green:#22c55e;--blue:#3b82f6;--orange:#f97316;--red:#ef4444;
+    }
+    body{
+      font-family:'Manrope',sans-serif;
+      background:linear-gradient(160deg,#0d0518 0%,#1a0a2e 50%,#0f1a2e 100%);
+      min-height:100vh;padding:40px 16px 80px;
+      color:#fff;
+    }
+
+    /* ── CANVAS PARTICLES ── */
+    #particles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+    .page{max-width:780px;margin:0 auto;position:relative;z-index:1;}
+
+    /* ── HEADER ── */
+    .header{
+      text-align:center;margin-bottom:48px;
+      animation:fadeUp 1s cubic-bezier(.22,1,.36,1) both;
+    }
+    .header .badge{
+      display:inline-block;
+      background:rgba(200,162,208,0.12);border:1px solid rgba(200,162,208,0.3);
+      color:var(--sky);font-size:11px;font-weight:700;letter-spacing:.18em;
+      text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:20px;
+    }
+    .header h1{font-size:clamp(28px,6vw,42px);font-weight:900;line-height:1.1;margin-bottom:10px;}
+    .header h1 span{
+      background:linear-gradient(90deg,var(--sky),#e8d0f0,var(--sky));
+      background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;animation:shimmer 4s linear infinite;
+    }
+    .header p{color:rgba(255,255,255,0.5);font-size:14px;line-height:1.7;}
+    .venue-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      margin-top:18px;background:rgba(212,175,55,0.12);
+      border:1px solid rgba(212,175,55,0.35);
+      color:var(--gold);font-size:12px;font-weight:700;
+      padding:9px 20px;border-radius:100px;
+      animation:goldPulse 3s ease-in-out infinite 1s;
+    }
+
+    @keyframes shimmer{from{background-position:0% center}to{background-position:200% center}}
+    @keyframes goldPulse{
+      0%,100%{box-shadow:0 0 12px rgba(212,175,55,0.2)}
+      50%{box-shadow:0 0 24px rgba(212,175,55,0.45)}
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── 3D ROUTE CARDS ── */
+    .routes-label{
+      font-size:11px;font-weight:700;letter-spacing:.18em;
+      text-transform:uppercase;color:rgba(255,255,255,0.35);
+      margin-bottom:16px;
+    }
+
+    .route-card{
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:24px;margin-bottom:14px;
+      overflow:hidden;
+      transform:perspective(1000px) rotateX(0deg);
+      transition:transform .4s ease,box-shadow .4s ease,border-color .3s;
+      animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both;
+      cursor:default;
+    }
+    .route-card:hover{
+      transform:perspective(1000px) rotateX(-2deg) translateY(-4px);
+      box-shadow:0 24px 48px rgba(0,0,0,0.4),0 0 0 1px rgba(212,175,55,0.2);
+      border-color:rgba(212,175,55,0.25);
+    }
+    .route-card:nth-child(1){animation-delay:.2s}
+    .route-card:nth-child(2){animation-delay:.35s}
+    .route-card:nth-child(3){animation-delay:.5s}
+    .route-card:nth-child(4){animation-delay:.65s}
+
+    .route-header{
+      display:flex;align-items:center;gap:14px;
+      padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.06);
+      position:relative;overflow:hidden;
+    }
+    .route-header::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    }
+    .route-card.green .route-header::before{background:linear-gradient(90deg,transparent,var(--green),transparent);}
+    .route-card.blue  .route-header::before{background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+    .route-card.orange.route-header::before{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+    .route-card.orange .route-header::before{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+    .route-card.red   .route-header::before{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+
+    .route-icon{
+      width:48px;height:48px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;flex-shrink:0;
+    }
+    .green .route-icon{background:rgba(34,197,94,0.15);}
+    .blue  .route-icon{background:rgba(59,130,246,0.15);}
+    .orange .route-icon{background:rgba(249,115,22,0.15);}
+    .red   .route-icon{background:rgba(239,68,68,0.15);}
+
+    .route-title{flex:1;}
+    .route-title h3{font-size:15px;font-weight:800;color:#fff;margin-bottom:2px;}
+    .route-title p{font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;}
+    .route-badge{
+      font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+      padding:5px 12px;border-radius:100px;
+    }
+    .green .route-badge{background:rgba(34,197,94,0.15);color:var(--green);}
+    .blue  .route-badge{background:rgba(59,130,246,0.15);color:var(--blue);}
+    .orange .route-badge{background:rgba(249,115,22,0.15);color:var(--orange);}
+    .red   .route-badge{background:rgba(239,68,68,0.15);color:var(--red);}
+
+    /* ── STEPS ── */
+    .steps{padding:20px 22px;display:flex;flex-direction:column;gap:0;}
+
+    .step-row{display:flex;gap:16px;align-items:flex-start;position:relative;}
+    .step-row:not(:last-child)::before{
+      content:'';position:absolute;
+      left:19px;top:40px;bottom:-12px;
+      width:2px;background:rgba(255,255,255,0.08);
+      border-radius:2px;
+    }
+
+    .step-num-wrap{flex-shrink:0;width:38px;display:flex;flex-direction:column;align-items:center;}
+    .step-num{
+      width:38px;height:38px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:900;
+      background:rgba(255,255,255,0.06);
+      border:1.5px solid rgba(255,255,255,0.12);
+      color:rgba(255,255,255,0.7);
+      flex-shrink:0;
+    }
+    .green  .step-num{border-color:rgba(34,197,94,0.4);color:var(--green);background:rgba(34,197,94,0.08);}
+    .blue   .step-num{border-color:rgba(59,130,246,0.4);color:var(--blue);background:rgba(59,130,246,0.08);}
+    .orange .step-num{border-color:rgba(249,115,22,0.4);color:var(--orange);background:rgba(249,115,22,0.08);}
+    .red    .step-num{border-color:rgba(239,68,68,0.4);color:var(--red);background:rgba(239,68,68,0.08);}
+
+    .step-body{flex:1;padding-bottom:20px;}
+    .step-body h4{font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.3;}
+    .step-body p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;}
+    .step-body .tip{
+      display:inline-flex;align-items:center;gap:6px;
+      margin-top:8px;background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px;padding:6px 10px;
+      font-size:12px;color:rgba(255,255,255,0.55);
+      font-weight:600;
+    }
+
+    /* Transport chips */
+    .transport-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+    .chip{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:4px 10px;border-radius:100px;
+      font-size:11px;font-weight:700;letter-spacing:.03em;
+    }
+    .chip-danfo{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.25);}
+    .chip-keke{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.25);}
+    .chip-okada{background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.25);}
+    .chip-uber{background:rgba(148,163,184,0.12);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);}
+    .chip-bus{background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.25);}
+
+    /* ── VENUE CARD ── */
+    .venue-card{
+      margin-top:32px;
+      background:linear-gradient(135deg,rgba(212,175,55,0.08),rgba(212,175,55,0.03));
+      border:1px solid rgba(212,175,55,0.3);
+      border-radius:24px;padding:28px 28px 24px;
+      position:relative;overflow:hidden;
+      animation:fadeUp .7s .8s cubic-bezier(.22,1,.36,1) both;
+    }
+    .venue-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent);
+      animation:scanLine 4s ease-in-out infinite;
+    }
+    @keyframes scanLine{
+      from{transform:scaleX(0);transform-origin:left}
+      50%{transform:scaleX(1);transform-origin:left}
+      50.001%{transform-origin:right}
+      to{transform:scaleX(0);transform-origin:right}
+    }
+    .venue-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+    @media(max-width:480px){.venue-grid{grid-template-columns:1fr;}}
+    .venue-item label{
+      display:block;font-size:10px;font-weight:700;letter-spacing:.15em;
+      text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:5px;
+    }
+    .venue-item p{font-size:14px;font-weight:700;color:#fff;line-height:1.5;}
+
+    .map-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      background:var(--gold);color:#1C0A2D;
+      font-size:13px;font-weight:900;
+      padding:12px 22px;border-radius:12px;
+      text-decoration:none;letter-spacing:.03em;
+      transition:transform .2s,box-shadow .2s;
+      box-shadow:0 4px 20px rgba(212,175,55,0.35);
+    }
+    .map-btn:hover{transform:scale(1.04);box-shadow:0 8px 28px rgba(212,175,55,0.5);}
+
+    /* ── LANDMARK BOX ── */
+    .landmark{
+      margin-top:14px;
+      display:flex;align-items:center;gap:12px;
+      background:rgba(255,255,255,0.04);
+      border:1px dashed rgba(255,255,255,0.12);
+      border-radius:14px;padding:14px 18px;
+    }
+    .landmark span{font-size:22px;}
+    .landmark p{font-size:13px;color:rgba(255,255,255,0.65);font-weight:600;line-height:1.5;}
+    .landmark strong{color:#fff;}
+
+    /* ── FOOTER ── */
+    .footer{
+      margin-top:40px;text-align:center;
+      animation:fadeUp .7s 1s cubic-bezier(.22,1,.36,1) both;
+    }
+    .footer p{font-size:12px;color:rgba(255,255,255,0.25);line-height:1.8;}
+    .footer strong{color:var(--sky);}
+
+    /* ── 3D FLOATING ELEMENTS ── */
+    .float-badge{
+      position:fixed;bottom:32px;right:20px;z-index:10;
+      background:linear-gradient(135deg,var(--midnight),#2e1252);
+      border:1px solid rgba(212,175,55,0.3);
+      border-radius:16px;padding:12px 18px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.4);
+      animation:float 4s ease-in-out infinite;
+      text-align:center;
+    }
+    .float-badge p{font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+    .float-badge strong{font-size:14px;color:var(--gold);}
+    @keyframes float{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-8px)}
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">ILPC 2026 · Travel Guide</div>
+    <h1>Getting to the <span>Venue</span></h1>
+    <p>Step-by-step directions from anywhere in Lagos — easy, local, and stress-free.</p>
+    <div class="venue-pill">
+      📍 &nbsp; 100/102 Akute Road, opp. Royal Prince Supermarket, Akute
+    </div>
+  </div>
+
+  <!-- Route 1: Ojodu-Berger -->
+  <p class="routes-label">Choose your starting point ↓</p>
+
+  <div class="route-card green">
+    <div class="route-header">
+      <div class="route-icon">🚌</div>
+      <div class="route-title">
+        <h3>From Ojodu-Berger</h3>
+        <p>Most popular route · Fastest connection</p>
+      </div>
+      <span class="route-badge">~30 min</span>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <h4>Get to Ojodu-Berger Bus Stop</h4>
+          <p>From anywhere on Lagos Mainland, board a bus heading to Ojodu-Berger. This is your main interchange point.</p>
+          <div class="transport-chips">
+            <span class="chip chip-danfo">🚐 Danfo</span>
+            <span class="chip chip-bus">🚌 BRT/ABC</span>
+            <span class="chip chip-uber">🚗 Uber/Bolt</span>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <h4>Board a bus going to "Akute" or "Lambe"</h4>
+          <p>At Berger, find a danfo or minibus going to <strong style="color:#fff">Akute</strong>. Tell the conductor "Akute junction" or "Royal Prince Supermarket".</p>
+          <div class="transport-chips">
+            <span class="chip chip-danfo">🚐 Danfo to Akute</span>
+            <span class="chip chip-keke">🛺 Keke NAPEP</span>
+          </div>
+          <div class="tip">💡 Fare is usually ₦200–₦400 from Berger</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">3</div></div>
+        <div class="step-body">
+          <h4>Drop at Royal Prince Supermarket</h4>
+          <p>Tell the driver to drop you at <strong style="color:#fff">Royal Prince Supermarket</strong> on Akute Road. The venue is right there — <strong style="color:#22c55e">100/102 Akute Road</strong>.</p>
+          <div class="tip">🏁 You have arrived!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route 2: Lagos Island -->
+  <div class="route-card blue">
+    <div class="route-header">
+      <div class="route-icon">🌉</div>
+      <div class="route-title">
+        <h3>From Lagos Island / CMS</h3>
+        <p>Via Third Mainland Bridge → Berger</p>
+      </div>
+      <span class="route-badge">~60–90 min</span>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <h4>Board a bus from CMS or TBS</h4>
+          <p>At CMS Bus Stop or Tafawa Balewa Square, take any bus heading to <strong style="color:#fff">Ikorodu Road → Ketu → Ojodu-Berger</strong>.</p>
+          <div class="transport-chips">
+            <span class="chip chip-bus">🚌 BRT Lagos</span>
+            <span class="chip chip-danfo">🚐 Danfo</span>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <h4>Drop at Ojodu-Berger</h4>
+          <p>This is your transfer point. From here follow <strong style="color:#60a5fa">Route 1 steps 2 & 3</strong> above to get to Akute.</p>
+          <div class="tip">🔁 Follow Route 1 from here</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route 3: Ikeja / Airport -->
+  <div class="route-card orange">
+    <div class="route-header">
+      <div class="route-icon">✈️</div>
+      <div class="route-title">
+        <h3>From Ikeja / Airport</h3>
+        <p>Via Agege Motor Road or Pen Cinema</p>
+      </div>
+      <span class="route-badge">~45 min</span>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <h4>Head to Pen Cinema or Agege</h4>
+          <p>From Ikeja or the airport, take a bus or keke toward <strong style="color:#fff">Pen Cinema junction</strong> or <strong style="color:#fff">Agege Motor Road</strong>.</p>
+          <div class="transport-chips">
+            <span class="chip chip-keke">🛺 Keke NAPEP</span>
+            <span class="chip chip-uber">🚗 Uber/Bolt</span>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <h4>Connect to Ojodu-Berger</h4>
+          <p>From Pen Cinema or Agege, board any bus to <strong style="color:#fff">Ojodu-Berger</strong>. It's a short ride on the Lagos-Abeokuta Expressway.</p>
+          <div class="transport-chips">
+            <span class="chip chip-danfo">🚐 Danfo</span>
+            <span class="chip chip-bus">🚌 Minibus</span>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">3</div></div>
+        <div class="step-body">
+          <h4>Berger → Akute → You're there</h4>
+          <p>At Berger, take a danfo or keke to Akute. Drop at <strong style="color:#fb923c">Royal Prince Supermarket</strong> — venue is right there.</p>
+          <div class="tip">🏁 Total journey under 45 mins</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route 4: By Car/Uber -->
+  <div class="route-card red">
+    <div class="route-header">
+      <div class="route-icon">🚗</div>
+      <div class="route-title">
+        <h3>By Car / Uber / Bolt</h3>
+        <p>Easiest — just share this address</p>
+      </div>
+      <span class="route-badge">Door-to-door</span>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <h4>Enter this exact address in your app</h4>
+          <p style="font-style:italic;color:rgba(255,255,255,0.7);">"100/102 Akute Road, opposite Royal Prince Supermarket, Akute, Ogun State"</p>
+          <div class="transport-chips">
+            <span class="chip chip-uber">🚗 Uber</span>
+            <span class="chip chip-uber">⚡ Bolt</span>
+            <span class="chip chip-uber">🟢 InDrive</span>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <h4>Key route: Lagos–Abeokuta Expressway</h4>
+          <p>From Lagos, take the <strong style="color:#fff">Lagos-Abeokuta Expressway</strong> (from Berger/Ojodu), then exit at Akute. The road leads directly to the venue.</p>
+          <div class="tip">⛽ Fill up before leaving — no fuel drama!</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num-wrap"><div class="step-num">3</div></div>
+        <div class="step-body">
+          <h4>Look for the Royal Prince Supermarket sign</h4>
+          <p>The venue is directly <strong style="color:#f87171">opposite Royal Prince Supermarket</strong>. You'll see it clearly from the road. Parking is available nearby.</p>
+          <div class="tip">📱 WhatsApp +234 813 093 8682 if you get lost</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Venue Card -->
+  <div class="venue-card">
+    <p style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:18px;">📍 Venue Details</p>
+    <div class="venue-grid">
+      <div class="venue-item">
+        <label>Full Address</label>
+        <p>100/102 Akute Road,<br/>opp. Royal Prince Supermarket,<br/>Akute, Ogun State</p>
+      </div>
+      <div class="venue-item">
+        <label>Conference Dates</label>
+        <p>June 5–7, 2026<br/>Daily from 9:00 AM</p>
+      </div>
+      <div class="venue-item">
+        <label>Contact / Lost?</label>
+        <p>+234 813 093 8682<br/>heartbeatofgodf@gmail.com</p>
+      </div>
+      <div class="venue-item">
+        <label>Nearest Landmark</label>
+        <p>Royal Prince Supermarket<br/>Akute Bus Stop</p>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+      <a class="map-btn" href="https://maps.google.com/?q=100+Akute+Road+Akute+Ogun+State+Nigeria" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Open in Google Maps
+      </a>
+      <a class="map-btn" href="https://waze.com/ul?q=100+Akute+Road+Akute+Nigeria" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);box-shadow:none;">
+        🗺️ Open in Waze
+      </a>
+    </div>
+
+    <div class="landmark">
+      <span>🏪</span>
+      <p><strong>Key landmark to tell your driver:</strong> "Drop me at Royal Prince Supermarket on Akute Road." The venue is directly opposite — you cannot miss it.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Heartbeat of God Ministry · ILPC 2026<br/>
+    <strong>heartbeatofgod.ca</strong> &nbsp;·&nbsp; June 5–7, Akute, Nigeria<br/><br/>
+    <span style="opacity:.5;">This guide is also your training ground for <strong style="color:rgba(255,255,255,0.4);">MTA 2026 · September</strong></span></p>
+  </div>
+
+</div>
+
+<!-- Floating badge -->
+<div class="float-badge">
+  <p>Conference opens</p>
+  <strong>June 5 · 9AM</strong>
+</div>
+
+<script>
+// ── Floating particles
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+
+const particles = Array.from({length:50},()=>({
+  x:Math.random()*window.innerWidth,
+  y:Math.random()*window.innerHeight,
+  r:Math.random()*2+0.5,
+  vx:(Math.random()-.5)*0.3,
+  vy:-Math.random()*0.4-0.1,
+  op:Math.random()*0.4+0.05,
+  color:Math.random()>.5?'200,162,208':'212,175,55'
+}));
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${p.color},${p.op})`;
+    ctx.fill();
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.y<-10){p.y=canvas.height+10;p.x=Math.random()*canvas.width;}
+    if(p.x<0||p.x>canvas.width){p.vx*=-1;}
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── Scroll-triggered reveal
+const cards = document.querySelectorAll('.route-card,.venue-card');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.style.opacity='1';
+  });
+},{threshold:.1});
+cards.forEach(c=>{obs.observe(c);});
+</script>
+</body>
+</html>
