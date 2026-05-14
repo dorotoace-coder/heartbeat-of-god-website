@@ -431,55 +431,132 @@
     </div>
   </div>
 
-  <!-- Venue Card -->
-  <div class="venue-card">
-    <p style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:18px;">📍 Venue Details</p>
-    <div class="venue-grid">
-      <div class="venue-item">
-        <label>Full Address</label>
-        <p>100/102 Akute Road,<br/>opp. Royal Prince Supermarket,<br/>Akute, Ogun State</p>
+  <!-- Venue Infographic Card -->
+  <div class="venue-card" style="padding:0;overflow:hidden;">
+
+    <!-- ── Church image header with logo overlay ── -->
+    <div style="position:relative;height:200px;overflow:hidden;">
+      <img src="/salvation.jpg" alt="Heartbeat of God Ministry"
+        style="width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(0.55) saturate(0.85);" />
+      <!-- Dark gradient overlay -->
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,2,26,0.3) 0%,rgba(8,2,26,0.85) 100%);"></div>
+      <!-- Logo + ministry name centred -->
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+        <img src="/hbg-logo.svg" alt="HBG Logo"
+          style="width:60px;height:60px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(200,162,208,0.7));"
+          onerror="this.style.display='none'" />
+        <div style="text-align:center;">
+          <div style="font-size:14px;font-weight:900;color:#fff;letter-spacing:0.06em;">Heartbeat of God Ministry</div>
+          <div style="font-size:9px;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:#d4af37;margin-top:3px;">ILPC 2026 · Akute, Nigeria</div>
+        </div>
       </div>
-      <div class="venue-item">
-        <label>Conference Dates</label>
-        <p>June 5–7, 2026<br/>Daily from 9:00 AM</p>
-      </div>
-      <div class="venue-item">
-        <label>Contact / Lost?</label>
-        <p>+234 813 093 8682<br/>heartbeatofgodf@gmail.com</p>
-      </div>
-      <div class="venue-item">
-        <label>Nearest Landmark</label>
-        <p>Royal Prince Supermarket<br/>Akute Bus Stop</p>
-      </div>
+      <!-- Gold line bottom -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#d4af37,transparent);"></div>
     </div>
 
-    <!-- Live map embed — centred on Royal Prince Supermarket -->
-    <div style="margin-bottom:16px;border-radius:16px;overflow:hidden;border:1px solid rgba(212,175,55,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.4);">
-      <iframe
-        title="Royal Prince Supermarket — ILPC 2026 Venue Landmark"
-        src="https://maps.google.com/maps?q=Royal+Prince+Supermarket,+Akute,+Ogun+State,+Nigeria&output=embed&z=17"
-        width="100%"
-        height="240"
-        style="border:0;display:block;"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
-    </div>
+    <!-- ── Venue details grid ── -->
+    <div style="padding:20px 20px 0;">
+      <div class="venue-grid" style="margin-bottom:20px;">
+        <div class="venue-item">
+          <label>Full Address</label>
+          <p>100/102 Akute Road,<br/>opp. Royal Prince Supermarket,<br/>Akute, Ogun State</p>
+        </div>
+        <div class="venue-item">
+          <label>Conference Dates</label>
+          <p>June 5–7, 2026<br/>Daily from 9:00 AM</p>
+        </div>
+        <div class="venue-item">
+          <label>Contact / Lost?</label>
+          <p>+234 813 093 8682<br/>heartbeatofgodf@gmail.com</p>
+        </div>
+        <div class="venue-item">
+          <label>Nearest Landmark</label>
+          <p>Royal Prince Supermarket<br/>Akute Bus Stop</p>
+        </div>
+      </div>
 
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;">
-      <a class="map-btn" href="https://maps.google.com/?q=Royal+Prince+Supermarket,+Akute,+Ogun+State,+Nigeria" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        Open in Google Maps
-      </a>
-      <a class="map-btn" href="https://waze.com/ul?q=Royal+Prince+Supermarket+Akute+Nigeria" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);box-shadow:none;">
-        🗺️ Open in Waze
-      </a>
-    </div>
+      <!-- ── Landmark trail infographic ── -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:14px;text-align:center;">
+          🗺️ &nbsp; Landmark Trail to the Venue
+        </div>
 
-    <div class="landmark">
-      <span>🏪</span>
-      <p><strong>Key landmark to tell your driver:</strong> "Drop me at Royal Prince Supermarket on Akute Road." The venue is directly opposite — you cannot miss it.</p>
+        <!-- Trail items -->
+        <div style="display:flex;flex-direction:column;gap:0;">
+
+          <!-- Landmark 1 -->
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(96,165,250,0.15);border:2px solid rgba(96,165,250,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🚏</div>
+              <div style="width:2px;flex:1;min-height:24px;background:linear-gradient(180deg,rgba(96,165,250,0.4),rgba(212,175,55,0.4));margin:4px 0;"></div>
+            </div>
+            <div style="padding:4px 0 16px;">
+              <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:2px;">Ojodu-Berger</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Main transport hub · Danfo, BRT & bus connections from all of Lagos</div>
+            </div>
+          </div>
+
+          <!-- Landmark 2 -->
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(139,92,246,0.15);border:2px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🛣️</div>
+              <div style="width:2px;flex:1;min-height:24px;background:linear-gradient(180deg,rgba(212,175,55,0.4),rgba(34,197,94,0.4));margin:4px 0;"></div>
+            </div>
+            <div style="padding:4px 0 16px;">
+              <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:2px;">Lagos–Abeokuta Expressway</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Board any vehicle heading toward Akute / Lambe junction — ~15 min ride</div>
+            </div>
+          </div>
+
+          <!-- Landmark 3 -->
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(34,197,94,0.15);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔄</div>
+              <div style="width:2px;flex:1;min-height:24px;background:linear-gradient(180deg,rgba(34,197,94,0.4),rgba(212,175,55,0.6));margin:4px 0;"></div>
+            </div>
+            <div style="padding:4px 0 16px;">
+              <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:2px;">Akute Junction / Bus Stop</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Alight here · Take a keke NAPEP or okada down Akute Road · 5 min</div>
+            </div>
+          </div>
+
+          <!-- Landmark 4 — SUPERMARKET (gold highlight) -->
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(212,175,55,0.2);border:2px solid rgba(212,175,55,0.7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(212,175,55,0.3);">🏪</div>
+              <div style="width:2px;flex:1;min-height:24px;background:linear-gradient(180deg,rgba(212,175,55,0.6),rgba(200,162,208,0.7));margin:4px 0;"></div>
+            </div>
+            <div style="padding:4px 0 16px;">
+              <div style="font-size:12px;font-weight:800;color:#d4af37;margin-bottom:2px;">Royal Prince Supermarket ← STOP HERE</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Tell your driver: <em style="color:rgba(255,255,255,0.75);">"Drop me at Royal Prince Supermarket, Akute Road"</em></div>
+            </div>
+          </div>
+
+          <!-- Landmark 5 — VENUE (purple highlight, no line after) -->
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(200,162,208,0.2);border:2px solid rgba(200,162,208,0.7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 0 14px rgba(200,162,208,0.35);">⛪</div>
+            </div>
+            <div style="padding:4px 0;">
+              <div style="font-size:12px;font-weight:800;color:#C8A2D0;margin-bottom:2px;">HBG Ministry — 100/102 Akute Rd</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5;">Directly <strong style="color:#fff;">opposite</strong> Royal Prince Supermarket · You have arrived! 🎉</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CTA buttons -->
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+        <a class="map-btn" href="https://maps.google.com/?q=Royal+Prince+Supermarket,+Akute,+Ogun+State,+Nigeria" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Google Maps
+        </a>
+        <a class="map-btn" href="https://waze.com/ul?q=Royal+Prince+Supermarket+Akute+Nigeria" target="_blank" rel="noopener" style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);box-shadow:none;">
+          🗺️ Waze
+        </a>
+      </div>
+
     </div>
   </div>
 
