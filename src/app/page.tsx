@@ -300,7 +300,7 @@ export default function Home() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff9a3c" }}>Coming September 2026</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff9a3c" }}>September 4–6, 2026</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border" style={{ color: "#ff9a3c", background: "rgba(255,107,43,0.1)", borderColor: "rgba(255,107,43,0.3)" }}>Save the Date</span>
                 </div>
                 <h3 className="font-headline text-2xl md:text-3xl text-white font-light">
@@ -309,7 +309,7 @@ export default function Home() {
                 <div className="flex flex-wrap items-center gap-4 mt-2">
                   <span className="flex items-center gap-1.5 text-white/50 text-xs">
                     <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>calendar_month</span>
-                    September 2026
+                    Sep 4–6, 2026
                   </span>
                   <span className="flex items-center gap-1.5 text-white/50 text-xs">
                     <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>location_on</span>

@@ -290,11 +290,16 @@ export default function ProgramsPage() {
             <h2 className="font-headline text-4xl text-midnight mb-16 text-center">Annual Ministry Calendar</h2>
             <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
               {[
-                { months: "Jan – Feb", focus: "Prayer, Consecration, Alignment", details: "Beginning the year with fasting and spiritual alignment." },
-                { months: "Mar – Apr", focus: "Evangelism Focus & Salvation Challenge", details: "Major soul-winning initiatives and regional outreaches." },
-                { months: "May – Jul", focus: "Teaching, Mentorship, Discipleship", details: "Focused training, leadership seminars, and spiritual growth series." },
-                { months: "Aug – Sep", focus: "Deep Prayer Seasons & Major Gatherings", details: "Intensive 21-day prayer cycles and annual ministry conferences." },
-                { months: "Oct – Dec", focus: "Celebration, Outreach, Thanksgiving", details: "End-of-year missions, charity work, and corporate praise." }
+                { months: "Jan 1 – Feb 1", focus: "STIR UP — Prayer & Fasting", details: "Month-long consecration, fasting and alignment to begin the year in God." },
+                { months: "Feb 1", focus: "First Fruit Sunday", details: "Thanksgiving and seed sowing — honouring God with the first of everything." },
+                { months: "Mar 29–30", focus: "Salvation Challenge Conference", details: "Leadership prayer, intercession and major soul-winning initiative." },
+                { months: "Apr 3", focus: "RISEN Crusade", details: "Easter Friday crusade — integrated departmental execution and outreach." },
+                { months: "Jun 5–7", focus: "ILPC 2026 — Mid-Year Conference", details: "International Leaders & Pastors Conference. Volunteer training and evaluation." },
+                { months: "Aug 13 – Sep 2", focus: "We Wait — 21 Days Fasting & Prayer", details: "Spiritual focus, intercession and fasting emphasis leading into MTA26." },
+                { months: "Sep 4–6", focus: "MTA26 — Mighty Turn Around Assembly", details: "Full programme integration. Our major annual gathering of fire and power." },
+                { months: "Nov 27", focus: "TRIBE X CONCERT — Throne Room", details: "A night of worship and prophecy. Come before the throne of God." },
+                { months: "Dec 9", focus: "Christmas Carol", details: "Community outreach and celebration of the birth of Christ." },
+                { months: "Dec 31", focus: "Captured in Glory Night", details: "Year-end celebration — entering the new year in God's glory." }
               ].map((period) => (
                 <div key={period.months} className="flex flex-col md:flex-row items-center justify-between p-8 bg-white rounded-2xl border border-outline-variant/10 hover:border-sky/20 transition-all group">
                   <div className="mb-4 md:mb-0">
@@ -333,7 +338,7 @@ export default function ProgramsPage() {
               style={{ background: "linear-gradient(90deg, transparent, #ff6b2b, #d4af37, #ff6b2b, transparent)", backgroundSize: "300%" }}
             />
             <div className="relative z-10">
-              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>Coming September 2026</span>
+              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>September 4–6, 2026</span>
               <h2 className="font-headline text-4xl md:text-5xl mb-3">
                 <span style={{ color: "#d4af37" }}>MTA26</span>
               </h2>
