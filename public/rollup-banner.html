@@ -9,376 +9,519 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #1a0a2e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 40px 20px;
-      font-family: 'Manrope', sans-serif;
-    }
-
-    /* ── The Banner ──
-       Standard roll-up: 85cm × 200cm = ratio 1 : 2.353
-       At screen: 480px × 1130px (scaled for preview)
-    */
-    .banner {
-      width: 480px;
-      height: 1130px;
-      position: relative;
-      overflow: hidden;
-      border-radius: 4px;
-      box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.2);
-      background: #08021a;
-    }
-
-    /* ── ZONE 1: TOP — Deep midnight header ── */
-    .zone-top {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 240px;
-      background: linear-gradient(180deg, #05010f 0%, #1C0A2D 70%, transparent 100%);
-      z-index: 10;
+      background: #0a0516;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 32px 40px 0;
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+      font-family: 'Manrope', sans-serif;
     }
 
-    /* Gold shimmer line at very top */
-    .zone-top::before {
+    /*
+      Roll-up banner: 85cm × 200cm → ratio 0.425 : 1
+      Screen preview: 510px × 1200px
+    */
+    .banner {
+      width: 510px;
+      height: 1200px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(175deg, #0e0420 0%, #1a0830 30%, #0f0525 60%, #08021a 100%);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.9), 0 0 0 1px rgba(212,175,55,0.15);
+    }
+
+    /* ════════════════════════════
+       DECORATIVE ELEMENTS
+    ════════════════════════════ */
+
+    /* Gold shimmer line — top */
+    .banner::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent);
+      background: linear-gradient(90deg, transparent 5%, #b8962e 30%, #f0d060 50%, #b8962e 70%, transparent 95%);
+      z-index: 50;
     }
 
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .logo-img {
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
-    }
-
-    .ministry-name {
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.9);
-      line-height: 1.3;
-    }
-
-    .ministry-name span {
-      display: block;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.28em;
-      color: rgba(212,175,55,0.7);
-      margin-top: 3px;
-    }
-
-    /* Thin gold divider */
-    .divider {
-      width: 60px;
-      height: 1.5px;
-      background: linear-gradient(90deg, transparent, #d4af37, transparent);
-      margin: 0 auto;
-    }
-
-    /* ── ZONE 2: MIDDLE WARM — The welcome band ── */
-    .zone-welcome {
-      position: absolute;
-      top: 195px; left: 0; right: 0;
-      height: 200px;
-      background: linear-gradient(180deg,
-        transparent 0%,
-        rgba(245,238,220,0.06) 20%,
-        rgba(245,238,220,0.10) 50%,
-        rgba(245,238,220,0.06) 80%,
-        transparent 100%
-      );
-      z-index: 9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 48px;
-    }
-
-    .welcome-text {
-      font-size: 36px;
-      font-weight: 300;
-      color: rgba(255,255,255,0.95);
-      letter-spacing: 0.01em;
-      line-height: 1.2;
-      margin-bottom: 12px;
-    }
-
-    .welcome-text em {
-      font-style: italic;
-      color: #f5e8c0;
-    }
-
-    .welcome-sub {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: rgba(212,175,55,0.6);
-    }
-
-    /* ── PASTOR IMAGE — Full bleed cinematic ── */
-    .pastor-image {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 800px;
-      z-index: 5;
-    }
-
-    .pastor-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      filter: brightness(0.85) contrast(1.08) saturate(0.9);
-    }
-
-    /* Cinematic vignette over image */
-    .pastor-image::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 30%, transparent 0%, rgba(8,2,26,0.35) 100%),
-        linear-gradient(to right, rgba(8,2,26,0.55) 0%, transparent 35%, transparent 65%, rgba(8,2,26,0.55) 100%),
-        linear-gradient(to top, rgba(8,2,26,0.0) 0%, transparent 40%),
-        linear-gradient(to bottom, rgba(8,2,26,0.8) 0%, transparent 25%);
-      z-index: 2;
-    }
-
-    /* Gold rim light — left edge */
-    .pastor-image::after {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: linear-gradient(180deg, transparent, rgba(212,175,55,0.6) 30%, rgba(212,175,55,0.4) 70%, transparent);
-      z-index: 3;
-    }
-
-    /* ── ZONE 3: BOTTOM — Dark info band ── */
-    .zone-bottom {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 200px;
-      background: linear-gradient(0deg, #05010f 0%, #1C0A2D 60%, transparent 100%);
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 40px 28px;
-      text-align: center;
-    }
-
-    /* Gold shimmer line at bottom */
-    .zone-bottom::after {
+    /* Gold shimmer line — bottom */
+    .banner::after {
       content: '';
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent);
+      background: linear-gradient(90deg, transparent 5%, #b8962e 30%, #f0d060 50%, #b8962e 70%, transparent 95%);
+      z-index: 50;
     }
 
-    .pastor-name-badge {
-      display: inline-flex;
+    /* Ambient background glows */
+    .glow-top {
+      position: absolute;
+      top: -60px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 300px;
+      background: radial-gradient(ellipse, rgba(100,40,160,0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      z-index: 1;
+    }
+
+    .glow-mid {
+      position: absolute;
+      top: 38%; left: 50%; transform: translate(-50%, -50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(212,175,55,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 1;
+    }
+
+    /* Purple wave — bottom */
+    .wave-bottom {
+      position: absolute;
+      bottom: 120px; left: 0; right: 0;
+      height: 160px;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .wave-bottom svg {
+      width: 100%; height: 100%;
+    }
+
+    /* Gold leaf / feather particles */
+    .particles {
+      position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    }
+
+    /* Red heart flowing line — from logo */
+    .heart-line {
+      position: absolute;
+      top: 0; right: 0;
+      width: 220px; height: 220px;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    /* ════════════════════════════
+       SECTION 1: TOP — Logo
+    ════════════════════════════ */
+    .section-top {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      padding: 6px 18px;
-      background: rgba(212,175,55,0.12);
-      border: 1px solid rgba(212,175,55,0.35);
-      border-radius: 100px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #d4af37;
-      margin-bottom: 16px;
+      padding: 38px 40px 0;
+      text-align: center;
     }
 
-    .vision-line {
-      font-size: 13px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.75);
+    .logo-lockup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .logo-img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(180,100,220,0.6)) drop-shadow(0 0 6px rgba(212,175,55,0.3));
+    }
+
+    .ministry-name {
+      font-size: 17px;
+      font-weight: 900;
+      color: #ffffff;
       letter-spacing: 0.04em;
       text-align: center;
-      margin-bottom: 8px;
-      line-height: 1.5;
+      line-height: 1.2;
     }
 
-    .reason-line {
-      font-size: 11px;
-      font-style: italic;
+    .reason-to-live {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    .gold-rule {
+      width: 80px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      margin: 0 auto 24px;
+    }
+
+    /* ════════════════════════════
+       SECTION 2: WELCOME HEADLINE
+    ════════════════════════════ */
+    .section-welcome {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 44px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-headline {
+      font-size: 58px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 40px rgba(100,40,200,0.3);
+    }
+
+    .welcome-sub {
+      font-size: 13px;
       font-weight: 400;
-      color: rgba(212,175,55,0.65);
-      letter-spacing: 0.06em;
-      margin-bottom: 16px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
     }
 
-    .service-times {
+    .welcome-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 8px;
+    }
+
+    .welcome-message {
+      font-size: 12.5px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.75;
+      text-align: center;
+    }
+
+    /* ════════════════════════════
+       SECTION 3: PASTOR IMAGE — centered, contained
+    ════════════════════════════ */
+    .section-pastor {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0 16px;
+    }
+
+    .pastor-frame {
+      width: 260px;
+      height: 320px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 2px rgba(212,175,55,0.35),
+        0 0 0 6px rgba(212,175,55,0.06),
+        0 24px 64px rgba(0,0,0,0.7),
+        0 0 40px rgba(130,60,200,0.2);
+    }
+
+    .pastor-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.9) contrast(1.1) saturate(0.88);
+    }
+
+    /* Cinematic vignette */
+    .pastor-frame::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 100% 50% at 50% 0%, rgba(14,4,32,0.5) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(14,4,32,0.35) 0%, transparent 30%, transparent 65%, rgba(8,2,26,0.6) 100%),
+        linear-gradient(to right, rgba(8,2,26,0.3) 0%, transparent 25%, transparent 75%, rgba(8,2,26,0.3) 100%);
+      z-index: 2;
+    }
+
+    /* Gold rim light left */
+    .pastor-frame::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent 5%, rgba(212,175,55,0.7) 30%, rgba(212,175,55,0.5) 70%, transparent 95%);
+      z-index: 3;
+    }
+
+    .pastor-name {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .pastor-name strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+    }
+
+    .pastor-name span {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.6);
+      margin-top: 3px;
+    }
+
+    /* ════════════════════════════
+       SECTION 4: HEARTBEAT WAY
+    ════════════════════════════ */
+    .section-mission {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 44px;
+      margin-bottom: 10px;
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 8px;
+    }
+
+    .heartbeat-way {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      text-shadow: 0 2px 20px rgba(100,40,200,0.2);
+    }
+
+    .gold-rule-short {
+      width: 48px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      margin: 0 auto 14px;
+    }
+
+    .vision-mission {
+      text-align: center;
+    }
+
+    .vm-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 4px;
+    }
+
+    .vm-text {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .mission-pills {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ════════════════════════════
+       SECTION 5: BOTTOM FOOTER
+    ════════════════════════════ */
+    .section-footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 0 40px;
+      margin-top: 10px;
+    }
+
+    .service-row {
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: center;
+      gap: 10px;
       font-size: 9px;
       font-weight: 800;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 6px;
     }
 
-    .service-dot {
-      width: 3px; height: 3px;
-      background: rgba(212,175,55,0.4);
-      border-radius: 50%;
-    }
+    .dot { width: 3px; height: 3px; background: rgba(212,175,55,0.4); border-radius: 50%; }
 
     .website {
-      margin-top: 10px;
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: rgba(212,175,55,0.4);
+      color: rgba(212,175,55,0.45);
     }
 
-    /* ── Subtle floating particles (decorative) ── */
-    .particles {
-      position: absolute;
-      inset: 0;
-      z-index: 8;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .p {
-      position: absolute;
-      border-radius: 50%;
-      animation: floatUp linear infinite;
-    }
-
-    @keyframes floatUp {
-      0%   { transform: translateY(0) translateX(0); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(-300px) translateX(20px); opacity: 0; }
-    }
-
-    /* Print sizing note */
+    /* Print note */
     .print-note {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(28,10,45,0.9);
-      border: 1px solid rgba(212,175,55,0.3);
-      color: rgba(255,255,255,0.6);
+      margin-top: 28px;
       font-size: 11px;
-      padding: 8px 20px;
-      border-radius: 100px;
-      font-family: 'Manrope', sans-serif;
+      color: rgba(255,255,255,0.25);
       letter-spacing: 0.1em;
+      text-align: center;
+      font-family: 'Manrope', sans-serif;
     }
   </style>
 </head>
 <body>
 
-  <div class="banner" id="banner">
+<div class="banner">
 
-    <!-- Floating particles -->
-    <div class="particles" id="particles"></div>
+  <!-- Ambient glows -->
+  <div class="glow-top"></div>
+  <div class="glow-mid"></div>
 
-    <!-- ── TOP ZONE: Logo + Ministry Name ── -->
-    <div class="zone-top">
-      <div class="logo-wrap">
-        <img class="logo-img" src="/hbg-logo.svg" alt="HBG Logo" onerror="this.style.display='none'" />
-        <div class="ministry-name">
-          Heartbeat of God
-          <span>Ministry International</span>
-        </div>
-      </div>
-      <div class="divider"></div>
-    </div>
+  <!-- Red heart flowing line from logo (matches HBG brand) -->
+  <svg class="heart-line" viewBox="0 0 220 220" fill="none">
+    <path d="M 80 40 Q 160 10 200 80 Q 240 150 160 180 Q 120 200 80 160"
+      stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7" />
+  </svg>
 
-    <!-- ── WELCOME ZONE ── -->
-    <div class="zone-welcome">
-      <div class="welcome-text">You are <em>welcome</em><br>home.</div>
-      <div class="welcome-sub">God's presence is here</div>
-    </div>
-
-    <!-- ── PASTOR IMAGE ── -->
-    <div class="pastor-image">
-      <img
-        src="/pastor-amos-pro.jpg"
-        alt="Pastor Amos Unogwu"
-        onerror="this.style.background='linear-gradient(180deg,#1C0A2D,#08021a)'"
-      />
-    </div>
-
-    <!-- ── BOTTOM ZONE: Vision + Info ── -->
-    <div class="zone-bottom">
-      <div class="pastor-name-badge">Pastor Amos Unogwu</div>
-      <div class="vision-line">Bringing Men to the Sense<br>of God's Presence</div>
-      <div class="reason-line">a reason to live</div>
-      <div class="service-times">
-        <span>Sunday 9:00 AM</span>
-        <span class="service-dot"></span>
-        <span>Wednesday 6:00 PM</span>
-      </div>
-      <div class="website">heartbeatofgod.ca</div>
-    </div>
-
+  <!-- Purple wave bottom -->
+  <div class="wave-bottom">
+    <svg viewBox="0 0 510 160" preserveAspectRatio="none">
+      <path d="M0,80 Q80,20 160,80 Q240,140 320,80 Q400,20 510,60 L510,160 L0,160 Z"
+        fill="rgba(80,30,140,0.18)" />
+      <path d="M0,100 Q100,50 200,100 Q300,150 400,100 Q460,75 510,90 L510,160 L0,160 Z"
+        fill="rgba(60,20,110,0.12)" />
+    </svg>
   </div>
 
-  <div class="print-note">Preview — Print at 85cm × 200cm · 150 DPI minimum</div>
+  <!-- Gold floating particles -->
+  <div class="particles" id="particles"></div>
 
-  <script>
-    // Subtle floating gold particles
-    const container = document.getElementById('particles');
-    const colors = ['rgba(212,175,55,VAL)', 'rgba(200,162,208,VAL)', 'rgba(255,255,255,VAL)'];
+  <!-- ═══ SECTION 1: LOGO ═══ -->
+  <div class="section-top">
+    <div class="logo-lockup">
+      <img class="logo-img" src="/hbg-logo.svg" alt="HBG"
+        onerror="this.style.display='none'" />
+      <div class="ministry-name">Heartbeat of God Ministry</div>
+    </div>
+    <div class="reason-to-live">A Reason to Live</div>
+    <div class="gold-rule"></div>
+  </div>
 
-    for (let i = 0; i < 18; i++) {
-      const p = document.createElement('div');
-      p.className = 'p';
-      const size = Math.random() * 3 + 1;
-      const left = Math.random() * 100;
-      const dur  = Math.random() * 15 + 10;
-      const delay = Math.random() * 14;
-      const bottom = Math.random() * 60;
-      const col = colors[Math.floor(Math.random() * colors.length)];
-      const opacity = (Math.random() * 0.35 + 0.1).toFixed(2);
+  <!-- ═══ SECTION 2: WELCOME ═══ -->
+  <div class="section-welcome">
+    <div class="welcome-headline">Welcome<br>to HBG</div>
+    <div class="welcome-sub">We are honored to receive you today.</div>
+    <div class="welcome-label">Welcome Message</div>
+    <div class="welcome-message">
+      May you encounter Christ,<br>
+      grow in the Spirit, be established in the Word,<br>
+      and discover your place in God's purpose.
+    </div>
+  </div>
 
-      p.style.cssText = `
-        width:${size}px; height:${size}px;
-        left:${left}%;
-        bottom:${bottom}%;
-        background:${col.replace('VAL', opacity)};
-        box-shadow:0 0 ${size*3}px ${col.replace('VAL','0.6')};
-        animation-duration:${dur}s;
-        animation-delay:${delay}s;
-      `;
-      container.appendChild(p);
-    }
-  </script>
+  <!-- ═══ SECTION 3: PASTOR IMAGE ═══ -->
+  <div class="section-pastor">
+    <div class="pastor-frame">
+      <img src="/pastor-amos-pro.jpg" alt="Pastor Amos Unogwu"
+        onerror="this.style.background='linear-gradient(180deg,#2a0a50,#1C0A2D)'" />
+    </div>
+    <div class="pastor-name">
+      <strong>Pastor Amos Unogwu</strong>
+      <span>Lead Pastor</span>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4: MISSION ═══ -->
+  <div class="section-mission">
+    <div class="section-label">The Heartbeat Way</div>
+    <div class="heartbeat-way">
+      Win Souls.<br>
+      Build Believers.<br>
+      Send Lights.
+    </div>
+    <div class="gold-rule-short"></div>
+    <div class="vision-mission">
+      <div class="vm-label">Vision</div>
+      <div class="vm-text">To bring men to the sense of God's divine presence.</div>
+      <div class="vm-label">Mission</div>
+      <div class="mission-pills">WIN &nbsp;•&nbsp; BUILD &nbsp;•&nbsp; SEND</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5: FOOTER ═══ -->
+  <div class="section-footer">
+    <div style="width:80px; height:1.5px; background:linear-gradient(90deg,transparent,rgba(212,175,55,0.4),transparent); margin:14px auto 12px;"></div>
+    <div class="service-row">
+      <span>Sunday 9:00 AM</span>
+      <span class="dot"></span>
+      <span>Wednesday 6:00 PM</span>
+    </div>
+    <div class="website">heartbeatofgod.ca</div>
+  </div>
+
+</div>
+
+<div class="print-note">Preview · Print at 85cm × 200cm · 150 DPI minimum</div>
+
+<script>
+  // Gold + purple particles
+  const container = document.getElementById('particles');
+  const palette = [
+    'rgba(212,175,55,OP)', 'rgba(200,162,208,OP)', 'rgba(255,255,255,OP)'
+  ];
+
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    const size = Math.random() * 3.5 + 1;
+    const left = Math.random() * 96 + 2;
+    const top  = Math.random() * 90 + 2;
+    const dur  = Math.random() * 8 + 6;
+    const delay = Math.random() * 10;
+    const col  = palette[Math.floor(Math.random() * palette.length)];
+    const op   = (Math.random() * 0.3 + 0.1).toFixed(2);
+
+    el.style.cssText = `
+      position:absolute;
+      width:${size}px; height:${size}px;
+      left:${left}%; top:${top}%;
+      border-radius:50%;
+      background:${col.replace('OP', op)};
+      box-shadow:0 0 ${size*3}px ${col.replace('OP','0.5')};
+      animation: floatDrift ${dur}s ease-in-out ${delay}s infinite;
+      pointer-events:none;
+    `;
+    container.appendChild(el);
+  }
+</script>
+
+<style>
+  @keyframes floatDrift {
+    0%,100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+    33%     { transform: translateY(-14px) translateX(6px); opacity: 0.9; }
+    66%     { transform: translateY(-8px) translateX(-5px); opacity: 0.6; }
+  }
+</style>
+
 </body>
 </html>
