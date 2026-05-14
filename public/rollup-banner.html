@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HBG Roll-Up Banner — Print Ready</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a0a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    /* ── The Banner ──
+       Standard roll-up: 85cm × 200cm = ratio 1 : 2.353
+       At screen: 480px × 1130px (scaled for preview)
+    */
+    .banner {
+      width: 480px;
+      height: 1130px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.2);
+      background: #08021a;
+    }
+
+    /* ── ZONE 1: TOP — Deep midnight header ── */
+    .zone-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 240px;
+      background: linear-gradient(180deg, #05010f 0%, #1C0A2D 70%, transparent 100%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 32px 40px 0;
+    }
+
+    /* Gold shimmer line at very top */
+    .zone-top::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent);
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .logo-img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
+    }
+
+    .ministry-name {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.3;
+    }
+
+    .ministry-name span {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      color: rgba(212,175,55,0.7);
+      margin-top: 3px;
+    }
+
+    /* Thin gold divider */
+    .divider {
+      width: 60px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      margin: 0 auto;
+    }
+
+    /* ── ZONE 2: MIDDLE WARM — The welcome band ── */
+    .zone-welcome {
+      position: absolute;
+      top: 195px; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(180deg,
+        transparent 0%,
+        rgba(245,238,220,0.06) 20%,
+        rgba(245,238,220,0.10) 50%,
+        rgba(245,238,220,0.06) 80%,
+        transparent 100%
+      );
+      z-index: 9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 48px;
+    }
+
+    .welcome-text {
+      font-size: 36px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.95);
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .welcome-text em {
+      font-style: italic;
+      color: #f5e8c0;
+    }
+
+    .welcome-sub {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.6);
+    }
+
+    /* ── PASTOR IMAGE — Full bleed cinematic ── */
+    .pastor-image {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 800px;
+      z-index: 5;
+    }
+
+    .pastor-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.85) contrast(1.08) saturate(0.9);
+    }
+
+    /* Cinematic vignette over image */
+    .pastor-image::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, transparent 0%, rgba(8,2,26,0.35) 100%),
+        linear-gradient(to right, rgba(8,2,26,0.55) 0%, transparent 35%, transparent 65%, rgba(8,2,26,0.55) 100%),
+        linear-gradient(to top, rgba(8,2,26,0.0) 0%, transparent 40%),
+        linear-gradient(to bottom, rgba(8,2,26,0.8) 0%, transparent 25%);
+      z-index: 2;
+    }
+
+    /* Gold rim light — left edge */
+    .pastor-image::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, transparent, rgba(212,175,55,0.6) 30%, rgba(212,175,55,0.4) 70%, transparent);
+      z-index: 3;
+    }
+
+    /* ── ZONE 3: BOTTOM — Dark info band ── */
+    .zone-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(0deg, #05010f 0%, #1C0A2D 60%, transparent 100%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 40px 28px;
+      text-align: center;
+    }
+
+    /* Gold shimmer line at bottom */
+    .zone-bottom::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent);
+    }
+
+    .pastor-name-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      background: rgba(212,175,55,0.12);
+      border: 1px solid rgba(212,175,55,0.35);
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 16px;
+    }
+
+    .vision-line {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.04em;
+      text-align: center;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .reason-line {
+      font-size: 11px;
+      font-style: italic;
+      font-weight: 400;
+      color: rgba(212,175,55,0.65);
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    .service-times {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .service-dot {
+      width: 3px; height: 3px;
+      background: rgba(212,175,55,0.4);
+      border-radius: 50%;
+    }
+
+    .website {
+      margin-top: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.4);
+    }
+
+    /* ── Subtle floating particles (decorative) ── */
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .p {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-300px) translateX(20px); opacity: 0; }
+    }
+
+    /* Print sizing note */
+    .print-note {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(28,10,45,0.9);
+      border: 1px solid rgba(212,175,55,0.3);
+      color: rgba(255,255,255,0.6);
+      font-size: 11px;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-family: 'Manrope', sans-serif;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="banner" id="banner">
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- ── TOP ZONE: Logo + Ministry Name ── -->
+    <div class="zone-top">
+      <div class="logo-wrap">
+        <img class="logo-img" src="/hbg-logo.svg" alt="HBG Logo" onerror="this.style.display='none'" />
+        <div class="ministry-name">
+          Heartbeat of God
+          <span>Ministry International</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
+
+    <!-- ── WELCOME ZONE ── -->
+    <div class="zone-welcome">
+      <div class="welcome-text">You are <em>welcome</em><br>home.</div>
+      <div class="welcome-sub">God's presence is here</div>
+    </div>
+
+    <!-- ── PASTOR IMAGE ── -->
+    <div class="pastor-image">
+      <img
+        src="/pastor-amos-pro.jpg"
+        alt="Pastor Amos Unogwu"
+        onerror="this.style.background='linear-gradient(180deg,#1C0A2D,#08021a)'"
+      />
+    </div>
+
+    <!-- ── BOTTOM ZONE: Vision + Info ── -->
+    <div class="zone-bottom">
+      <div class="pastor-name-badge">Pastor Amos Unogwu</div>
+      <div class="vision-line">Bringing Men to the Sense<br>of God's Presence</div>
+      <div class="reason-line">a reason to live</div>
+      <div class="service-times">
+        <span>Sunday 9:00 AM</span>
+        <span class="service-dot"></span>
+        <span>Wednesday 6:00 PM</span>
+      </div>
+      <div class="website">heartbeatofgod.ca</div>
+    </div>
+
+  </div>
+
+  <div class="print-note">Preview — Print at 85cm × 200cm · 150 DPI minimum</div>
+
+  <script>
+    // Subtle floating gold particles
+    const container = document.getElementById('particles');
+    const colors = ['rgba(212,175,55,VAL)', 'rgba(200,162,208,VAL)', 'rgba(255,255,255,VAL)'];
+
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'p';
+      const size = Math.random() * 3 + 1;
+      const left = Math.random() * 100;
+      const dur  = Math.random() * 15 + 10;
+      const delay = Math.random() * 14;
+      const bottom = Math.random() * 60;
+      const col = colors[Math.floor(Math.random() * colors.length)];
+      const opacity = (Math.random() * 0.35 + 0.1).toFixed(2);
+
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${left}%;
+        bottom:${bottom}%;
+        background:${col.replace('VAL', opacity)};
+        box-shadow:0 0 ${size*3}px ${col.replace('VAL','0.6')};
+        animation-duration:${dur}s;
+        animation-delay:${delay}s;
+      `;
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>
