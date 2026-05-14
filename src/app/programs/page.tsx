@@ -319,6 +319,43 @@ export default function ProgramsPage() {
           </div>
         </section>
 
+        {/* MTA26 Teaser */}
+        <section className="px-8 max-w-7xl mx-auto mb-20">
+          <motion.a
+            href="/mta-2026-announcement.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.015 }}
+            className="flex flex-col md:flex-row items-center justify-between gap-8 p-10 md:p-14 rounded-[2.5rem] relative overflow-hidden text-white no-underline block"
+            style={{ background: "linear-gradient(135deg, #0d0518 0%, #1a0828 60%, #0d0518 100%)", border: "1px solid rgba(255,107,43,0.2)", boxShadow: "0 0 0 1px rgba(212,175,55,0.08), 0 32px 80px rgba(255,60,0,0.1)" }}
+          >
+            {/* Fire glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,107,43,0.12) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
+            {/* Gold shimmer top */}
+            <motion.div
+              animate={{ backgroundPosition: ["0% center", "300% center"] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+              className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[2.5rem]"
+              style={{ background: "linear-gradient(90deg, transparent, #ff6b2b, #d4af37, #ff6b2b, transparent)", backgroundSize: "300%" }}
+            />
+            <div className="relative z-10">
+              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>Coming September 2026</span>
+              <h2 className="font-headline text-4xl md:text-5xl mb-3">
+                <span style={{ color: "#d4af37" }}>MTA26</span>
+              </h2>
+              <p className="text-white/60 text-lg font-medium">Mighty Turn Around Assembly — a gathering of fire, prayer &amp; prophetic power.</p>
+            </div>
+            <div className="relative z-10 flex-shrink-0">
+              <span className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-base" style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", boxShadow: "0 8px 32px rgba(255,107,43,0.35)" }}>
+                🔥 Learn More &amp; Save the Date →
+              </span>
+            </div>
+          </motion.a>
+        </section>
+
         {/* Bottom CTA */}
         <section className="px-8 max-w-4xl mx-auto text-center pb-20">
            <h3 className="font-headline text-3xl text-midnight mb-8">Need the detailed schedule?</h3>

@@ -252,6 +252,54 @@ export default function Home() {
           </div>
         </section>
 
+        {/* MTA26 Coming Soon Banner */}
+        <section className="relative overflow-hidden py-14 px-8" style={{ background: "linear-gradient(135deg, #0d0518 0%, #1a0a2e 50%, #0d0518 100%)" }}>
+          <div className="absolute top-0 left-1/3 w-96 h-40 rounded-full bg-orange-500/8 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 right-1/4 w-64 h-40 rounded-full bg-amber-400/6 blur-3xl pointer-events-none" />
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-6">
+              <div className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border border-orange-500/30" style={{ background: "rgba(255,107,43,0.1)" }}>
+                <span className="text-3xl">🔥</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff9a3c" }}>Coming September 2026</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border" style={{ color: "#ff9a3c", background: "rgba(255,107,43,0.1)", borderColor: "rgba(255,107,43,0.3)" }}>Save the Date</span>
+                </div>
+                <h3 className="font-headline text-2xl md:text-3xl text-white font-light">
+                  MTA26 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
+                </h3>
+                <div className="flex flex-wrap items-center gap-4 mt-2">
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>calendar_month</span>
+                    September 2026
+                  </span>
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>location_on</span>
+                    Akute, Nigeria &amp; Online
+                  </span>
+                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
+                    <span className="material-symbols-outlined text-sm" style={{ color: "#d4af37" }}>auto_awesome</span>
+                    Free Admission
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <a
+                href="/mta-2026-announcement.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-7 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 hover:shadow-xl whitespace-nowrap"
+                style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff", boxShadow: "0 8px 24px rgba(255,107,43,0.3)" }}
+              >
+                <span className="text-base">🔥</span>
+                Learn More — MTA26
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* Quick Access Bento Grid */}
         <section className="py-24 px-8 bg-surface">
           <div className="max-w-7xl mx-auto">
