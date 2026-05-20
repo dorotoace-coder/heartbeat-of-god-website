@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ILPC 2026 — Featured Speaker: Dr. Jide Ayangbesan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0118;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Manrope', sans-serif;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+      z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(180,80,220,0.12); top: -100px; left: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(212,175,55,0.08); bottom: -50px; right: -80px; }
+    .orb-3 { width: 300px; height: 300px; background: rgba(100,60,180,0.1); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+    /* Particles */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleDrift linear infinite;
+    }
+    @keyframes particleDrift {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-20px) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── FLYER CARD ── */
+    .flyer {
+      position: relative;
+      z-index: 10;
+      max-width: 560px;
+      width: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #1a0330 0%, #0f0220 60%, #150128 100%);
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,0.25),
+        0 0 60px rgba(180,80,220,0.2),
+        0 30px 80px rgba(0,0,0,0.8);
+    }
+
+    /* Top gold shimmer bar */
+    .shimmer-bar {
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, #b06ae0, #d4af37, transparent);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    /* Conference badge */
+    .conference-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px 30px 0;
+    }
+    .badge-chip {
+      background: rgba(212,175,55,0.12);
+      border: 1px solid rgba(212,175,55,0.35);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #d4af37;
+    }
+
+    /* Speaker portrait area */
+    .portrait-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 30px 0;
+      position: relative;
+    }
+
+    .portrait-ring {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      flex-shrink: 0;
+    }
+    .portrait-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #d4af37, #b06ae0, #d4af37, #b06ae0, #d4af37);
+      animation: ringRotate 4s linear infinite;
+      z-index: 0;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+    .portrait-ring::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #1a0330;
+      z-index: 1;
+      margin: 4px;
+    }
+    .portrait-inner {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      z-index: 2;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(212,175,55,0.15) 0%, transparent 60%),
+        linear-gradient(160deg, #2a0a45 0%, #1a0535 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(212,175,55,0.3);
+    }
+
+    /* Silhouette placeholder (shows when no photo) */
+    .speaker-initials {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: rgba(212,175,55,0.9);
+      text-shadow: 0 0 30px rgba(212,175,55,0.5);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    /* Mic badge */
+    .mic-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      z-index: 5;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      box-shadow: 0 0 16px rgba(212,175,55,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* Name & title */
+    .name-block {
+      text-align: center;
+      padding: 20px 30px 0;
+    }
+    .speaker-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.6);
+      margin-bottom: 8px;
+    }
+    .speaker-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.05;
+      text-shadow:
+        0 0 30px rgba(212,175,55,0.4),
+        0 0 60px rgba(180,80,220,0.2);
+      animation: nameGlow 5s ease-in-out infinite;
+    }
+    @keyframes nameGlow {
+      0%,100% { text-shadow: 0 0 30px rgba(212,175,55,0.4), 0 0 60px rgba(180,80,220,0.2); }
+      50%      { text-shadow: 0 0 50px rgba(212,175,55,0.7), 0 0 100px rgba(200,100,255,0.3); }
+    }
+
+    /* Gold divider */
+    .gold-rule {
+      width: 80px;
+      height: 2px;
+      margin: 16px auto 0;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(212,175,55,0.5);
+    }
+
+    /* Sessions */
+    .sessions-block {
+      padding: 24px 30px;
+    }
+    .sessions-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.5);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .session-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .session-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .session-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #d4af37, #b06ae0);
+      border-radius: 3px 0 0 3px;
+    }
+    .session-day-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: rgba(180,80,220,0.15);
+      border: 1px solid rgba(180,80,220,0.3);
+      flex-shrink: 0;
+    }
+    .session-day-name {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(200,162,208,0.7);
+      line-height: 1;
+    }
+    .session-day-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #d4af37;
+      line-height: 1;
+    }
+    .session-info {
+      flex: 1;
+    }
+    .session-time {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #d4af37;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .session-time::before {
+      content: '●';
+      font-size: 6px;
+      color: #d4af37;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.4); }
+    }
+    .session-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.3;
+    }
+    .session-subtitle {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    /* Footer strip */
+    .footer-strip {
+      background: rgba(212,175,55,0.06);
+      border-top: 1px solid rgba(212,175,55,0.15);
+      padding: 16px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .footer-date {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.05em;
+    }
+    .footer-conf {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      color: rgba(212,175,55,0.7);
+    }
+    .footer-register {
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      color: #1a0330;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 0 16px rgba(212,175,55,0.4);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .footer-register:hover { box-shadow: 0 0 24px rgba(212,175,55,0.7); transform: translateY(-1px); }
+
+    /* Bottom shimmer */
+    .shimmer-bar-bottom {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #b06ae0, #d4af37, #b06ae0, transparent);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite reverse;
+    }
+
+    /* Below card note */
+    .card-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.1em;
+      text-align: center;
+      z-index: 10;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Floating particles -->
+  <div id="particles"></div>
+
+  <div class="flyer">
+    <div class="shimmer-bar"></div>
+
+    <!-- Conference Badge -->
+    <div class="conference-badge">
+      <div class="badge-chip">ILPC 2026 &nbsp;·&nbsp; Featured Speaker</div>
+    </div>
+
+    <!-- Portrait -->
+    <div class="portrait-section">
+      <div class="portrait-ring">
+        <div class="portrait-inner">
+          <span class="speaker-initials">JA</span>
+        </div>
+        <div class="mic-badge">🎤</div>
+      </div>
+    </div>
+
+    <!-- Name -->
+    <div class="name-block">
+      <div class="speaker-title">Speaking at ILPC 2026</div>
+      <div class="speaker-name">Dr. Jide<br/>Ayangbesan</div>
+      <div class="gold-rule"></div>
+    </div>
+
+    <!-- Sessions -->
+    <div class="sessions-block">
+      <div class="sessions-label">Confirmed Sessions</div>
+      <div class="session-cards">
+
+        <!-- Friday session -->
+        <div class="session-card">
+          <div class="session-day-badge">
+            <div class="session-day-name">Friday</div>
+            <div class="session-day-date">5</div>
+          </div>
+          <div class="session-info">
+            <div class="session-time">6:00 PM</div>
+            <div class="session-title">Leadership Masterclass</div>
+            <div class="session-subtitle">Ablaze for Christ &nbsp;·&nbsp; June 5, 2026</div>
+          </div>
+        </div>
+
+        <!-- Saturday session -->
+        <div class="session-card">
+          <div class="session-day-badge">
+            <div class="session-day-name">Saturday</div>
+            <div class="session-day-date">6</div>
+          </div>
+          <div class="session-info">
+            <div class="session-time">5:00 PM</div>
+            <div class="session-title">Night of Supernatural Encounter</div>
+            <div class="session-subtitle">Evening Session &nbsp;·&nbsp; June 6, 2026</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-strip">
+      <div>
+        <div class="footer-date">June 5–7, 2026 &nbsp;·&nbsp; Akute, Nigeria</div>
+        <div class="footer-conf">International Leaders & Pastors Conference</div>
+      </div>
+      <a class="footer-register" href="https://ilpc.heartbeatofgod.ca" target="_blank">
+        Register Free →
+      </a>
+    </div>
+
+    <div class="shimmer-bar-bottom"></div>
+  </div>
+
+  <div class="card-note">heartbeatofgod.ca &nbsp;·&nbsp; ILPC 2026</div>
+
+  <script>
+    // Floating particles
+    const container = document.getElementById('particles');
+    const colors = ['rgba(212,175,55,0.5)', 'rgba(180,80,220,0.4)', 'rgba(255,255,255,0.3)', 'rgba(200,162,208,0.4)'];
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 1;
+      const duration = Math.random() * 15 + 10;
+      const delay = Math.random() * 15;
+      p.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        animation-duration: ${duration}s;
+        animation-delay: -${delay}s;
+        border-radius: 50%;
+      `;
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>
