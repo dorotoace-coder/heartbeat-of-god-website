@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ILPC 2026 — Official Program</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Manrope:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    body {
+      background: #07010f;
+      font-family: 'Manrope', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px;
+    }
+
+    /* ══════════════════════════════════
+       FLYER CARD
+    ══════════════════════════════════ */
+    .flyer {
+      width: 900px;
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 110% 60% at 50% 0%, #2a0848 0%, transparent 60%),
+        radial-gradient(ellipse 80% 80% at 20% 80%, rgba(180,80,220,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 80% 60%, rgba(212,175,55,0.07) 0%, transparent 55%),
+        linear-gradient(175deg, #140228 0%, #0b0118 40%, #100120 100%);
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,0.22),
+        0 0 80px rgba(160,60,210,0.2),
+        0 40px 120px rgba(0,0,0,0.9);
+    }
+
+    /* ── Top shimmer bar ── */
+    .shimmer-top {
+      height: 4px;
+      background: linear-gradient(90deg,
+        #2D0A4E 0%, #d4af37 20%, #b06ae0 40%, #d4af37 60%, #b06ae0 80%, #2D0A4E 100%);
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    /* ── Header ── */
+    .header {
+      padding: 36px 50px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(180,80,220,0.9)) drop-shadow(0 0 24px rgba(212,175,55,0.4));
+    }
+    .ministry-label {
+      display: flex;
+      flex-direction: column;
+    }
+    .ministry-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+    }
+    .ministry-sub {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.65);
+    }
+    .header-right {
+      text-align: right;
+    }
+    .free-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      color: #1a0330;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      box-shadow: 0 0 16px rgba(212,175,55,0.5);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .website-tag {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Hero band ── */
+    .hero {
+      padding: 28px 50px 0;
+      text-align: center;
+      position: relative;
+    }
+    .conf-eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.55);
+      margin-bottom: 10px;
+    }
+    .conf-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 64px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      text-shadow:
+        0 0 40px rgba(212,175,55,0.5),
+        0 0 80px rgba(180,80,220,0.25);
+      animation: titleGlow 5s ease-in-out infinite;
+    }
+    .conf-year {
+      color: #d4af37;
+    }
+    @keyframes titleGlow {
+      0%,100%{ text-shadow: 0 0 40px rgba(212,175,55,0.5), 0 0 80px rgba(180,80,220,0.2); }
+      50%    { text-shadow: 0 0 60px rgba(212,175,55,0.8), 0 0 120px rgba(200,100,255,0.3); }
+    }
+    .conf-full-name {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-top: 8px;
+    }
+    .conf-theme {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-style: italic;
+      color: rgba(212,175,55,0.85);
+      margin-top: 10px;
+      text-shadow: 0 0 20px rgba(212,175,55,0.4);
+    }
+
+    /* meta pills */
+    .meta-pills {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.05em;
+    }
+    .meta-pill svg { flex-shrink: 0; }
+    .meta-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(212,175,55,0.3);
+    }
+
+    /* ── Gold rule ── */
+    .gold-rule {
+      height: 1px;
+      margin: 30px 50px 0;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), rgba(200,162,208,0.4), rgba(212,175,55,0.6), transparent);
+      position: relative;
+    }
+    .gold-rule::after {
+      content: '✦';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: #0b0118;
+      padding: 0 12px;
+      color: rgba(212,175,55,0.6);
+      font-size: 12px;
+    }
+
+    /* ── SPEAKERS ── */
+    .speakers-section {
+      padding: 28px 50px 0;
+    }
+    .section-eyebrow {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.45);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .speakers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .speaker-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.12);
+      border-radius: 18px;
+      padding: 22px 16px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .speaker-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 18px 18px 0 0;
+    }
+    .speaker-card.host::before  { background: linear-gradient(90deg, #d4af37, #f0d060, #d4af37); }
+    .speaker-card.guest::before { background: linear-gradient(90deg, #b06ae0, #d4af37, #b06ae0); }
+    .speaker-card.online::before{ background: linear-gradient(90deg, #4a9eff, #b06ae0, #4a9eff); }
+
+    /* role tag */
+    .role-tag {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 3px 12px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .role-tag.host  { background: rgba(212,175,55,0.15); color: #d4af37; border: 1px solid rgba(212,175,55,0.35); }
+    .role-tag.guest { background: rgba(180,80,220,0.12); color: #c8a2d0; border: 1px solid rgba(180,80,220,0.3); }
+    .role-tag.online{ background: rgba(74,158,255,0.12); color: #7ec8ff; border: 1px solid rgba(74,158,255,0.3); }
+
+    /* Portrait */
+    .portrait-wrap {
+      position: relative;
+      width: 134px;
+      height: 134px;
+      margin-top: 18px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    /* Animated glow ring using box-shadow on the image */
+    .portrait-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+    .speaker-card.host  .portrait-img { box-shadow: 0 0 0 3px #d4af37, 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.25); }
+    .speaker-card.guest .portrait-img { box-shadow: 0 0 0 3px #b06ae0, 0 0 20px rgba(180,80,220,0.6), 0 0 40px rgba(212,175,55,0.2); }
+    .speaker-card.online .portrait-img{ box-shadow: 0 0 0 3px #4a9eff, 0 0 20px rgba(74,158,255,0.5), 0 0 40px rgba(180,80,220,0.2); }
+    .portrait-ring { display: none; }
+    .portrait-bg   { display: none; }
+
+    /* Speaker name */
+    .speaker-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.15;
+      text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    }
+    .speaker-loc {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-top: 5px;
+      text-align: center;
+    }
+    .speaker-sessions {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .sp-session {
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sp-session .sp-time {
+      color: #d4af37;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── SCHEDULE ── */
+    .schedule-section {
+      padding: 28px 50px 0;
+    }
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    .day-card {
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .day-header {
+      padding: 12px 16px;
+      text-align: center;
+    }
+    .day-card:nth-child(1) .day-header { background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.12)); }
+    .day-card:nth-child(2) .day-header { background: linear-gradient(135deg, rgba(180,80,220,0.25), rgba(180,80,220,0.12)); }
+    .day-card:nth-child(3) .day-header { background: linear-gradient(135deg, rgba(74,158,255,0.2), rgba(74,158,255,0.08)); }
+    .day-num {
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+    .day-card:nth-child(1) .day-num { color: #d4af37; }
+    .day-card:nth-child(2) .day-num { color: #c8a2d0; }
+    .day-card:nth-child(3) .day-num { color: #7ec8ff; }
+    .day-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+    .day-theme {
+      font-size: 9px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 2px;
+      font-style: italic;
+    }
+    .day-events {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .event-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .event-time {
+      font-size: 9px;
+      font-weight: 800;
+      color: rgba(212,175,55,0.75);
+      white-space: nowrap;
+      min-width: 48px;
+      padding-top: 1px;
+      letter-spacing: 0.05em;
+    }
+    .event-body {
+      flex: 1;
+    }
+    .event-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.35;
+    }
+    .event-speaker {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .event-speaker span {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(212,175,55,0.7);
+      letter-spacing: 0.05em;
+    }
+    .mic-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #d4af37;
+      box-shadow: 0 0 4px rgba(212,175,55,0.8);
+      flex-shrink: 0;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%,100%{ transform: scale(1); opacity:1; }
+      50%    { transform: scale(1.5); opacity:0.6; }
+    }
+    .event-break {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    .footer-bar {
+      margin: 28px 50px 0;
+      padding: 18px 24px;
+      background: rgba(212,175,55,0.06);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .footer-venue {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.65);
+    }
+    .footer-zoom {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.05em;
+    }
+    .register-cta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .reg-label {
+      text-align: right;
+    }
+    .reg-free {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.55);
+    }
+    .reg-url {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-style: italic;
+      color: #d4af37;
+      text-shadow: 0 0 12px rgba(212,175,55,0.5);
+    }
+    .reg-btn {
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      color: #1a0330;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 11px 22px;
+      border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(212,175,55,0.45);
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* bottom shimmer */
+    .shimmer-bottom {
+      height: 3px;
+      margin-top: 28px;
+      background: linear-gradient(90deg, #2D0A4E 0%, #b06ae0 25%, #d4af37 50%, #b06ae0 75%, #2D0A4E 100%);
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite reverse;
+    }
+
+    /* print note */
+    .print-note {
+      margin-top: 24px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="flyer">
+  <div class="shimmer-top"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-group">
+      <img class="logo-img" src="/hbg-logo.png" alt="HBG" onerror="this.src='/hbg-logo.svg'"/>
+      <div class="ministry-label">
+        <div class="ministry-name">Heartbeat of God</div>
+        <div class="ministry-sub">Ministry International</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="free-badge">✦ Registration is FREE ✦</span>
+      <div class="website-tag">heartbeatofgod.ca</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="conf-eyebrow">International Leaders &amp; Pastors Conference</div>
+    <div class="conf-title">ILPC <span class="conf-year">2026</span></div>
+    <div class="conf-full-name">International Leaders &amp; Pastors Conference</div>
+    <div class="conf-theme">"Fresh Oil for a New Season"</div>
+    <div class="meta-pills">
+      <div class="meta-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        June 5–7, 2026
+      </div>
+      <div class="meta-dot"></div>
+      <div class="meta-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        HBG Ministry, Akute, Ogun State, Nigeria
+      </div>
+      <div class="meta-dot"></div>
+      <div class="meta-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Also on Zoom
+      </div>
+    </div>
+  </div>
+
+  <div class="gold-rule"></div>
+
+  <!-- SPEAKERS -->
+  <div class="speakers-section">
+    <div class="section-eyebrow">Featured Ministers</div>
+    <div class="speakers-grid">
+
+      <!-- HOST: Pastor Amos -->
+      <div class="speaker-card host">
+        <span class="role-tag host">Host Pastor</span>
+        <div class="portrait-wrap">
+          <div class="portrait-ring"></div>
+          <div class="portrait-bg"></div>
+          <img class="portrait-img" src="/pastor-amos-pro.jpg" alt="Pastor Amos Unogwu"/>
+        </div>
+        <div class="speaker-name">Pastor Amos<br/>Unogwu</div>
+        <div class="speaker-loc">Akute, Nigeria</div>
+        <div class="speaker-sessions">
+          <div class="sp-session"><span class="sp-time">Sun 9:30AM</span> Session 3 — Apostolic Commissioning</div>
+          <div class="sp-session"><span class="sp-time">Sun 11AM</span> Praise &amp; Worship &amp; Closing</div>
+        </div>
+      </div>
+
+      <!-- GUEST: Dr. Jide -->
+      <div class="speaker-card guest">
+        <span class="role-tag guest">Guest Speaker</span>
+        <div class="portrait-wrap">
+          <div class="portrait-ring"></div>
+          <div class="portrait-bg"></div>
+          <img class="portrait-img" src="/dr-jide-ayangbesan.jpg" alt="Dr. Jide Ayangbesan"/>
+        </div>
+        <div class="speaker-name">Dr. Jide<br/>Ayangbesan</div>
+        <div class="speaker-loc">Nigeria</div>
+        <div class="speaker-sessions">
+          <div class="sp-session"><span class="sp-time">Fri 6PM</span> Leadership Masterclass — Ablaze for Christ</div>
+          <div class="sp-session"><span class="sp-time">Sat 5PM</span> Night of Supernatural Encounter</div>
+        </div>
+      </div>
+
+      <!-- GUEST ONLINE: Pastor Chris -->
+      <div class="speaker-card online">
+        <span class="role-tag online">Guest Speaker · Online</span>
+        <div class="portrait-wrap">
+          <div class="portrait-ring" style="background: conic-gradient(from 0deg, #4a9eff 0deg, transparent 120deg, #b06ae0 240deg, transparent 360deg);"></div>
+          <div class="portrait-bg"></div>
+          <img class="portrait-img" src="/pastor-chris-ehidiamen.jpg" alt="Pastor Christopher Ehidiamen"/>
+        </div>
+        <div class="speaker-name">Pastor Christopher<br/>Ehidiamen</div>
+        <div class="speaker-loc">Texas, USA 🇺🇸 · Joining via Zoom</div>
+        <div class="speaker-sessions">
+          <div class="sp-session"><span class="sp-time">Sat 11:30AM</span> Session 2 — Navigating the New Season</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="gold-rule" style="margin-top:26px;"></div>
+
+  <!-- SCHEDULE -->
+  <div class="schedule-section">
+    <div class="section-eyebrow">Conference Programme</div>
+    <div class="schedule-grid">
+
+      <!-- DAY 1 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-num">Day 1</div>
+          <div class="day-date">Friday, June 5</div>
+          <div class="day-theme">Arrival &amp; Ablaze for Christ</div>
+        </div>
+        <div class="day-events">
+          <div class="event-row">
+            <div class="event-time">5:00 PM</div>
+            <div class="event-body">
+              <div class="event-name">Registration &amp; Accreditation</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">6:00 PM</div>
+            <div class="event-body">
+              <div class="event-name">Leadership Masterclass — Ablaze for Christ</div>
+              <div class="event-speaker"><div class="mic-dot"></div><span>Dr. Jide Ayangbesan</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAY 2 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-num">Day 2</div>
+          <div class="day-date">Saturday, June 6</div>
+          <div class="day-theme">Equipping &amp; Supernatural Encounter</div>
+        </div>
+        <div class="day-events">
+          <div class="event-row">
+            <div class="event-time">8:00 AM</div>
+            <div class="event-body">
+              <div class="event-name">Registration &amp; Accreditation</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">9:30 AM</div>
+            <div class="event-body">
+              <div class="event-name">Session 1 — Fresh Oil for Ministry</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">11:30 AM</div>
+            <div class="event-body">
+              <div class="event-name">Session 2 — Navigating the New Season</div>
+              <div class="event-speaker"><div class="mic-dot" style="animation-delay:0.5s;"></div><span>Pst. Christopher Ehidiamen (Zoom)</span></div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">1:00 PM</div>
+            <div class="event-body">
+              <div class="event-break">Lunch Break</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">5:00 PM</div>
+            <div class="event-body">
+              <div class="event-name">Night of Supernatural Encounter</div>
+              <div class="event-speaker"><div class="mic-dot" style="animation-delay:1s;"></div><span>Dr. Jide Ayangbesan</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAY 3 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div class="day-num">Day 3</div>
+          <div class="day-date">Sunday, June 7</div>
+          <div class="day-theme">Commissioning &amp; Closing Service</div>
+        </div>
+        <div class="day-events">
+          <div class="event-row">
+            <div class="event-time">8:00 AM</div>
+            <div class="event-body">
+              <div class="event-name">Morning Devotion</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">9:30 AM</div>
+            <div class="event-body">
+              <div class="event-name">Session 3 — Apostolic Commissioning</div>
+              <div class="event-speaker"><div class="mic-dot" style="animation-delay:1.5s;"></div><span>Pastor Amos Unogwu</span></div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">11:00 AM</div>
+            <div class="event-body">
+              <div class="event-name">Praise &amp; Worship Service</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">12:30 PM</div>
+            <div class="event-body">
+              <div class="event-name">Communion &amp; Covenant Meal</div>
+            </div>
+          </div>
+          <div class="event-row">
+            <div class="event-time">2:00 PM</div>
+            <div class="event-body">
+              <div class="event-name">Closing Remarks &amp; Departure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-bar">
+    <div class="footer-left">
+      <div class="footer-venue">📍 HBG Ministry · 100/102 Akute Road, Martins Bus Stop, Akute, Ogun State, Nigeria</div>
+      <div class="footer-zoom">🌐 Also streaming live on Zoom · Hosted by Pastor Amos Unogwu</div>
+    </div>
+    <div class="register-cta">
+      <div class="reg-label">
+        <div class="reg-free">✦ Free Registration</div>
+        <div class="reg-url">ilpc.heartbeatofgod.ca</div>
+      </div>
+      <div class="reg-btn">Register Now →</div>
+    </div>
+  </div>
+
+  <div class="shimmer-bottom"></div>
+</div>
+
+<div class="print-note">ILPC 2026 · International Leaders &amp; Pastors Conference · heartbeatofgod.ca</div>
+
+</body>
+</html>
