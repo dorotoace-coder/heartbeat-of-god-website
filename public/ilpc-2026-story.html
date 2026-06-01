@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ILPC 2026 Story Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Manrope:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #04000a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 30px 20px;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    /* ── CARD  540 × 960 ── */
+    .card {
+      width: 540px;
+      height: 960px;
+      position: relative;
+      border-radius: 28px;
+      overflow: hidden;
+      flex-shrink: 0;
+
+      /* Layered background */
+      background:
+        radial-gradient(ellipse 130% 55% at 50% 0%,   #2e0850 0%, transparent 55%),
+        radial-gradient(ellipse 80%  80% at 15% 90%,  rgba(180,80,220,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 70%  50% at 85% 55%,  rgba(212,175,55,0.09) 0%, transparent 55%),
+        linear-gradient(175deg, #130226 0%, #090114 45%, #0e0120 100%);
+
+      box-shadow:
+        0 0 0 1.5px rgba(212,175,55,0.28),
+        0 0 0 3px   rgba(212,175,55,0.05),
+        0 0 80px    rgba(160,60,210,0.25),
+        0 40px 100px rgba(0,0,0,0.95);
+    }
+
+    /* shimmer bars */
+    .bar-top, .bar-bottom {
+      position: absolute;
+      left: 0; right: 0;
+      height: 4px;
+      z-index: 30;
+    }
+    .bar-top    { top: 0;    background: linear-gradient(90deg, #2D0A4E, #d4af37 25%, #b06ae0 50%, #d4af37 75%, #2D0A4E); background-size: 200%; animation: sh 4s linear infinite; }
+    .bar-bottom { bottom: 0; background: linear-gradient(90deg, #2D0A4E, #b06ae0 25%, #d4af37 50%, #b06ae0 75%, #2D0A4E); background-size: 200%; animation: sh 4s linear infinite reverse; }
+    @keyframes sh { to { background-position: 200% center; } }
+
+    /* ── LOGO ROW ── */
+    .logo-row {
+      position: absolute;
+      top: 22px; left: 26px; right: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-img {
+      width: 42px; height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(180,80,220,0.9)) drop-shadow(0 0 20px rgba(212,175,55,0.4));
+    }
+    .min-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .min-sub {
+      font-size: 7px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.6);
+      margin-top: 2px;
+    }
+    .free-chip {
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      color: #1a0330;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      box-shadow: 0 0 14px rgba(212,175,55,0.5);
+    }
+
+    /* ── HERO TEXT ── */
+    .hero {
+      position: absolute;
+      top: 82px; left: 0; right: 0;
+      text-align: center;
+      z-index: 10;
+      padding: 0 20px;
+    }
+    .eyebrow {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.5);
+      margin-bottom: 6px;
+    }
+    .big-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      text-shadow: 0 0 50px rgba(212,175,55,0.5), 0 0 100px rgba(180,80,220,0.25);
+    }
+    .big-title .yr { color: #d4af37; }
+    .theme-line {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-style: italic;
+      color: rgba(212,175,55,0.85);
+      margin-top: 8px;
+      text-shadow: 0 0 16px rgba(212,175,55,0.4);
+    }
+
+    /* date/venue pills */
+    .pills {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      background: rgba(212,175,55,0.09);
+      border: 1px solid rgba(212,175,55,0.28);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── SPEAKER PORTRAITS ── */
+    .speakers {
+      position: absolute;
+      top: 310px; left: 0; right: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0;
+      z-index: 10;
+      padding: 0 20px;
+    }
+
+    /* side speakers smaller */
+    .sp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .sp.side  { flex: 0 0 140px; }
+    .sp.center{ flex: 0 0 180px; }
+
+    .portrait-frame {
+      position: relative;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .sp.side   .portrait-frame { width: 110px; height: 110px; }
+    .sp.center .portrait-frame { width: 148px; height: 148px; }
+
+    .sp.left   .portrait-frame { box-shadow: 0 0 0 3px #b06ae0, 0 0 24px rgba(180,80,220,0.6); }
+    .sp.center .portrait-frame { box-shadow: 0 0 0 3.5px #d4af37, 0 0 30px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.25); }
+    .sp.right  .portrait-frame { box-shadow: 0 0 0 3px #4a9eff, 0 0 24px rgba(74,158,255,0.5); }
+
+    .portrait-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* glow halo behind center speaker */
+    .sp.center::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px; height: 200px;
+      background: radial-gradient(ellipse, rgba(212,175,55,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    /* role badge on portrait */
+    .role-badge {
+      margin-top: 8px;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 100px;
+      text-align: center;
+    }
+    .sp.left   .role-badge { background: rgba(180,80,220,0.15); color: #c8a2d0; border: 1px solid rgba(180,80,220,0.35); }
+    .sp.center .role-badge { background: rgba(212,175,55,0.15); color: #d4af37; border: 1px solid rgba(212,175,55,0.45); }
+    .sp.right  .role-badge { background: rgba(74,158,255,0.12); color: #7ec8ff; border: 1px solid rgba(74,158,255,0.35); }
+
+    .sp-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      line-height: 1.15;
+      margin-top: 5px;
+    }
+    .sp.side   .sp-name { font-size: 13px; }
+    .sp.center .sp-name { font-size: 17px; }
+
+    .sp-loc {
+      font-size: 8px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    /* ── GOLD DIVIDER ── */
+    .divider {
+      position: absolute;
+      left: 30px; right: 30px;
+      height: 1px;
+      z-index: 10;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), rgba(200,162,208,0.4), rgba(212,175,55,0.6), transparent);
+    }
+    .divider.top-div    { top: 584px; }
+    .divider.bottom-div { top: 830px; }
+
+    /* ── SCHEDULE STRIP ── */
+    .schedule {
+      position: absolute;
+      top: 600px; left: 26px; right: 26px;
+      z-index: 10;
+    }
+    .sched-title {
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.45);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .sched-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .sched-day {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .sched-hd {
+      padding: 7px 10px;
+      text-align: center;
+    }
+    .sched-day:nth-child(1) .sched-hd { background: rgba(212,175,55,0.2); }
+    .sched-day:nth-child(2) .sched-hd { background: rgba(180,80,220,0.2); }
+    .sched-day:nth-child(3) .sched-hd { background: rgba(74,158,255,0.15); }
+    .sched-dn {
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+    .sched-day:nth-child(1) .sched-dn { color: #d4af37; }
+    .sched-day:nth-child(2) .sched-dn { color: #c8a2d0; }
+    .sched-day:nth-child(3) .sched-dn { color: #7ec8ff; }
+    .sched-dt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .sched-body {
+      padding: 8px 8px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .sched-row {
+      display: flex;
+      gap: 5px;
+      align-items: flex-start;
+    }
+    .sched-t {
+      font-size: 7.5px;
+      font-weight: 800;
+      color: rgba(212,175,55,0.8);
+      white-space: nowrap;
+      min-width: 36px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .sched-s {
+      font-size: 8px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.35;
+    }
+    .sched-sp {
+      font-size: 7.5px;
+      font-weight: 700;
+      color: rgba(212,175,55,0.65);
+      margin-top: 1px;
+    }
+
+    /* ── BOTTOM CTA ── */
+    .cta-block {
+      position: absolute;
+      top: 845px; left: 26px; right: 26px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .cta-left {}
+    .cta-free {
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(212,175,55,0.5);
+    }
+    .cta-url {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-style: italic;
+      color: #d4af37;
+      text-shadow: 0 0 14px rgba(212,175,55,0.5);
+      margin-top: 1px;
+    }
+    .cta-venue {
+      font-size: 8px;
+      color: rgba(255,255,255,0.28);
+      margin-top: 3px;
+      letter-spacing: 0.04em;
+    }
+    .cta-btn {
+      background: linear-gradient(135deg, #d4af37, #c9972a);
+      color: #1a0330;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 11px 20px;
+      border-radius: 100px;
+      box-shadow: 0 0 22px rgba(212,175,55,0.5);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── LIGHT RAYS behind hero ── */
+    .rays {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 500px;
+      background: conic-gradient(
+        from 260deg at 50% 0%,
+        transparent 0deg,
+        rgba(212,175,55,0.04) 10deg,
+        transparent 20deg,
+        rgba(180,80,220,0.04) 30deg,
+        transparent 40deg,
+        rgba(212,175,55,0.04) 50deg,
+        transparent 60deg,
+        rgba(180,80,220,0.03) 70deg,
+        transparent 80deg
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* floating particles */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      animation: pdrift linear infinite;
+    }
+    @keyframes pdrift {
+      0%   { transform: translateY(960px) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.8; }
+      100% { transform: translateY(-20px) scale(1); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="card" id="card">
+
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+  <div class="rays"></div>
+  <div id="pts"></div>
+
+  <!-- LOGO ROW -->
+  <div class="logo-row">
+    <div class="logo-group">
+      <img class="logo-img" src="/hbg-logo.png" alt="HBG" onerror="this.src='/hbg-logo.svg'"/>
+      <div>
+        <div class="min-name">Heartbeat of God</div>
+        <div class="min-sub">Ministry International</div>
+      </div>
+    </div>
+    <div class="free-chip">✦ FREE ENTRY ✦</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow">International Leaders &amp; Pastors Conference</div>
+    <div class="big-title">ILPC <span class="yr">2026</span></div>
+    <div class="theme-line">"Fresh Oil for a New Season"</div>
+    <div class="pills">
+      <div class="pill">📅 June 5–7, 2026</div>
+      <div class="pill">📍 Akute, Nigeria</div>
+      <div class="pill">🌐 + Zoom</div>
+    </div>
+  </div>
+
+  <!-- SPEAKERS -->
+  <div class="speakers">
+
+    <!-- Dr. Jide — left -->
+    <div class="sp side left">
+      <div class="portrait-frame">
+        <img src="/dr-jide-ayangbesan.jpg" alt="Dr. Jide Ayangbesan"/>
+      </div>
+      <div class="role-badge">Guest Speaker</div>
+      <div class="sp-name">Dr. Jide<br/>Ayangbesan</div>
+      <div class="sp-loc">Nigeria</div>
+    </div>
+
+    <!-- Pastor Amos — centre (HOST) -->
+    <div class="sp center">
+      <div class="portrait-frame">
+        <img src="/pastor-amos-pro.jpg" alt="Pastor Amos Unogwu"/>
+      </div>
+      <div class="role-badge">Host Pastor</div>
+      <div class="sp-name">Pastor Amos<br/>Unogwu</div>
+      <div class="sp-loc">Akute, Nigeria</div>
+    </div>
+
+    <!-- Pastor Chris — right -->
+    <div class="sp side right">
+      <div class="portrait-frame">
+        <img src="/pastor-chris-ehidiamen.jpg" alt="Pastor Chris Ehidiamen"/>
+      </div>
+      <div class="role-badge">Online · USA 🇺🇸</div>
+      <div class="sp-name">Pastor Chris<br/>Ehidiamen</div>
+      <div class="sp-loc">Texas, USA</div>
+    </div>
+
+  </div>
+
+  <!-- DIVIDERS -->
+  <div class="divider top-div"></div>
+  <div class="divider bottom-div"></div>
+
+  <!-- SCHEDULE -->
+  <div class="schedule">
+    <div class="sched-title">Conference Programme</div>
+    <div class="sched-cols">
+
+      <div class="sched-day">
+        <div class="sched-hd">
+          <div class="sched-dn">Day 1</div>
+          <div class="sched-dt">Fri, June 5</div>
+        </div>
+        <div class="sched-body">
+          <div class="sched-row">
+            <div class="sched-t">5:00PM</div>
+            <div class="sched-s">Registration</div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-t">6:00PM</div>
+            <div>
+              <div class="sched-s">Leadership Masterclass</div>
+              <div class="sched-sp">🎤 Dr. Jide Ayangbesan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-day">
+        <div class="sched-hd">
+          <div class="sched-dn">Day 2</div>
+          <div class="sched-dt">Sat, June 6</div>
+        </div>
+        <div class="sched-body">
+          <div class="sched-row">
+            <div class="sched-t">9:30AM</div>
+            <div class="sched-s">Fresh Oil for Ministry</div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-t">11:30AM</div>
+            <div>
+              <div class="sched-s">Navigating New Seasons</div>
+              <div class="sched-sp">🎤 Pst. Chris (Zoom)</div>
+            </div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-t">5:00PM</div>
+            <div>
+              <div class="sched-s">Supernatural Encounter</div>
+              <div class="sched-sp">🎤 Dr. Jide Ayangbesan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sched-day">
+        <div class="sched-hd">
+          <div class="sched-dn">Day 3</div>
+          <div class="sched-dt">Sun, June 7</div>
+        </div>
+        <div class="sched-body">
+          <div class="sched-row">
+            <div class="sched-t">8:00AM</div>
+            <div class="sched-s">Morning Devotion</div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-t">9:30AM</div>
+            <div>
+              <div class="sched-s">Apostolic Commissioning</div>
+              <div class="sched-sp">🎤 Pst. Amos Unogwu</div>
+            </div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-t">2:00PM</div>
+            <div class="sched-s">Closing &amp; Departure</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <div class="cta-left">
+      <div class="cta-free">✦ Registration is absolutely free</div>
+      <div class="cta-url">ilpc.heartbeatofgod.ca</div>
+      <div class="cta-venue">📍 HBG Ministry · Akute, Ogun State, Nigeria</div>
+    </div>
+    <div class="cta-btn">Register →</div>
+  </div>
+
+</div>
+
+<script>
+  const pts = document.getElementById('pts');
+  const colors = ['rgba(212,175,55,0.5)','rgba(180,80,220,0.4)','rgba(255,255,255,0.3)','rgba(200,162,208,0.35)'];
+  for(let i=0;i<18;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = Math.random()*3+1;
+    p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*14+8}s;animation-delay:-${Math.random()*14}s;`;
+    pts.appendChild(p);
+  }
+</script>
+</body>
+</html>
