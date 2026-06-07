@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MTA 2026 — Church Announcement</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Manrope:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      background:#05000a;
+      font-family:'Manrope',sans-serif;
+      min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      padding:40px 20px 60px;
+    }
+
+    .page{max-width:760px;width:100%;position:relative;}
+
+    /* ── ANNOUNCEMENT CARD ── */
+    .card{
+      border-radius:24px;overflow:hidden;
+      background:linear-gradient(170deg,#150005 0%,#0a0002 50%,#100004 100%);
+      box-shadow:0 0 0 1.5px rgba(201,151,42,0.25),0 0 80px rgba(255,69,0,0.12),0 40px 100px rgba(0,0,0,0.9);
+    }
+
+    /* shimmer */
+    .shimmer{height:5px;background:linear-gradient(90deg,#150005,#ff4500 20%,#C9972A 50%,#ff4500 80%,#150005);background-size:200%;animation:sh 3s linear infinite;}
+    @keyframes sh{to{background-position:200% center;}}
+
+    /* header */
+    .header{
+      padding:36px 48px 30px;
+      background:linear-gradient(135deg,rgba(255,69,0,0.12),rgba(201,151,42,0.06));
+      border-bottom:1px solid rgba(201,151,42,0.15);
+      text-align:center;
+    }
+    .from-label{font-size:9px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;color:rgba(201,151,42,0.5);margin-bottom:8px;}
+    .header-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+    .header-date{font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(201,151,42,0.4);}
+
+    /* body */
+    .body{padding:44px 48px;}
+
+    /* subject line */
+    .subject{
+      font-family:'Cormorant Garamond',serif;
+      font-size:38px;font-weight:700;
+      color:#fff;line-height:1.1;margin-bottom:28px;
+      text-shadow:0 0 40px rgba(255,69,0,0.3),0 0 80px rgba(201,151,42,0.15);
+    }
+    .subject span{color:#C9972A;}
+
+    /* script text */
+    .script{
+      font-size:16px;line-height:2;
+      color:rgba(255,255,255,0.75);
+      margin-bottom:20px;
+    }
+    .script strong{color:#fff;font-weight:800;}
+    .script em{
+      font-family:'Cormorant Garamond',serif;
+      font-size:18px;font-style:italic;
+      color:rgba(201,151,42,0.9);
+    }
+    .script .shout{
+      font-size:22px;font-weight:900;color:#fff;
+      display:block;margin:12px 0;
+      text-shadow:0 0 30px rgba(255,69,0,0.4);
+      letter-spacing:.02em;
+    }
+    .script .verse{
+      display:block;
+      font-family:'Cormorant Garamond',serif;
+      font-size:18px;font-style:italic;
+      color:rgba(201,151,42,0.8);
+      padding:16px 20px;
+      border-left:3px solid rgba(201,151,42,0.5);
+      background:rgba(201,151,42,0.05);
+      border-radius:0 10px 10px 0;
+      margin:20px 0;
+      line-height:1.7;
+    }
+    .script .ref{
+      font-size:11px;font-weight:900;letter-spacing:.15em;
+      text-transform:uppercase;color:rgba(201,151,42,0.5);
+      font-style:normal;font-family:'Manrope',sans-serif;
+      display:block;margin-top:6px;
+    }
+    .script .action{
+      display:block;
+      background:rgba(255,69,0,0.08);
+      border:1px solid rgba(255,69,0,0.2);
+      border-radius:12px;
+      padding:14px 18px;
+      font-size:13px;font-weight:700;
+      color:rgba(255,150,80,0.8);
+      margin:20px 0;
+      font-style:normal;
+      font-family:'Manrope',sans-serif;
+    }
+    .script .action::before{content:"🎤  ";}
+
+    /* details box */
+    .details-box{
+      background:rgba(201,151,42,0.07);
+      border:1px solid rgba(201,151,42,0.2);
+      border-radius:16px;
+      padding:24px 28px;
+      margin:28px 0;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .detail-item{}
+    .detail-label{font-size:9px;font-weight:900;letter-spacing:.25em;text-transform:uppercase;color:rgba(201,151,42,0.5);margin-bottom:4px;}
+    .detail-value{font-size:15px;font-weight:800;color:#fff;}
+    .detail-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;}
+
+    /* closing */
+    .closing{
+      margin-top:32px;padding-top:28px;
+      border-top:1px solid rgba(201,151,42,0.12);
+    }
+    .cta-url{
+      font-family:'Cormorant Garamond',serif;
+      font-size:28px;font-style:italic;
+      color:#C9972A;
+      text-shadow:0 0 20px rgba(201,151,42,0.4);
+      margin-bottom:6px;
+    }
+    .cta-sub{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:.08em;}
+
+    /* print note */
+    .print-note{margin-top:24px;font-size:11px;color:rgba(255,255,255,0.15);letter-spacing:.1em;text-align:center;}
+
+    /* dividers */
+    .gold-rule{height:1px;margin:24px 0;background:linear-gradient(90deg,transparent,rgba(201,151,42,0.4),rgba(255,69,0,0.3),rgba(201,151,42,0.4),transparent);}
+
+    @media print{
+      body{background:#fff;padding:0;}
+      .card{box-shadow:none;border:2px solid #333;border-radius:0;}
+      .shimmer{display:none;}
+      .script{color:#222;}
+      .script strong{color:#000;}
+      .subject{color:#000;text-shadow:none;}
+      .script em,.cta-url{color:#7a4400;}
+      .script .verse{border-left:3px solid #7a4400;background:#fffbf0;color:#5a3000;}
+      .script .action{background:#fff8f0;border:1px solid #cc7700;color:#7a4000;}
+      .script .shout{color:#000;text-shadow:none;}
+      .header{background:#f5f0e0;}
+      .details-box{background:#f9f6ee;border:1px solid #c8a040;}
+      .detail-value{color:#000;}
+      .from-label,.header-title,.header-date,.detail-label,.cta-sub,.print-note{color:#666;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="card">
+    <div class="shimmer"></div>
+
+    <div class="header">
+      <div class="from-label">Heartbeat of God Ministry — Sunday Service Announcement</div>
+      <div class="header-title">To be read from the pulpit by Pastor Amos Unogwu</div>
+      <div class="header-date">Sunday, June 7, 2026</div>
+    </div>
+
+    <div class="body">
+
+      <div class="subject">
+        MTA 2026 —<br/>
+        <span>The Mighty Turn Around Assembly</span>
+      </div>
+
+      <div class="script">
+
+        <span class="action">[ Stand to your feet if you can. ]</span>
+
+        Church, I want to talk to you for just a few minutes.
+        We have just concluded <strong>ILPC 2026</strong> —
+        three days of <em>fresh oil, fresh fire, and fresh encounters with God.</em>
+        And I want to say to every one of you — thank you.
+        Thank you for showing up. Thank you for believing.
+        <strong>God was here.</strong>
+
+        <div class="gold-rule"></div>
+
+        But church — we are not stopping here.
+        In fact, what God just poured into you at ILPC
+        is not the destination. <strong>It is the fuel.</strong>
+        Because what is coming next is even greater.
+
+        <span class="shout">I want to announce to you — MTA 2026.</span>
+
+        <span class="verse">
+          "There is a river whose streams make glad the city of God,
+          the holy place where the Most High dwells."
+          <span class="ref">— Psalm 46 : 4</span>
+        </span>
+
+        The <strong>Mighty Turn Around Assembly.</strong>
+        This September — <strong>September 4th, 5th, and 6th</strong> —
+        we are gathering again. And this time,
+        <em>we are coming for the turnaround.</em>
+        Not just a blessing. Not just a word.
+        A <strong>turnaround</strong> — in your health, your family,
+        your finances, your ministry, your destiny.
+
+        <div class="gold-rule"></div>
+
+        But before MTA, I want you to know —
+        beginning <strong>August 13th</strong>,
+        this entire ministry enters into
+        <strong>21 days of corporate fasting and prayer.</strong>
+        We are calling it — <em>We Wait.</em>
+
+        <span class="shout">We Wait — 21 days. August 13 to September 2.</span>
+
+        You will fast with us. You will pray with us.
+        You will seek God with us for 21 days —
+        and then on <strong>September 4th</strong>,
+        we walk straight out of the fast
+        and into the assembly. <em>You don't come to MTA empty.</em>
+        You come <strong>loaded</strong> — loaded from 21 days
+        in the presence of God.
+
+        <div class="gold-rule"></div>
+
+        <span class="action">[ Lower your voice — then rise with fire: ]</span>
+
+        Church, I am telling you —
+        <strong>something is going to break at MTA 2026.</strong>
+        Things that have been stuck for years are going to move.
+        Situations that have refused to shift are going to turn around.
+        Because <em>there is a river</em> — and it is about to flood this place.
+
+        <span class="shout">MTA 2026 — September 4, 5 and 6!</span>
+
+        It is free. It is open to all.
+        We will be in person here at <strong>HBG Ministry, Akute</strong>
+        and online for those who cannot make it physically.
+
+        <span class="action">[ Hold up your phone / point to the screen: ]</span>
+
+        Go to — <strong>mta.heartbeatofgod.ca</strong> —
+        register yourself, register your family,
+        register your neighbour, register your colleague.
+        <em>Registration is completely free.</em>
+        Tell somebody. Send a message. Make a call today.
+
+        <div class="gold-rule"></div>
+
+        Can somebody shout — <em>"My turnaround is coming!"</em>
+
+        <span class="action">[ Congregation responds — then dismiss / continue service. ]</span>
+
+      </div>
+
+      <!-- Key Details -->
+      <div class="details-box">
+        <div class="detail-item">
+          <div class="detail-label">Event</div>
+          <div class="detail-value">MTA 2026</div>
+          <div class="detail-sub">Mighty Turn Around Assembly</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Dates</div>
+          <div class="detail-value">Sep 4–6, 2026</div>
+          <div class="detail-sub">Daily from 9:00 AM</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Pre-Event Fast</div>
+          <div class="detail-value">We Wait</div>
+          <div class="detail-sub">Aug 13 – Sep 2 · 21 Days</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Venue</div>
+          <div class="detail-value">HBG Ministry</div>
+          <div class="detail-sub">Akute, Nigeria & Online · Free</div>
+        </div>
+      </div>
+
+      <div class="closing">
+        <div class="cta-url">mta.heartbeatofgod.ca</div>
+        <div class="cta-sub">Free registration · Open to all · In-person & Online via Zoom</div>
+      </div>
+
+    </div>
+
+    <div class="shimmer" style="transform:scaleX(-1);"></div>
+  </div>
+
+  <div class="print-note">Print this script · Heartbeat of God Ministry · June 7, 2026</div>
+
+</div>
+</body>
+</html>
