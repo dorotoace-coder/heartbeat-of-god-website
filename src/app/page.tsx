@@ -227,111 +227,82 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* ILPC 2026 Announcement Banner */}
-        <section className="relative overflow-hidden py-16 px-8" style={{ background: "linear-gradient(135deg, #1C0A2D 0%, #2A1143 50%, #1C0A2D 100%)" }}>
-          {/* Subtle glow */}
-          <div className="absolute top-0 right-1/4 w-96 h-64 rounded-full bg-amber-400/5 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-64 rounded-full bg-sky/5 blur-3xl pointer-events-none" />
-
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Left: event info */}
-            <div className="flex items-center gap-6">
-              <div className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border border-amber-400/30" style={{ background: "rgba(212,160,23,0.12)" }}>
-                <span className="material-symbols-outlined text-3xl" style={{ color: "#D4A017" }}>celebration</span>
-              </div>
+        {/* ILPC 2026 — Completed Thank You */}
+        <section className="relative overflow-hidden py-10 px-8" style={{ background: "linear-gradient(135deg, #0e0618 0%, #160a24 50%, #0e0618 100%)" }}>
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <span className="text-2xl">🙏</span>
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#D4A017" }}>Annual Conference</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400/15 border border-amber-400/30" style={{ color: "#D4A017" }}>31 Days Away</span>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: "#C8A2D0" }}>Completed · June 5–7, 2026</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider" style={{ color: "#C8A2D0", background: "rgba(200,162,208,0.12)", border: "1px solid rgba(200,162,208,0.25)" }}>✓ Conference Complete</span>
                 </div>
-                <h3 className="font-headline text-2xl md:text-3xl text-white font-light">
-                  ILPC 2026 — <span className="italic" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</span>
-                </h3>
-                <div className="flex flex-wrap items-center gap-4 mt-2">
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>calendar_month</span>
-                    June 5–7, 2026
-                  </span>
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>location_on</span>
-                    Akute, Nigeria
-                  </span>
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#D4A017" }}>person</span>
-                    Host: Pastor Amos Unogwu
-                  </span>
-                </div>
+                <p className="text-white/70 text-sm font-medium">
+                  ILPC 2026 — <span className="italic" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</span> · Thank you to all who joined us!
+                </p>
               </div>
             </div>
-
-            {/* Right: CTA */}
-            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
-              <a
-                href="https://ilpc.heartbeatofgod.ca"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-7 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 hover:shadow-xl whitespace-nowrap"
-                style={{ background: "linear-gradient(135deg, #D4A017, #F0C842)", color: "#1C0A2D", boxShadow: "0 8px 24px rgba(212,160,23,0.3)" }}
-              >
-                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_reg</span>
-                Register Free
-              </a>
-              <a
-                href="https://ilpc.heartbeatofgod.ca/#schedule"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-7 py-3.5 rounded-xl font-semibold text-sm transition-all hover:bg-white/10 whitespace-nowrap text-center"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}
-              >
-                View Schedule
-              </a>
-            </div>
+            <a href="https://ilpc.heartbeatofgod.ca" target="_blank" rel="noopener noreferrer"
+              className="text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/10 whitespace-nowrap"
+              style={{ border: "1px solid rgba(200,162,208,0.2)", color: "rgba(200,162,208,0.6)" }}>
+              View ILPC Site →
+            </a>
           </div>
         </section>
 
-        {/* MTA26 Coming Soon Banner */}
-        <section className="relative overflow-hidden py-14 px-8" style={{ background: "linear-gradient(135deg, #0d0518 0%, #1a0a2e 50%, #0d0518 100%)" }}>
-          <div className="absolute top-0 left-1/3 w-96 h-40 rounded-full bg-orange-500/8 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-1/4 w-64 h-40 rounded-full bg-amber-400/6 blur-3xl pointer-events-none" />
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        {/* MTA 2026 — PRIMARY CAMPAIGN BANNER */}
+        <section className="relative overflow-hidden py-20 px-8" style={{ background: "linear-gradient(135deg, #150005 0%, #1a0008 40%, #0d0002 100%)" }}>
+          <div className="absolute top-0 left-1/3 w-[600px] h-64 rounded-full opacity-20 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse, #ff4500, transparent)", filter: "blur(80px)" }} />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full opacity-15 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse, #d4af37, transparent)", filter: "blur(60px)" }} />
+
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
             <div className="flex items-center gap-6">
-              <div className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border border-orange-500/30" style={{ background: "rgba(255,107,43,0.1)" }}>
-                <span className="text-3xl">🔥</span>
+              <div className="flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center border"
+                style={{ background: "rgba(255,69,0,0.12)", borderColor: "rgba(255,69,0,0.3)" }}>
+                <span className="text-4xl">🔥</span>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff9a3c" }}>September 4–6, 2026</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border" style={{ color: "#ff9a3c", background: "rgba(255,107,43,0.1)", borderColor: "rgba(255,107,43,0.3)" }}>Save the Date</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff6b2b" }}>Next Major Assembly</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                    style={{ color: "#d4af37", background: "rgba(212,175,55,0.1)", borderColor: "rgba(212,175,55,0.3)" }}>
+                    Registration Open
+                  </span>
                 </div>
-                <h3 className="font-headline text-2xl md:text-3xl text-white font-light">
-                  MTA26 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
+                <h3 className="font-headline text-3xl md:text-4xl text-white font-light mb-2">
+                  MTA 2026 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
                 </h3>
-                <div className="flex flex-wrap items-center gap-4 mt-2">
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>calendar_month</span>
-                    Sep 4–6, 2026
-                  </span>
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#ff9a3c" }}>location_on</span>
-                    Akute, Nigeria &amp; Online
-                  </span>
-                  <span className="flex items-center gap-1.5 text-white/50 text-xs">
-                    <span className="material-symbols-outlined text-sm" style={{ color: "#d4af37" }}>auto_awesome</span>
-                    Free Admission
-                  </span>
+                <p className="text-white/50 text-sm mb-3 italic" style={{ color: "rgba(212,175,55,0.7)" }}>
+                  "There is a river whose streams make glad the city of God" — Psalm 46:4
+                </p>
+                <div className="flex flex-wrap items-center gap-4">
+                  {[
+                    { icon: "calendar_month", text: "September 4–6, 2026", color: "#ff9a3c" },
+                    { icon: "location_on", text: "Akute, Nigeria & Online", color: "#ff9a3c" },
+                    { icon: "auto_awesome", text: "Free Admission", color: "#d4af37" },
+                    { icon: "person", text: "Host: Pastor Amos Unogwu", color: "#d4af37" },
+                  ].map((m) => (
+                    <span key={m.text} className="flex items-center gap-1.5 text-white/50 text-xs">
+                      <span className="material-symbols-outlined text-sm" style={{ color: m.color }}>{m.icon}</span>
+                      {m.text}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="flex-shrink-0">
-              <a
-                href="/mta-2026-announcement.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-7 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 hover:shadow-xl whitespace-nowrap"
-                style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff", boxShadow: "0 8px 24px rgba(255,107,43,0.3)" }}
-              >
-                <span className="text-base">🔥</span>
-                Learn More — MTA26
+
+            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
+              <a href="https://mta.heartbeatofgod.ca" target="_blank" rel="noopener noreferrer"
+                className="px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 whitespace-nowrap"
+                style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff", boxShadow: "0 8px 24px rgba(255,107,43,0.35)" }}>
+                🔥 Register Free — MTA 2026
+              </a>
+              <a href="/mta-2026-announcement.html" target="_blank" rel="noopener noreferrer"
+                className="px-7 py-4 rounded-xl font-semibold text-sm transition-all hover:bg-white/10 whitespace-nowrap text-center"
+                style={{ border: "1px solid rgba(255,107,43,0.25)", color: "rgba(255,150,80,0.8)" }}>
+                Learn More
               </a>
             </div>
           </div>
