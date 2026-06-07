@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>We Wait × MTA 2026 — HBG Ministry</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Manrope:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      background:#050001;
+      font-family:'Manrope',sans-serif;
+      display:flex;flex-direction:column;align-items:center;
+      justify-content:center;min-height:100vh;padding:40px 20px;
+    }
+
+    /* ── CARD 540 × 960 ── */
+    .card{
+      width:540px;height:960px;
+      position:relative;border-radius:28px;overflow:hidden;flex-shrink:0;
+      background:
+        radial-gradient(ellipse 120% 50% at 50% 0%, rgba(180,30,0,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 60% at 20% 85%, rgba(255,69,0,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 80% 50%, rgba(201,151,42,0.08) 0%, transparent 55%),
+        linear-gradient(175deg, #130005 0%, #080001 45%, #100003 100%);
+      box-shadow:
+        0 0 0 1.5px rgba(201,151,42,0.22),
+        0 0 0 3px rgba(201,151,42,0.04),
+        0 0 80px rgba(255,69,0,0.15),
+        0 40px 100px rgba(0,0,0,0.95);
+    }
+
+    /* shimmer bars */
+    .bar-top,.bar-bottom{position:absolute;left:0;right:0;height:4px;z-index:30;}
+    .bar-top{top:0;background:linear-gradient(90deg,#150005,#ff4500 20%,#C9972A 50%,#ff4500 80%,#150005);background-size:200%;animation:sh 4s linear infinite;}
+    .bar-bottom{bottom:0;background:linear-gradient(90deg,#150005,#C9972A 20%,#ff4500 50%,#C9972A 80%,#150005);background-size:200%;animation:sh 4s linear infinite reverse;}
+    @keyframes sh{to{background-position:200% center;}}
+
+    /* Logo row */
+    .logo-row{
+      position:absolute;top:22px;left:26px;right:26px;
+      display:flex;align-items:center;justify-content:space-between;z-index:10;
+    }
+    .logo-grp{display:flex;align-items:center;gap:10px;}
+    .logo-img{width:40px;height:40px;object-fit:contain;
+      filter:drop-shadow(0 0 10px rgba(255,69,0,0.8)) drop-shadow(0 0 20px rgba(201,151,42,0.4));}
+    .min-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;color:#fff;line-height:1;}
+    .min-sub{font-size:7px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:rgba(201,151,42,0.6);margin-top:2px;}
+    .hbg-tag{font-size:8px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;
+      padding:4px 12px;border-radius:100px;color:#C9972A;
+      background:rgba(201,151,42,0.1);border:1px solid rgba(201,151,42,0.3);}
+
+    /* ── HERO: WE WAIT ── */
+    .hero{position:absolute;top:74px;left:0;right:0;text-align:center;z-index:10;padding:0 26px;}
+    .section-chip{
+      display:inline-block;font-size:8px;font-weight:900;letter-spacing:.25em;
+      text-transform:uppercase;padding:5px 16px;border-radius:100px;margin-bottom:10px;
+      color:#ff9a3c;background:rgba(255,69,0,0.1);border:1px solid rgba(255,107,43,0.35);
+    }
+    .we-wait-title{
+      font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:700;
+      color:#fff;line-height:.95;letter-spacing:-.01em;
+      text-shadow:0 0 50px rgba(255,69,0,0.45),0 0 100px rgba(201,151,42,0.2);
+    }
+    .we-wait-title .days{color:#ff6b2b;display:block;font-size:72px;}
+    .we-wait-sub{
+      font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;
+      color:rgba(255,150,80,0.8);margin-top:6px;
+    }
+    .we-wait-desc{
+      font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);
+      margin-top:8px;letter-spacing:.05em;
+    }
+    .date-pill{
+      display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+      padding:6px 16px;border-radius:100px;
+      background:rgba(255,69,0,0.1);border:1px solid rgba(255,107,43,0.3);
+      font-size:11px;font-weight:800;color:rgba(255,150,80,0.85);
+    }
+    .pulse-dot{width:6px;height:6px;border-radius:50%;background:#ff6b2b;
+      box-shadow:0 0 6px rgba(255,107,43,0.9);animation:dpulse 2s ease-in-out infinite;}
+    @keyframes dpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.5);opacity:.6;}}
+
+    /* ── ARROW BRIDGE ── */
+    .bridge{
+      position:absolute;top:388px;left:0;right:0;z-index:10;
+      display:flex;flex-direction:column;align-items:center;gap:0;
+    }
+    .bridge-line{width:2px;height:28px;background:linear-gradient(180deg,rgba(255,69,0,0.6),rgba(201,151,42,0.6));}
+    .bridge-mid{
+      background:rgba(0,0,0,0.8);border:1px solid rgba(201,151,42,0.35);
+      border-radius:20px;padding:6px 18px;
+      font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;
+      color:rgba(201,151,42,0.8);white-space:nowrap;
+    }
+    .bridge-arrow{font-size:28px;color:#C9972A;line-height:1;
+      text-shadow:0 0 20px rgba(201,151,42,0.6);margin-top:4px;}
+
+    /* ── MTA BLOCK ── */
+    .mta-block{
+      position:absolute;top:470px;left:26px;right:26px;z-index:10;
+      background:linear-gradient(135deg,rgba(201,151,42,0.12),rgba(255,69,0,0.06));
+      border:1px solid rgba(201,151,42,0.3);border-radius:20px;padding:22px 20px;
+    }
+    .mta-inner-chip{
+      font-size:7px;font-weight:900;letter-spacing:.3em;text-transform:uppercase;
+      color:#C9972A;margin-bottom:10px;display:flex;align-items:center;gap:6px;
+    }
+    .gold-dot{width:5px;height:5px;border-radius:50%;background:#C9972A;
+      box-shadow:0 0 6px rgba(201,151,42,0.9);animation:dpulse 2s ease-in-out infinite .5s;}
+    .mta-title{
+      font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;
+      color:#fff;line-height:1;margin-bottom:4px;
+      text-shadow:0 0 30px rgba(201,151,42,0.4);
+    }
+    .mta-full{
+      font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;
+      color:rgba(201,151,42,0.75);margin-bottom:14px;
+    }
+    .mta-theme{
+      font-size:12px;font-style:italic;color:rgba(255,255,255,0.5);
+      margin-bottom:16px;font-family:'Cormorant Garamond',serif;
+    }
+
+    /* 3 day pills */
+    .day-pills{display:flex;gap:8px;margin-bottom:14px;}
+    .day-pill{
+      flex:1;padding:8px 6px;border-radius:12px;text-align:center;
+      background:rgba(255,69,0,0.08);border:1px solid rgba(201,151,42,0.2);
+    }
+    .dp-day{font-size:7px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:#C9972A;}
+    .dp-date{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.1;}
+    .dp-theme{font-size:8px;color:rgba(255,255,255,0.35);margin-top:2px;line-height:1.3;}
+
+    .mta-meta{display:flex;flex-wrap:wrap;gap:8px;}
+    .mta-tag{
+      font-size:10px;font-weight:700;color:rgba(255,255,255,0.55);
+      padding:4px 10px;border-radius:100px;
+      background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ── VERSE ── */
+    .verse-block{
+      position:absolute;top:790px;left:26px;right:26px;z-index:10;
+      text-align:center;
+      border-top:1px solid rgba(201,151,42,0.15);
+      padding-top:16px;
+    }
+    .verse-text{
+      font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;
+      color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:5px;
+    }
+    .verse-ref{font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:rgba(201,151,42,0.5);}
+
+    /* ── CTA ── */
+    .cta-block{
+      position:absolute;top:872px;left:26px;right:26px;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .cta-left{}
+    .cta-url{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;
+      color:#C9972A;text-shadow:0 0 12px rgba(201,151,42,0.4);}
+    .cta-sub{font-size:8px;color:rgba(255,255,255,0.25);margin-top:2px;}
+    .cta-btn{
+      background:linear-gradient(135deg,#C9972A,#d4af37);color:#0d0002;
+      font-size:9px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;
+      padding:10px 18px;border-radius:100px;box-shadow:0 0 20px rgba(201,151,42,0.45);
+      white-space:nowrap;flex-shrink:0;
+    }
+
+    /* particles */
+    .particle{position:absolute;border-radius:50%;pointer-events:none;animation:pd linear infinite;}
+    @keyframes pd{0%{transform:translateY(960px) scale(0);opacity:0;}10%{opacity:.9;}90%{opacity:.8;}100%{transform:translateY(-20px) scale(1);opacity:0;}}
+  </style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="bar-top"></div>
+  <div class="bar-bottom"></div>
+  <div id="pts"></div>
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <div class="logo-grp">
+      <img class="logo-img" src="/hbg-logo.png" alt="HBG" onerror="this.src='/hbg-logo.svg'"/>
+      <div>
+        <div class="min-name">Heartbeat of God</div>
+        <div class="min-sub">Ministry International</div>
+      </div>
+    </div>
+    <div class="hbg-tag">HBG 2026</div>
+  </div>
+
+  <!-- WE WAIT hero -->
+  <div class="hero">
+    <div class="section-chip">Step 1 · Spiritual Preparation</div>
+    <div class="we-wait-title">
+      WE WAIT
+      <span class="days">21</span>
+    </div>
+    <div class="we-wait-sub">Days of Fasting & Prayer</div>
+    <div class="we-wait-desc">Corporate consecration · Intercession · Spiritual sharpening</div>
+    <div class="date-pill">
+      <div class="pulse-dot"></div>
+      August 13 – September 2, 2026
+    </div>
+  </div>
+
+  <!-- Bridge arrow -->
+  <div class="bridge">
+    <div class="bridge-line"></div>
+    <div class="bridge-mid">✦ &nbsp; 2 days later, enter your turnaround &nbsp; ✦</div>
+    <div class="bridge-arrow">↓</div>
+  </div>
+
+  <!-- MTA Block -->
+  <div class="mta-block">
+    <div class="mta-inner-chip">
+      <div class="gold-dot"></div>
+      Step 2 · The Mighty Turnaround
+    </div>
+    <div class="mta-title">MTA <span style="color:#C9972A;">2026</span></div>
+    <div class="mta-full">Mighty Turn Around Assembly</div>
+    <div class="mta-theme">"There is a river whose streams make glad the city of God" — Psalm 46:4</div>
+
+    <div class="day-pills">
+      <div class="day-pill">
+        <div class="dp-day">Day 1</div>
+        <div class="dp-date">Sep 4</div>
+        <div class="dp-theme">Opening Fire</div>
+      </div>
+      <div class="day-pill">
+        <div class="dp-day">Day 2</div>
+        <div class="dp-date">Sep 5</div>
+        <div class="dp-theme">Prophetic Power</div>
+      </div>
+      <div class="day-pill">
+        <div class="dp-day">Day 3</div>
+        <div class="dp-date">Sep 6</div>
+        <div class="dp-theme">Commissioning</div>
+      </div>
+    </div>
+
+    <div class="mta-meta">
+      <div class="mta-tag">📍 Akute, Nigeria</div>
+      <div class="mta-tag">🌐 + Zoom</div>
+      <div class="mta-tag">✦ Free Entry</div>
+      <div class="mta-tag">🙏 Host: Pst. Amos Unogwu</div>
+    </div>
+  </div>
+
+  <!-- Verse -->
+  <div class="verse-block">
+    <div class="verse-text">"You don't come to MTA empty — you come loaded from 21 days in His presence."</div>
+    <div class="verse-ref">Psalm 46 : 4</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <div class="cta-left">
+      <div class="cta-url">mta.heartbeatofgod.ca</div>
+      <div class="cta-sub">Free registration · HBG Ministry, Akute, Ogun State</div>
+    </div>
+    <div class="cta-btn">Register →</div>
+  </div>
+
+  <div class="bar-bottom"></div>
+</div>
+
+<script>
+const pts=document.getElementById('pts');
+const colors=['rgba(255,107,43,0.5)','rgba(201,151,42,0.4)','rgba(255,255,255,0.25)','rgba(255,69,0,0.35)'];
+for(let i=0;i<18;i++){
+  const p=document.createElement('div');p.className='particle';
+  const s=Math.random()*3+1;
+  p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*14+8}s;animation-delay:-${Math.random()*14}s;`;
+  pts.appendChild(p);
+}
+</script>
+</body>
+</html>
