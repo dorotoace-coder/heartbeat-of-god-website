@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
 import TiltCard from "@/components/TiltCard";
-import StatsStrip from "@/components/StatsStrip";
+import VlogSection from "@/components/VlogSection";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
@@ -159,52 +159,49 @@ export default function Home() {
               </motion.div>
             </div>
 
-            {/* Pastor Photo Column */}
+            {/* Pastor Photo Column — 3D interactive */}
             <motion.div
               initial={{ opacity: 0, x: 40, scale: 0.96 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
               className="flex-shrink-0 relative hidden lg:block"
+              style={{ perspective: "1400px" }}
             >
               {/* Glow ring behind photo */}
-              <div className="absolute inset-0 rounded-3xl bg-sky/20 blur-3xl scale-110 -z-10" />
+              <div className="absolute inset-0 rounded-3xl bg-sky/25 blur-3xl scale-110 -z-10" />
 
-              {/* Photo frame */}
-              <div className="relative w-72 h-[420px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-midnight/60">
-                <img
-                  src="/pastor-amos.png"
-                  alt="Pastor Amos Unogwu"
-                  className="w-full h-full object-cover object-top"
-                />
-                {/* Subtle gradient fade at bottom */}
-                <div className="absolute inset-0 bg-gradient-to-t from-midnight/70 via-transparent to-transparent" />
+              {/* Gentle float wrapper */}
+              <motion.div animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}>
+                <TiltCard className="rounded-[1.75rem]" intensity={11} glowColor="rgba(200,162,208,0.28)">
+                  {/* Photo frame */}
+                  <div className="relative w-72 h-[420px] rounded-[1.75rem] overflow-hidden border border-white/15 shadow-2xl shadow-midnight/70"
+                    style={{ boxShadow: "0 40px 90px rgba(10,4,22,0.7), 0 0 0 1px rgba(255,255,255,0.08), 0 8px 40px rgba(200,162,208,0.2)" }}>
+                    <img
+                      src="/pastor-amos.png"
+                      alt="Pastor Amos Unogwu"
+                      className="w-full h-full object-cover object-top"
+                    />
+                    {/* Subtle gradient fade at bottom */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-midnight/70 via-transparent to-transparent" />
 
-                {/* Name badge */}
-                <div className="absolute bottom-5 left-0 right-0 text-center">
-                  <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs font-semibold tracking-widest uppercase">
-                    Pastor Amos Unogwu
-                  </span>
-                </div>
-              </div>
+                    {/* Name badge */}
+                    <div className="absolute bottom-5 left-0 right-0 text-center">
+                      <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-xs font-semibold tracking-widest uppercase">
+                        Pastor Amos Unogwu
+                      </span>
+                    </div>
+                  </div>
+                </TiltCard>
+              </motion.div>
 
               {/* Floating accent: nations */}
               <motion.div
                 animate={{ y: [0, -6, 0] }}
                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                className="absolute -top-4 -right-4 px-3 py-2 bg-midnight-light/90 backdrop-blur border border-white/10 rounded-xl shadow-xl"
+                className="absolute -top-4 -right-4 px-3 py-2 bg-midnight-light/90 backdrop-blur border border-white/10 rounded-xl shadow-xl z-10"
               >
                 <p className="text-white/50 text-[10px] uppercase tracking-widest mb-0.5">Reaching</p>
                 <p className="text-white text-xs font-bold">🇳🇬 🇨🇦 🇩🇪</p>
-              </motion.div>
-
-              {/* Floating accent: ministry years */}
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-                className="absolute -bottom-4 -left-4 px-3 py-2 bg-midnight-light/90 backdrop-blur border border-white/10 rounded-xl shadow-xl"
-              >
-                <p className="text-white/50 text-[10px] uppercase tracking-widest mb-0.5">In Ministry</p>
-                <p className="text-white text-xs font-bold">10+ Years</p>
               </motion.div>
             </motion.div>
           </div>
@@ -368,8 +365,54 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Ministry Stats Strip ── */}
-        <StatsStrip />
+        {/* ── Heartbeat Vlog (pulls from Media library) ── */}
+        <VlogSection />
+
+        {/* ── Feed the Future — community project teaser ── */}
+        <section className="relative py-24 px-8 overflow-hidden" style={{ background: "linear-gradient(135deg, #150005 0%, #1a0008 45%, #0d0002 100%)", perspective: "1400px" }}>
+          <div className="absolute top-0 left-1/4 w-[600px] h-64 rounded-full opacity-20 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse, #ff4500, transparent)", filter: "blur(90px)" }} />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full opacity-15 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse, #d4af37, transparent)", filter: "blur(70px)" }} />
+
+          <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row items-center gap-12">
+            <motion.div
+              initial={{ opacity: 0, rotateY: 10, y: 30 }}
+              whileInView={{ opacity: 1, rotateY: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="flex-shrink-0"
+              style={{ transformStyle: "preserve-3d" }}
+            >
+              <div className="w-24 h-24 rounded-3xl flex items-center justify-center border"
+                style={{ background: "rgba(255,69,0,0.12)", borderColor: "rgba(255,107,43,0.35)", boxShadow: "0 24px 60px rgba(255,69,0,0.25)" }}>
+                <span className="material-symbols-outlined text-5xl" style={{ color: "#ff9a3c" }}>restaurant</span>
+              </div>
+            </motion.div>
+
+            <div className="flex-1 text-center lg:text-left">
+              <span className="inline-block px-3 py-1 mb-4 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                style={{ background: "rgba(255,107,43,0.12)", color: "#ff9a3c", border: "1px solid rgba(255,107,43,0.3)" }}>
+                Community Project
+              </span>
+              <h2 className="font-headline text-3xl md:text-5xl text-white font-light mb-4 leading-tight">
+                Feed the <span className="italic" style={{ color: "#ff9a3c" }}>Future</span>
+              </h2>
+              <p className="text-white/60 text-lg leading-relaxed max-w-2xl mb-6">
+                We feed vulnerable families monthly — with dignity and structure. Not charity handed out and forgotten, but a full system of registration, distribution, documentation, and follow-up. Partner with us for real community impact.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
+                <Link href="/feed-the-future" className="px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 whitespace-nowrap"
+                  style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff", boxShadow: "0 8px 24px rgba(255,107,43,0.35)" }}>
+                  🍲 Explore the Project
+                </Link>
+                <Link href="/connect" className="px-7 py-4 rounded-xl font-semibold text-sm text-white/80 border border-white/15 hover:bg-white/5 hover:scale-105 transition-all whitespace-nowrap text-center">
+                  Become a Partner
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Latest Message Section */}
         <section className="py-32 px-8 bg-surface-container-low relative overflow-hidden">
@@ -611,28 +654,28 @@ export default function Home() {
               {upcomingEvents.length === 0 ? (
                 // Hardcoded Fallback for Preview Perfection
                 <>
-                  {/* ILPC 2026 — Featured event card */}
-                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative col-span-1" style={{ background: "linear-gradient(135deg, #1C0A2D 0%, #2A1143 100%)", border: "2px solid rgba(212,160,23,0.3)" }}>
+                  {/* MTA 2026 — Featured event card */}
+                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative col-span-1" style={{ background: "linear-gradient(135deg, #1a0008 0%, #2a0d10 100%)", border: "2px solid rgba(255,107,43,0.35)" }}>
                     <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity -z-10">
-                      <span className="material-symbols-outlined text-9xl text-amber-400">celebration</span>
+                      <span className="material-symbols-outlined text-9xl" style={{ color: "#ff6b2b" }}>local_fire_department</span>
                     </div>
                     <div className="p-8 h-full flex flex-col justify-between">
                       <div>
-                        <div className="inline-block px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider" style={{ background: "rgba(212,160,23,0.15)", color: "#D4A017", border: "1px solid rgba(212,160,23,0.3)" }}>
-                          Signature Event · June 5–7
+                        <div className="inline-block px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider" style={{ background: "rgba(255,107,43,0.15)", color: "#ff9a3c", border: "1px solid rgba(255,107,43,0.3)" }}>
+                          Signature Event · Sept 4–6
                         </div>
-                        <h3 className="font-headline text-3xl text-white mb-2">ILPC 2026</h3>
-                        <p className="italic mb-4" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</p>
+                        <h3 className="font-headline text-3xl text-white mb-2">MTA 2026</h3>
+                        <p className="italic mb-4" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</p>
                         <p className="text-white/50 text-sm leading-relaxed mb-6">
-                          International Leaders & Pastors Conference · Akute, Nigeria
+                          &ldquo;There is a river whose streams make glad the city of God&rdquo; · Akute, Nigeria &amp; Online
                         </p>
                       </div>
                       <a
-                        href="https://ilpc.heartbeatofgod.ca"
+                        href="https://mta.heartbeatofgod.ca"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all hover:scale-105"
-                        style={{ background: "linear-gradient(135deg, #D4A017, #F0C842)", color: "#1C0A2D" }}
+                        style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff" }}
                       >
                         <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_reg</span>
                         Register Free

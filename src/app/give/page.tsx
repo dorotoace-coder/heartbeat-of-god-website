@@ -156,8 +156,8 @@ export default function GivePage() {
             <div className="space-y-5">
               {[
                 { title: "Global Outreach", body: "Funding crusades, media broadcasts, and international missions." },
-                { title: "Community Upliftment", body: "Empowering local communities through welfare and education initiatives." },
-                { title: "ILPC 2026", body: "Supporting the International Leaders & Pastors Conference — June 5–7, Akute, Nigeria." },
+                { title: "Feed the Future", body: "Feeding vulnerable families monthly with dignity, structure, and follow-up." },
+                { title: "MTA 2026", body: "Supporting the Mighty Turn Around Assembly — September 4–6, Akute, Nigeria & Online." },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 items-start">
                   <div className="w-10 h-10 rounded-full bg-sky/10 flex items-center justify-center text-sky shrink-0 mt-0.5">
