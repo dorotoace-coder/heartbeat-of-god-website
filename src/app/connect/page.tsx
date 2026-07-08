@@ -7,19 +7,32 @@ import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from "lucide-react";
 
+const PRAYER_CATEGORIES = ["General", "Healing", "Family", "Work / Business", "Salvation", "Testimony"];
+const VISIT_TYPES = ["First time", "Returning guest", "New convert"];
+
 export default function ConnectPage() {
   const [formStep, setFormStep] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [subject, setSubject] = useState("General Inquiry");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
+    phone: "",
+    category: PRAYER_CATEGORIES[0],
+    confidential: false,
+    area: "",
+    visitType: VISIT_TYPES[0],
+    invitedBy: "",
+    prayerNeed: "",
   });
+
+  const isPrayerRequest = subject === "Prayer Request";
+  const isFirstTimer = subject === "First-Timer Card";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStep("sending");
-    
+
     try {
       const { error } = await supabase
         .from('inquiries')
@@ -27,7 +40,14 @@ export default function ConnectPage() {
           full_name: formData.name,
           email: formData.email,
           type: subject,
-          message: formData.message
+          message: isFirstTimer ? formData.prayerNeed : formData.message,
+          phone: (isPrayerRequest || isFirstTimer) ? formData.phone : null,
+          category: isPrayerRequest ? formData.category : null,
+          confidential: isPrayerRequest ? formData.confidential : false,
+          area: isFirstTimer ? formData.area : null,
+          visit_type: isFirstTimer ? formData.visitType : null,
+          invited_by: isFirstTimer ? formData.invitedBy : null,
+          prayer_need: isFirstTimer ? formData.prayerNeed : null,
         }]);
 
       if (error) throw error;
@@ -201,6 +221,7 @@ export default function ConnectPage() {
                     >
                       <option>General Inquiry</option>
                       <option>Prayer Request</option>
+                      <option>First-Timer Card</option>
                       <option>Testimony Submission</option>
                       <option>Department Application</option>
                       <option>ILPC 2026 Registration</option>
@@ -209,15 +230,90 @@ export default function ConnectPage() {
                     </select>
                  </div>
 
+                 {(isPrayerRequest || isFirstTimer) && (
+                   <div className="space-y-2">
+                      <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Phone</label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        placeholder="+234 800 000 0000"
+                        className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
+                      />
+                   </div>
+                 )}
+
+                 {isPrayerRequest && (
+                   <div className="space-y-2">
+                      <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Category</label>
+                      <select
+                        value={formData.category}
+                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                        className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
+                      >
+                        {PRAYER_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                      </select>
+                   </div>
+                 )}
+
+                 {isFirstTimer && (
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Area</label>
+                         <input
+                           type="text"
+                           value={formData.area}
+                           onChange={(e) => setFormData({...formData, area: e.target.value})}
+                           placeholder="Where do you live?"
+                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Visit Type</label>
+                         <select
+                           value={formData.visitType}
+                           onChange={(e) => setFormData({...formData, visitType: e.target.value})}
+                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
+                         >
+                           {VISIT_TYPES.map((v) => <option key={v}>{v}</option>)}
+                         </select>
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Invited By</label>
+                         <input
+                           type="text"
+                           value={formData.invitedBy}
+                           onChange={(e) => setFormData({...formData, invitedBy: e.target.value})}
+                           placeholder="Who invited you? (optional)"
+                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
+                         />
+                      </div>
+                   </div>
+                 )}
+
+                 {isPrayerRequest && (
+                   <label className="flex items-center gap-3 ml-1 cursor-pointer select-none">
+                     <input
+                       type="checkbox"
+                       checked={formData.confidential}
+                       onChange={(e) => setFormData({...formData, confidential: e.target.checked})}
+                       className="w-5 h-5 rounded border-2 border-outline-variant accent-sky"
+                     />
+                     <span className="text-sm text-on-surface-variant">The team may contact me. Keep this confidential.</span>
+                   </label>
+                 )}
+
                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Your Message</label>
-                    <textarea 
-                      required 
-                      rows={6} 
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      placeholder="How can we help or partner with you?" 
-                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all resize-none" 
+                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">
+                      {isFirstTimer ? "Prayer Need" : "Your Message"}
+                    </label>
+                    <textarea
+                      required={!isFirstTimer}
+                      rows={6}
+                      value={isFirstTimer ? formData.prayerNeed : formData.message}
+                      onChange={(e) => setFormData(isFirstTimer ? {...formData, prayerNeed: e.target.value} : {...formData, message: e.target.value})}
+                      placeholder={isFirstTimer ? "Any specific prayer need? (optional)" : "How can we help or partner with you?"}
+                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all resize-none"
                     />
                  </div>
 
@@ -227,11 +323,11 @@ export default function ConnectPage() {
                    className="w-full py-5 bg-midnight text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-midnight/20 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                    {formStep === "sending" ? (
-                     <span className="animate-pulse">Sending Message...</span>
+                     <span className="animate-pulse">Sending...</span>
                    ) : (
                      <>
                        <Send size={20} />
-                       Send to Ministry
+                       {isPrayerRequest ? "Send Prayer Request" : isFirstTimer ? "Submit First-Timer Card" : "Send to Ministry"}
                      </>
                    )}
                  </button>

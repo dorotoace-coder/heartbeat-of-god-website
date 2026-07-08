@@ -89,8 +89,46 @@ export default function MediaPage() {
           </div>
         </section>
 
+        {/* The Message Must Travel */}
+        <section className="px-8 py-24 bg-surface-container-low mb-20">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <span className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block">How We Multiply The Word</span>
+              <h2 className="font-headline text-4xl md:text-5xl text-midnight mb-6">The Message Must Travel</h2>
+              <p className="text-on-surface-variant text-lg max-w-3xl mx-auto leading-relaxed">
+                Every message, prayer, testimony, and worship moment is preserved and shared so more people can encounter Christ and grow in the sense of God&rsquo;s divine presence.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                { icon: "auto_stories", title: "CLT Devotionals", label: "Daily discipleship", desc: "Daily spiritual formation that helps believers come, listen, and take heed to the Word with prayer, reflection, and action." },
+                { icon: "movie", title: "Sermon Clips", label: "Message multiplication", desc: "Short, clear moments from the Word that keep the message alive beyond Sunday and reach people where they already are." },
+                { icon: "volunteer_activism", title: "Prayer Moments", label: "Prayer momentum", desc: "Declarations, prayer charges, and STIR UP focuses that awaken faith and keep the church aligned in the Spirit." },
+                { icon: "music_note", title: "Worship Reels", label: "Sound and spirit", desc: "Worship and music moments that carry sound, atmosphere, and encouragement into the week." },
+                { icon: "record_voice_over", title: "Testimony Videos", label: "Witness", desc: "Stories of God's faithfulness preserved and shared so others can believe, pray, and return with expectation." },
+                { icon: "local_fire_department", title: "Salvation Challenge", label: "Evangelism fire", desc: "Evangelism-centered media that mobilizes believers to win souls and sustain outreach momentum." },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="p-8 bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all border border-outline-variant/30"
+                >
+                  <span className="material-symbols-outlined text-4xl text-sky mb-6 block">{item.icon}</span>
+                  <p className="text-[10px] font-bold text-sky uppercase tracking-widest mb-2">{item.label}</p>
+                  <h3 className="font-headline text-2xl text-midnight mb-3">{item.title}</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="px-8 max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             layout
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
           >

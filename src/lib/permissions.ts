@@ -19,6 +19,7 @@ const NAV_MIN_LEVEL: Record<string, number> = {
   members: 2,   // Manager+
   events: 1,    // Everyone (leader = read-only, enforced in component)
   media: 1,     // Everyone (leader = read-only, enforced in component)
+  inquiries: 2, // Manager+ (prayer requests, first-timer cards)
   settings: 3,  // Pastor+ (System Rules)
 };
 

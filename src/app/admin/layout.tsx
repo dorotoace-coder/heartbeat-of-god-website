@@ -4,12 +4,13 @@ import { ReactNode, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAdminRole, hasNavAccess } from "@/lib/permissions";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Video, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Users,
+  Video,
+  Settings,
   CalendarDays,
+  Inbox,
   Menu,
   ChevronRight
 } from "lucide-react";
@@ -19,6 +20,7 @@ const ALL_NAV_ITEMS = [
   { id: "members", label: "Members", icon: Users, href: "/admin?view=members" },
   { id: "events", label: "Events Engine", icon: CalendarDays, href: "/admin?view=events" },
   { id: "media", label: "Media Vault", icon: Video, href: "/admin?view=media" },
+  { id: "inquiries", label: "Intake Inbox", icon: Inbox, href: "/admin?view=inquiries" },
 ];
 
 function SidebarContent() {
