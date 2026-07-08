@@ -13,6 +13,7 @@ import { LeaderView } from "@/components/admin/LeaderView";
 import { MembersView } from "@/components/admin/MembersView";
 import { EventsView } from "@/components/admin/EventsView";
 import { MediaView } from "@/components/admin/MediaView";
+import { InquiriesView } from "@/components/admin/InquiriesView";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -76,6 +77,8 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
         return <EventsView />;
       case 'media':
         return <MediaView />;
+      case 'inquiries':
+        return <InquiriesView />;
       case 'settings':
         return <div className="p-12 text-center text-slate-400 font-bold">System Rules Management - Coming Soon</div>;
       case 'overview':

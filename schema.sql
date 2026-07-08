@@ -83,6 +83,16 @@ ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Inquiries insert open" ON inquiries FOR INSERT WITH CHECK (true);
 CREATE POLICY "Inquiries admin read" ON inquiries FOR SELECT USING (auth.role() = 'authenticated');
 
+-- Intake fields for Prayer Request / First-Timer Card (ported from heartbeatofgod.foundation)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS category TEXT; -- Prayer Request: General, Healing, Family, Work / Business, Salvation, Testimony
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS confidential BOOLEAN DEFAULT false;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS area TEXT; -- First-Timer Card
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS visit_type TEXT; -- First-Timer Card: First time, Returning guest, New convert
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS invited_by TEXT; -- First-Timer Card
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS prayer_need TEXT; -- First-Timer Card
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending'; -- pending, reviewed, contacted
+
 -- ─────────────────────────────────────────
 -- EVENTS TABLE (Upcoming Encounters section)
 -- ─────────────────────────────────────────
