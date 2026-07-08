@@ -45,14 +45,15 @@ export default function Footer() {
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/connect">Partner With Us</Link></li>
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/connect">Contact Us</Link></li>
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/give">Giving Portal</Link></li>
+            <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/feed-the-future">Feed the Future</Link></li>
             <li>
               <a
-                href="https://ilpc.heartbeatofgod.ca"
+                href="https://mta.heartbeatofgod.ca"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-400/70 hover:text-amber-300 hover:underline decoration-amber-400/30 underline-offset-4 transition-all font-semibold"
+                className="text-orange-400/80 hover:text-orange-300 hover:underline decoration-orange-400/30 underline-offset-4 transition-all font-semibold"
               >
-                ILPC 2026 →
+                MTA 2026 →
               </a>
             </li>
           </ul>
