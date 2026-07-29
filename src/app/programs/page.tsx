@@ -64,10 +64,10 @@ export default function ProgramsPage() {
 
         setEvents(fixed);
 
-        // Prefer explicitly highlighted → ILPC → next upcoming
+        // Prefer explicitly highlighted → MTA → next upcoming
         const highlighted =
           fixed.find(e => e.is_highlighted) ||
-          fixed.find(e => e.name.toLowerCase().includes('ilpc')) ||
+          fixed.find(e => e.name.toLowerCase().includes('mta')) ||
           fixed.find(e => new Date(e.event_date) >= new Date()) ||
           fixed[0];
         setHighlightedEvent(highlighted || null);
@@ -212,9 +212,9 @@ export default function ProgramsPage() {
                       <span className="text-2xl font-headline">{highlightedEvent.location}</span>
                     </div>
                   </motion.div>
-                  {highlightedEvent.name.toLowerCase().includes('ilpc') ? (
+                  {highlightedEvent.name.toLowerCase().includes('mta') ? (
                     <motion.a
-                      href="https://ilpc.heartbeatofgod.ca"
+                      href="https://mta.heartbeatofgod.ca"
                       target="_blank"
                       rel="noopener noreferrer"
                       initial={{ opacity: 0, y: 10 }}
@@ -225,7 +225,7 @@ export default function ProgramsPage() {
                       className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl shadow-white/10 inline-block text-center"
                       style={{ boxShadow: '0 0 0 2px rgba(212,175,55,0.4), 0 12px 32px rgba(255,255,255,0.08)' }}
                     >
-                      Register Free — ILPC 2026 →
+                      Register Free — MTA 2026 →
                     </motion.a>
                   ) : (
                     <motion.div

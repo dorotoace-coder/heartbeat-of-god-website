@@ -15,6 +15,12 @@ interface Vlog {
   duration: string;
   thumbnail_url?: string | null;
   youtube_url?: string | null;
+  video_url?: string | null;
+}
+
+/** The playable video URL, whichever column the DB uses. */
+function videoUrlOf(v?: Vlog | null): string | null {
+  return v?.youtube_url || v?.video_url || null;
 }
 
 /** Extract a YouTube video id from common URL shapes. */
@@ -26,7 +32,7 @@ function youtubeId(url?: string | null): string | null {
 
 function thumbFor(v: Vlog): string {
   if (v.thumbnail_url) return v.thumbnail_url;
-  const id = youtubeId(v.youtube_url);
+  const id = youtubeId(videoUrlOf(v));
   if (id) return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
   return "https://images.unsplash.com/photo-1478147427282-58a87a120781?q=80&w=2070&auto=format&fit=crop";
 }
@@ -43,7 +49,7 @@ export default function VlogSection() {
       try {
         const { data, error } = await supabase
           .from("sermons")
-          .select("id,title,preacher,category,date_preached,duration,thumbnail_url,youtube_url")
+          .select("*")
           .order("date_preached", { ascending: false })
           .limit(7);
         if (error) throw error;
@@ -59,7 +65,7 @@ export default function VlogSection() {
     load();
   }, []);
 
-  const featuredVid = youtubeId(featured?.youtube_url);
+  const featuredVid = youtubeId(videoUrlOf(featured));
   const isPlaying = featured && activeId === featured.id && featuredVid;
 
   return (

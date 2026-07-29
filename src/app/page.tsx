@@ -211,7 +211,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5, duration: 1 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/40"
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden [@media(min-height:820px)]:flex flex-col items-center gap-4 text-white/40 pointer-events-none"
           >
             <motion.span
               animate={{ y: [0, 5, 0] }}
@@ -222,29 +222,6 @@ export default function Home() {
             </motion.span>
             <div className="w-px h-16 bg-gradient-to-b from-white/40 to-transparent"></div>
           </motion.div>
-        </section>
-
-        {/* ILPC 2026 — Completed Thank You */}
-        <section className="relative overflow-hidden py-10 px-8" style={{ background: "linear-gradient(135deg, #0e0618 0%, #160a24 50%, #0e0618 100%)" }}>
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <span className="text-2xl">🙏</span>
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: "#C8A2D0" }}>Completed · June 5–7, 2026</span>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider" style={{ color: "#C8A2D0", background: "rgba(200,162,208,0.12)", border: "1px solid rgba(200,162,208,0.25)" }}>✓ Conference Complete</span>
-                </div>
-                <p className="text-white/70 text-sm font-medium">
-                  ILPC 2026 — <span className="italic" style={{ color: "#C8A2D0" }}>Fresh Oil for a New Season</span> · Thank you to all who joined us!
-                </p>
-              </div>
-            </div>
-            <a href="https://ilpc.heartbeatofgod.ca" target="_blank" rel="noopener noreferrer"
-              className="text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/10 whitespace-nowrap"
-              style={{ border: "1px solid rgba(200,162,208,0.2)", color: "rgba(200,162,208,0.6)" }}>
-              View ILPC Site →
-            </a>
-          </div>
         </section>
 
         {/* MTA 2026 — PRIMARY CAMPAIGN BANNER */}

@@ -14,6 +14,7 @@ interface MediaItem {
   thumbnail_url: string | null;
   category: string;
   video_url: string | null;
+  youtube_url: string | null;
   description: string | null;
 }
 
@@ -70,7 +71,7 @@ function MediaActionDropdown({ onEdit, onDelete }: {
 function MediaModal({ item, onClose, onSave, saving }: {
   item: MediaItem | null;
   onClose: () => void;
-  onSave: (data: { title: string; preacher: string; date_preached: string; duration: string; thumbnail_url: string; category: string; description: string }) => void;
+  onSave: (data: { title: string; preacher: string; date_preached: string; duration: string; thumbnail_url: string; youtube_url: string; category: string; description: string }) => void;
   saving: boolean;
 }) {
   const [title, setTitle] = useState(item?.title || "");
@@ -78,6 +79,7 @@ function MediaModal({ item, onClose, onSave, saving }: {
   const [datePreached, setDatePreached] = useState(item?.date_preached || "");
   const [duration, setDuration] = useState(item?.duration || "");
   const [thumbnailUrl, setThumbnailUrl] = useState(item?.thumbnail_url || "");
+  const [youtubeUrl, setYoutubeUrl] = useState(item?.youtube_url || "");
   const [category, setCategory] = useState(item?.category || "General");
   const [description, setDescription] = useState(item?.description || "");
   const [errors, setErrors] = useState<{ title?: string; preacher?: string }>({});
@@ -94,7 +96,8 @@ function MediaModal({ item, onClose, onSave, saving }: {
       preacher: preacher.trim(),
       date_preached: datePreached || new Date().toISOString().split("T")[0],
       duration: duration || "0:00",
-      thumbnail_url: thumbnailUrl || "https://images.unsplash.com/photo-1544427928-142ec24aa861",
+      thumbnail_url: thumbnailUrl.trim() || (youtubeUrl.trim() ? "" : "https://images.unsplash.com/photo-1544427928-142ec24aa861"),
+      youtube_url: youtubeUrl.trim(),
       category,
       description: description || "",
     });
@@ -151,7 +154,14 @@ function MediaModal({ item, onClose, onSave, saving }: {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Thumbnail URL</label>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">YouTube URL</label>
+            <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="https://youtu.be/…  (powers the homepage Vlog player)"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
+            <p className="text-[11px] text-slate-400 mt-1.5">Leave the thumbnail blank to auto-use the YouTube cover.</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Thumbnail URL (optional)</label>
             <input type="text" value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} placeholder="https://..."
               className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
           </div>
@@ -246,7 +256,7 @@ export function MediaView() {
   useEffect(() => { fetchMedia(); }, [fetchMedia]);
 
   // ── Create / Update ────────────────────────────────────
-  const handleSave = async (data: { title: string; preacher: string; date_preached: string; duration: string; thumbnail_url: string; category: string; description: string }) => {
+  const handleSave = async (data: { title: string; preacher: string; date_preached: string; duration: string; thumbnail_url: string; youtube_url: string; category: string; description: string }) => {
     setSaving(true);
     try {
       if (editingItem) {
@@ -258,6 +268,7 @@ export function MediaView() {
             date_preached: data.date_preached,
             duration: data.duration,
             thumbnail_url: data.thumbnail_url,
+            youtube_url: data.youtube_url,
             category: data.category,
             description: data.description,
           })
@@ -273,6 +284,7 @@ export function MediaView() {
             date_preached: data.date_preached,
             duration: data.duration,
             thumbnail_url: data.thumbnail_url,
+            youtube_url: data.youtube_url,
             category: data.category,
             description: data.description,
           });
