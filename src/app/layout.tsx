@@ -35,11 +35,8 @@ export const metadata: Metadata = {
     title: "Heartbeat of God Ministry",
     description: "Raising a generation of Christ-conscious believers globally.",
     images: ["/hbg-logo.png"]
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.svg"
   }
+  // Favicon + apple-touch icon come from src/app/icon.svg and src/app/apple-icon.svg
 };
 
 export default function RootLayout({
