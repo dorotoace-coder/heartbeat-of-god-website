@@ -224,7 +224,7 @@ export default function ConnectPage() {
                       <option>First-Timer Card</option>
                       <option>Testimony Submission</option>
                       <option>Department Application</option>
-                      <option>ILPC 2026 Registration</option>
+                      <option>MTA 2026 Registration</option>
                       <option>Event Registration</option>
                       <option>Media/Sound Inquiry</option>
                     </select>

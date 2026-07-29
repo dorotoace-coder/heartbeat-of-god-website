@@ -146,3 +146,34 @@ END $$;
 
 -- Insert Initial Pulse State
 INSERT INTO pulse (id, is_live) VALUES (1, false) ON CONFLICT (id) DO NOTHING;
+
+-- ═══════════════════════════════════════════════════════════
+-- MIGRATIONS (idempotent) — safe to re-run against any state.
+-- This file is the SINGLE canonical schema. Run the whole file
+-- in the Supabase SQL editor to bring the database up to date.
+-- ═══════════════════════════════════════════════════════════
+
+-- Sermons: YouTube URL powers the homepage Heartbeat Vlog player.
+ALTER TABLE sermons ADD COLUMN IF NOT EXISTS youtube_url TEXT;
+
+-- Inquiries: richer intake fields for Prayer Request / First-Timer Card.
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS category TEXT;      -- General, Healing, Family, Work / Business, Salvation, Testimony
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS confidential BOOLEAN DEFAULT false;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS area TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS visit_type TEXT;    -- First time, Returning guest, New convert
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS invited_by TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS prayer_need TEXT;
+
+-- Inquiries RLS: anyone may submit; only authenticated staff may read.
+ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public insert access for inquiries') THEN
+    CREATE POLICY "Public insert access for inquiries" ON inquiries FOR INSERT WITH CHECK (true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated read access for inquiries') THEN
+    CREATE POLICY "Authenticated read access for inquiries" ON inquiries FOR SELECT TO authenticated USING (true);
+  END IF;
+END $$;
