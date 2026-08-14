@@ -165,15 +165,82 @@ ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS visit_type TEXT;    -- First time
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS invited_by TEXT;
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS prayer_need TEXT;
 
--- Inquiries RLS: anyone may submit; only authenticated staff may read.
+-- Profile authorization: authenticated staff may read only their own profile.
+-- Role assignment remains server/service-role managed so users cannot promote
+-- themselves into a privileged inquiry-reading role.
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON profiles;
+DROP POLICY IF EXISTS "Users can update their own profiles." ON profiles;
+DROP POLICY IF EXISTS profiles_authenticated_select_own ON profiles;
+REVOKE ALL PRIVILEGES ON TABLE profiles FROM anon, authenticated;
+GRANT SELECT (id, full_name, role, department_id, updated_at)
+  ON TABLE profiles TO authenticated;
+CREATE POLICY profiles_authenticated_select_own
+  ON profiles FOR SELECT TO authenticated
+  USING ((SELECT auth.uid()) = id);
+
+-- Inquiries RLS: anyone may submit through the public form. Only manager,
+-- pastor, and owner profiles may read submissions or change their status.
 ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public insert access for inquiries') THEN
-    CREATE POLICY "Public insert access for inquiries" ON inquiries FOR INSERT WITH CHECK (true);
-  END IF;
-END $$;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated read access for inquiries') THEN
-    CREATE POLICY "Authenticated read access for inquiries" ON inquiries FOR SELECT TO authenticated USING (true);
-  END IF;
-END $$;
+DROP POLICY IF EXISTS "Public insert access for inquiries" ON inquiries;
+DROP POLICY IF EXISTS "Authenticated read access for inquiries" ON inquiries;
+DROP POLICY IF EXISTS inquiries_public_insert ON inquiries;
+DROP POLICY IF EXISTS inquiries_manager_select ON inquiries;
+DROP POLICY IF EXISTS inquiries_manager_update_status ON inquiries;
+
+REVOKE ALL PRIVILEGES ON TABLE inquiries FROM anon, authenticated;
+GRANT INSERT (
+  full_name,
+  email,
+  type,
+  message,
+  phone,
+  category,
+  confidential,
+  area,
+  visit_type,
+  invited_by,
+  prayer_need
+) ON TABLE inquiries TO anon, authenticated;
+GRANT SELECT ON TABLE inquiries TO authenticated;
+GRANT UPDATE (status) ON TABLE inquiries TO authenticated;
+
+CREATE POLICY inquiries_public_insert
+  ON inquiries FOR INSERT TO anon, authenticated
+  WITH CHECK (
+    btrim(full_name) <> ''
+    AND btrim(email) <> ''
+    AND btrim(type) <> ''
+    AND status = 'pending'
+  );
+
+CREATE POLICY inquiries_manager_select
+  ON inquiries FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM profiles
+      WHERE profiles.id = (SELECT auth.uid())
+        AND profiles.role IN ('owner', 'pastor', 'manager')
+    )
+  );
+
+CREATE POLICY inquiries_manager_update_status
+  ON inquiries FOR UPDATE TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM profiles
+      WHERE profiles.id = (SELECT auth.uid())
+        AND profiles.role IN ('owner', 'pastor', 'manager')
+    )
+  )
+  WITH CHECK (
+    status IN ('pending', 'reviewed', 'contacted')
+    AND EXISTS (
+      SELECT 1
+      FROM profiles
+      WHERE profiles.id = (SELECT auth.uid())
+        AND profiles.role IN ('owner', 'pastor', 'manager')
+    )
+  );
