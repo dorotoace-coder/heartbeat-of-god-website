@@ -1,102 +1,321 @@
 -- ============================================================
--- DOR-AIOS-HBOG-INQUIRIES-SECURITY-GATE-R1
+-- DOR-AIOS-HBOG-CLEAN-STAGING-BOOTSTRAP-R1
 --
--- Protect inquiry contents while preserving:
---   * anonymous/authenticated public form submissions; and
---   * owner/pastor/manager inbox reads and status-only updates.
+-- Bootstrap the tables required by the public connect and staff inbox flows,
+-- then apply the verified inquiry/profile security gate. The migration is
+-- intentionally safe to re-run and supports both an empty Supabase database
+-- and the currently observed production-shaped schema.
 --
--- Profile role assignment is server/service-role managed. This prevents an
--- authenticated user from promoting their own profile to bypass inquiry RLS.
--- Apply and verify on staging before any production migration.
+-- Existing department rows are preserved. Because the observed production
+-- table predates its content columns, newly added content fields remain
+-- nullable there; a fresh database still requires department names.
 -- ============================================================
 
+begin;
+
+do $$
+declare
+  role_labels text[];
+begin
+  if not exists (
+    select 1
+    from pg_type
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role'
+  ) then
+    create type public.app_role as enum ('owner', 'pastor', 'manager', 'leader');
+  elsif not exists (
+    select 1
+    from pg_type
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role'
+      and pg_type.typtype = 'e'
+  ) then
+    raise exception 'public.app_role exists but is not an enum';
+  else
+    select array_agg(pg_enum.enumlabel order by pg_enum.enumsortorder)
+      into role_labels
+    from pg_enum
+    join pg_type on pg_type.oid = pg_enum.enumtypid
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role';
+
+    if role_labels is distinct from array['owner', 'pastor', 'manager', 'leader']::text[] then
+      raise exception 'public.app_role has incompatible labels: %', role_labels;
+    end if;
+  end if;
+end
+$$;
+
+create table if not exists public.departments (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  name text not null,
+  description text,
+  what_they_do text,
+  who_should_join text,
+  cta_text text,
+  display_order integer not null default 0
+);
+
+alter table public.departments add column if not exists id uuid default gen_random_uuid();
+alter table public.departments add column if not exists created_at timestamptz default now();
+alter table public.departments add column if not exists name text;
+alter table public.departments add column if not exists description text;
+alter table public.departments add column if not exists what_they_do text;
+alter table public.departments add column if not exists who_should_join text;
+alter table public.departments add column if not exists cta_text text;
+alter table public.departments add column if not exists display_order integer not null default 0;
+alter table public.departments alter column id set default gen_random_uuid();
+alter table public.departments alter column created_at set default now();
+alter table public.departments alter column display_order set default 0;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.departments'::regclass and contype = 'p'
+  ) then
+    alter table public.departments add primary key (id);
+  end if;
+end
+$$;
+
+create unique index if not exists departments_name_unique_idx
+  on public.departments (name)
+  where name is not null;
+
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  role public.app_role default 'leader',
+  department_id uuid references public.departments(id),
+  updated_at timestamptz default now()
+);
+
+alter table public.profiles add column if not exists id uuid;
+alter table public.profiles add column if not exists full_name text;
+alter table public.profiles add column if not exists role public.app_role default 'leader';
+alter table public.profiles add column if not exists department_id uuid;
+alter table public.profiles add column if not exists updated_at timestamptz default now();
+alter table public.profiles alter column role set default 'leader';
+alter table public.profiles alter column updated_at set default now();
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and contype = 'p'
+  ) then
+    alter table public.profiles add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and conname = 'profiles_id_fkey'
+  ) then
+    alter table public.profiles
+      add constraint profiles_id_fkey
+      foreign key (id) references auth.users(id) on delete cascade not valid;
+    alter table public.profiles validate constraint profiles_id_fkey;
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and conname = 'profiles_department_id_fkey'
+  ) then
+    alter table public.profiles
+      add constraint profiles_department_id_fkey
+      foreign key (department_id) references public.departments(id) not valid;
+    alter table public.profiles validate constraint profiles_department_id_fkey;
+  end if;
+end
+$$;
+
+create index if not exists profiles_department_id_idx
+  on public.profiles (department_id);
+
+create table if not exists public.inquiries (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  full_name text not null,
+  email text not null,
+  type text not null,
+  message text,
+  status text not null default 'pending',
+  phone text,
+  category text,
+  confidential boolean default false,
+  area text,
+  visit_type text,
+  invited_by text,
+  prayer_need text
+);
+
+alter table public.inquiries add column if not exists id uuid default gen_random_uuid();
+alter table public.inquiries add column if not exists created_at timestamptz default now();
+alter table public.inquiries add column if not exists full_name text;
+alter table public.inquiries add column if not exists email text;
+alter table public.inquiries add column if not exists type text;
+alter table public.inquiries add column if not exists message text;
+alter table public.inquiries add column if not exists status text default 'pending';
+alter table public.inquiries add column if not exists phone text;
+alter table public.inquiries add column if not exists category text;
+alter table public.inquiries add column if not exists confidential boolean default false;
+alter table public.inquiries add column if not exists area text;
+alter table public.inquiries add column if not exists visit_type text;
+alter table public.inquiries add column if not exists invited_by text;
+alter table public.inquiries add column if not exists prayer_need text;
+alter table public.inquiries alter column id set default gen_random_uuid();
+alter table public.inquiries alter column created_at set default now();
+alter table public.inquiries alter column status set default 'pending';
+alter table public.inquiries alter column confidential set default false;
+
+do $$
+begin
+  if exists (
+    select 1 from public.inquiries
+    where full_name is null or email is null or type is null or status is null
+       or status not in ('pending', 'reviewed', 'contacted')
+  ) then
+    raise exception 'public.inquiries contains rows incompatible with the required intake contract';
+  end if;
+end
+$$;
+
+alter table public.inquiries alter column full_name set not null;
+alter table public.inquiries alter column email set not null;
+alter table public.inquiries alter column type set not null;
+alter table public.inquiries alter column status set not null;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.inquiries'::regclass and contype = 'p'
+  ) then
+    alter table public.inquiries add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.inquiries'::regclass and conname = 'inquiries_status_check'
+  ) then
+    alter table public.inquiries
+      add constraint inquiries_status_check
+      check (status in ('pending', 'reviewed', 'contacted'));
+  end if;
+end
+$$;
+
+do $$
+begin
+  if exists (
+    select 1
+    from (values
+      ('departments', 'id', 'uuid'),
+      ('departments', 'created_at', 'timestamptz'),
+      ('departments', 'name', 'text'),
+      ('departments', 'description', 'text'),
+      ('departments', 'what_they_do', 'text'),
+      ('departments', 'who_should_join', 'text'),
+      ('departments', 'cta_text', 'text'),
+      ('departments', 'display_order', 'int4'),
+      ('profiles', 'id', 'uuid'),
+      ('profiles', 'full_name', 'text'),
+      ('profiles', 'role', 'app_role'),
+      ('profiles', 'department_id', 'uuid'),
+      ('profiles', 'updated_at', 'timestamptz'),
+      ('inquiries', 'id', 'uuid'),
+      ('inquiries', 'created_at', 'timestamptz'),
+      ('inquiries', 'full_name', 'text'),
+      ('inquiries', 'email', 'text'),
+      ('inquiries', 'type', 'text'),
+      ('inquiries', 'message', 'text'),
+      ('inquiries', 'status', 'text'),
+      ('inquiries', 'phone', 'text'),
+      ('inquiries', 'category', 'text'),
+      ('inquiries', 'confidential', 'bool'),
+      ('inquiries', 'area', 'text'),
+      ('inquiries', 'visit_type', 'text'),
+      ('inquiries', 'invited_by', 'text'),
+      ('inquiries', 'prayer_need', 'text')
+    ) as expected(table_name, column_name, udt_name)
+    left join information_schema.columns as actual
+      on actual.table_schema = 'public'
+     and actual.table_name = expected.table_name
+     and actual.column_name = expected.column_name
+     and actual.udt_name = expected.udt_name
+    where actual.column_name is null
+  ) then
+    raise exception 'protected table column types are incompatible with the required application contract';
+  end if;
+end
+$$;
+
+grant usage on schema public to anon, authenticated, service_role;
+alter table public.departments enable row level security;
+drop policy if exists "Departments are viewable by authenticated users." on public.departments;
+drop policy if exists "Public read access for departments" on public.departments;
+drop policy if exists departments_public_select on public.departments;
+revoke all privileges on table public.departments from public, anon, authenticated, service_role;
+grant select on table public.departments to anon, authenticated;
+grant select, insert, update, delete on table public.departments to service_role;
+create policy departments_public_select
+  on public.departments for select to anon, authenticated using (true);
+
 alter table public.profiles enable row level security;
-
-drop policy if exists "Public profiles are viewable by everyone."
-  on public.profiles;
-drop policy if exists "Users can update their own profiles."
-  on public.profiles;
-drop policy if exists profiles_authenticated_select_own
-  on public.profiles;
-
-revoke all privileges on table public.profiles from anon, authenticated;
-grant select (
-  id,
-  full_name,
-  role,
-  department_id,
-  updated_at
-) on table public.profiles to authenticated;
-
+drop policy if exists "Public profiles are viewable by everyone." on public.profiles;
+drop policy if exists "Users can update their own profiles." on public.profiles;
+drop policy if exists profiles_authenticated_select_own on public.profiles;
+revoke all privileges on table public.profiles from public, anon, authenticated, service_role;
+grant select (id, full_name, role, department_id, updated_at)
+  on table public.profiles to authenticated;
+grant select, insert, update, delete on table public.profiles to service_role;
 create policy profiles_authenticated_select_own
-  on public.profiles
-  for select
-  to authenticated
+  on public.profiles for select to authenticated
   using ((select auth.uid()) = id);
 
 alter table public.inquiries enable row level security;
-
-drop policy if exists "Public insert access for inquiries"
-  on public.inquiries;
-drop policy if exists "Authenticated read access for inquiries"
-  on public.inquiries;
-drop policy if exists inquiries_public_insert
-  on public.inquiries;
-drop policy if exists inquiries_manager_select
-  on public.inquiries;
-drop policy if exists inquiries_manager_update_status
-  on public.inquiries;
-
-revoke all privileges on table public.inquiries from anon, authenticated;
-
+drop policy if exists "Public insert access for inquiries" on public.inquiries;
+drop policy if exists "Authenticated read access for inquiries" on public.inquiries;
+drop policy if exists inquiries_public_insert on public.inquiries;
+drop policy if exists inquiries_manager_select on public.inquiries;
+drop policy if exists inquiries_manager_update_status on public.inquiries;
+revoke all privileges on table public.inquiries from public, anon, authenticated, service_role;
 grant insert (
-  full_name,
-  email,
-  type,
-  message,
-  phone,
-  category,
-  confidential,
-  area,
-  visit_type,
-  invited_by,
-  prayer_need
+  full_name, email, type, message, phone, category, confidential,
+  area, visit_type, invited_by, prayer_need
 ) on table public.inquiries to anon, authenticated;
 grant select on table public.inquiries to authenticated;
 grant update (status) on table public.inquiries to authenticated;
+grant select, insert, update, delete on table public.inquiries to service_role;
 
 create policy inquiries_public_insert
-  on public.inquiries
-  for insert
-  to anon, authenticated
+  on public.inquiries for insert to anon, authenticated
   with check (
-    btrim(full_name) <> ''
-    and btrim(email) <> ''
-    and btrim(type) <> ''
+    btrim(full_name) <> '' and btrim(email) <> '' and btrim(type) <> ''
     and status = 'pending'
   );
 
 create policy inquiries_manager_select
-  on public.inquiries
-  for select
-  to authenticated
+  on public.inquiries for select to authenticated
   using (
     exists (
-      select 1
-      from public.profiles
+      select 1 from public.profiles
       where profiles.id = (select auth.uid())
         and profiles.role in ('owner', 'pastor', 'manager')
     )
   );
 
 create policy inquiries_manager_update_status
-  on public.inquiries
-  for update
-  to authenticated
+  on public.inquiries for update to authenticated
   using (
     exists (
-      select 1
-      from public.profiles
+      select 1 from public.profiles
       where profiles.id = (select auth.uid())
         and profiles.role in ('owner', 'pastor', 'manager')
     )
@@ -104,9 +323,10 @@ create policy inquiries_manager_update_status
   with check (
     status in ('pending', 'reviewed', 'contacted')
     and exists (
-      select 1
-      from public.profiles
+      select 1 from public.profiles
       where profiles.id = (select auth.uid())
         and profiles.role in ('owner', 'pastor', 'manager')
     )
   );
+
+commit;
