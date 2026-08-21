@@ -17,6 +17,11 @@ import { InquiriesView } from "@/components/admin/InquiriesView";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+type AdminProfile = Profile & {
+  department_name?: string;
+  departments?: { name: string } | null;
+};
+
 // ─── Access Denied Block ─────────────────────────────────
 function AccessDenied({ view }: { view: string }) {
   return (
@@ -133,7 +138,7 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
 // ─── Main Admin Dashboard ────────────────────────────────
 export default function AdminDashboard() {
   const [pulse, setPulse] = useState<PulseState | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [roleOverride, setRoleOverride] = useState<UserRole | null>(null);
@@ -176,7 +181,7 @@ export default function AdminDashboard() {
         }
 
         console.log("Admin Dashboard: Profile role detected:", profileData.role);
-        const fullProfile = profileData as any;
+        const fullProfile = profileData as AdminProfile;
         setProfile({
           ...fullProfile,
           department_name: fullProfile.departments?.name

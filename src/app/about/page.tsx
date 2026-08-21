@@ -32,7 +32,7 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="text-on-surface-variant text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed italic font-serif"
           >
-            "A Reason to Live"
+            &ldquo;A Reason to Live&rdquo;
           </motion.p>
         </section>
 
@@ -47,7 +47,7 @@ export default function AboutPage() {
             >
               <h2 className="font-headline text-4xl text-midnight leading-tight">Our Vision</h2>
               <p className="text-on-surface-variant text-lg leading-relaxed">
-                To bring men to the sense of God's divine presence. We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
+                To bring men to the sense of God&apos;s divine presence. We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
               </p>
               <div className="pt-8 border-t border-outline-variant">
                 <p className="font-headline text-2xl text-midnight mb-2">Founder & Lead Pastor</p>
@@ -147,7 +147,7 @@ export default function AboutPage() {
               ))}
             </div>
             <p className="mt-20 text-center text-white/60 max-w-4xl mx-auto text-lg leading-relaxed italic">
-              "We believe that the Holy Spirit reveals truth, empowers believers, produces transformation, enables Christian witness, and leads believers into spiritual maturity."
+              &ldquo;We believe that the Holy Spirit reveals truth, empowers believers, produces transformation, enables Christian witness, and leads believers into spiritual maturity.&rdquo;
             </p>
           </div>
         </section>

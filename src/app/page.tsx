@@ -11,6 +11,15 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
 
+interface UpcomingEvent {
+  id: string;
+  name: string;
+  event_date: string;
+  location: string | null;
+  description: string | null;
+  image_url: string | null;
+}
+
 export default function Home() {
   const { scrollY } = useScroll();
   const yBg  = useTransform(scrollY, [0, 1000], [0, 300]);   // deepest — moves fastest
@@ -19,7 +28,7 @@ export default function Home() {
   const [pulse, setPulse] = useState<PulseState | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
 
   const openModal = (feature: string) => {
     setActiveFeature(feature);
@@ -251,7 +260,7 @@ export default function Home() {
                   MTA 2026 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
                 </h3>
                 <p className="text-white/50 text-sm mb-3 italic" style={{ color: "rgba(212,175,55,0.7)" }}>
-                  "There is a river whose streams make glad the city of God" — Psalm 46:4
+                  &ldquo;There is a river whose streams make glad the city of God&rdquo; — Psalm 46:4
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   {[
@@ -622,7 +631,7 @@ export default function Home() {
               className="flex justify-between items-end mb-16"
             >
               <div>
-                <span className="text-sky font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don't Miss Out</span>
+                <span className="text-sky font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don&apos;t Miss Out</span>
                 <h2 className="font-headline text-5xl text-midnight mt-2">Upcoming Encounters</h2>
               </div>
               <Link className="text-midnight font-semibold border-b border-midnight pb-1 hover:text-sky hover:border-sky transition-colors" href="/programs">View Calendar</Link>

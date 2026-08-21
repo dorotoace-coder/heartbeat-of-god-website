@@ -281,9 +281,9 @@ export function EventsView() {
       setModalOpen(false);
       setEditingEvent(null);
       await fetchEvents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Save failed:", err);
-      showToast(`⚠ Save failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Save failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }
@@ -299,9 +299,9 @@ export function EventsView() {
       if (error) throw error;
       showToast(`"${ev?.name}" deleted.`);
       await fetchEvents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete failed:", err);
-      showToast(`⚠ Delete failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Delete failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 
