@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -61,9 +62,11 @@ export default function AboutPage() {
               className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl group"
             >
               <div className="absolute inset-0 bg-midnight/10 mix-blend-overlay"></div>
-              <img
+              <Image
                 src="/pastor-amos-pro.jpg"
                 alt="Pastor Amos Unogwu - Founder and Lead Pastor of Heartbeat of God Ministry"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="w-full h-full object-cover object-top group-hover:scale-105 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>

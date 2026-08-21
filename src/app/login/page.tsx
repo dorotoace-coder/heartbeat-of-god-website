@@ -87,7 +87,7 @@ export default function LoginPage() {
       }
 
       try {
-        const { data, error } = await supabase.from('departments').select('count', { count: 'exact', head: true });
+        const { error } = await supabase.from('departments').select('count', { count: 'exact', head: true });
         if (error && error.code !== 'PGRST116') throw error; // Head check might error on empty, that's fine
         setStatus("online");
       } catch (e) {

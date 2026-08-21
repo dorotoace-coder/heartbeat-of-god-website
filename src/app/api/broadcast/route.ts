@@ -79,7 +79,7 @@ async function postToInstagram(message: string, imageUrl?: string) {
   }
 }
 
-async function postToTwitter(message: string, imageUrl?: string) {
+async function postToTwitter(message: string) {
   const apiKey = process.env.TWITTER_API_KEY;
   const apiSecret = process.env.TWITTER_API_SECRET;
   const accessToken = process.env.TWITTER_ACCESS_TOKEN;
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
   if (selected.includes("telegram"))  jobs.push(postToTelegram(message, imageUrl));
   if (selected.includes("facebook"))  jobs.push(postToFacebook(message, imageUrl));
   if (selected.includes("instagram")) jobs.push(postToInstagram(message, imageUrl));
-  if (selected.includes("twitter"))   jobs.push(postToTwitter(message, imageUrl));
+  if (selected.includes("twitter"))   jobs.push(postToTwitter(message));
   if (selected.includes("whatsapp"))  jobs.push(sendWhatsAppBroadcast(message, imageUrl));
 
   const results = await Promise.all(jobs);

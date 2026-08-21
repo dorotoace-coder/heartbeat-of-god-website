@@ -23,10 +23,8 @@ interface EventItem {
 export default function ProgramsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
-  const [events, setEvents] = useState<EventItem[]>([]);
   const [highlightedEvent, setHighlightedEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0 });
 
   // Compute next occurrence of a given weekday (0=Sun, 3=Wed)
   const getNextWeekday = (weekday: number) => {
@@ -67,8 +65,6 @@ export default function ProgramsPage() {
           return e;
         }) || [];
 
-        setEvents(fixed);
-
         // Prefer explicitly highlighted → MTA → next upcoming
         const highlighted =
           fixed.find(e => e.is_highlighted) ||
@@ -85,38 +81,6 @@ export default function ProgramsPage() {
 
     fetchEvents();
   }, []);
-
-  useEffect(() => {
-    if (!highlightedEvent) return;
-
-    // Compute initial countdown immediately
-    const computeCountdown = () => {
-      const target = new Date(highlightedEvent.event_date).getTime();
-      const now = new Date().getTime();
-      const diff = target - now;
-
-      if (diff <= 0) {
-        return { days: 0, hours: 0, mins: 0 };
-      }
-      return {
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      };
-    };
-
-    setCountdown(computeCountdown());
-
-    const timer = setInterval(() => {
-      const result = computeCountdown();
-      setCountdown(result);
-      if (result.days === 0 && result.hours === 0 && result.mins === 0) {
-        clearInterval(timer);
-      }
-    }, 60000);
-
-    return () => clearInterval(timer);
-  }, [highlightedEvent]);
 
   const openModal = (feature: string) => {
     setActiveFeature(feature);

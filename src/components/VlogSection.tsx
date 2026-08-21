@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Play, Youtube } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import Image from "next/image";
 
 interface Vlog {
   id: string;
@@ -167,9 +168,12 @@ export default function VlogSection() {
                   />
                 ) : (
                   <>
-                    <img
+                    <Image
                       src={featured ? thumbFor(featured) : ""}
                       alt={featured?.title || "Featured message"}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                      unoptimized
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0b0416] via-transparent to-transparent" />
@@ -221,7 +225,7 @@ export default function VlogSection() {
                     }}
                   >
                     <div className="relative w-28 h-16 rounded-xl overflow-hidden shrink-0">
-                      <img src={thumbFor(v)} alt={v.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Image src={thumbFor(v)} alt={v.title} fill sizes="112px" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Play size={18} className="text-white" fill="currentColor" />
                       </div>
