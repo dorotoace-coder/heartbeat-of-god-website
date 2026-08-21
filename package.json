@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:local-staging": "node scripts/verify-local-staging.mjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.4.0",
