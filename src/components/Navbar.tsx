@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function Navbar() {
       <nav className="flex justify-between items-center px-8 py-3 max-w-screen-2xl mx-auto">
         {/* Brand Identity */}
         <Link href="/" className="flex items-center gap-3 group">
-          <img src="/hbg-logo.svg" alt="HBG Logo" className="h-10 w-auto group-hover:scale-105 transition-transform" />
+          <Image src="/hbg-logo.svg" alt="HBG Logo" width={100} height={40} className="h-10 w-auto group-hover:scale-105 transition-transform" />
           <span className="text-xl font-light italic tracking-tight text-midnight font-serif hidden sm:inline">
             Heartbeat of God
           </span>

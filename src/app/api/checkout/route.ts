@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Checkout failed";
+}
+
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
@@ -69,8 +73,8 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ url: session.url });
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Stripe checkout error:", err);
-    return NextResponse.json({ error: err.message || "Checkout failed" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
   }
 }

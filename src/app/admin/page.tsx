@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { PulseState } from "@/lib/pulse";
-import { Activity, ShieldAlert, Lock, ShieldOff } from "lucide-react";
+import { Activity, Lock, ShieldOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Profile, UserRole } from "@/lib/types";
-import { AdminContext, hasNavAccess, canPerformAction } from "@/lib/permissions";
+import { AdminContext, hasNavAccess } from "@/lib/permissions";
 
 import { PastorView } from "@/components/admin/PastorView";
 import { ManagerView } from "@/components/admin/ManagerView";
@@ -14,8 +14,13 @@ import { MembersView } from "@/components/admin/MembersView";
 import { EventsView } from "@/components/admin/EventsView";
 import { MediaView } from "@/components/admin/MediaView";
 import { InquiriesView } from "@/components/admin/InquiriesView";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+
+type AdminProfile = Profile & {
+  department_name?: string;
+  departments?: { name: string } | null;
+};
 
 // ─── Access Denied Block ─────────────────────────────────
 function AccessDenied({ view }: { view: string }) {
@@ -61,6 +66,7 @@ function DevRoleSwitcher({ currentRole, onSwitch }: { currentRole: UserRole; onS
 
 // ─── Dashboard Content ───────────────────────────────────
 function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse: PulseState; profile: Profile; activeRole: UserRole; onRoleSwitch: (role: UserRole) => void }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const view = searchParams.get("view") || "overview";
 
@@ -90,7 +96,7 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
           case 'manager':
             return <ManagerView pulse={pulse} />;
           case 'leader':
-            return <LeaderView pulse={pulse} />;
+            return <LeaderView />;
           default:
             return <AccessDenied view="overview" />;
         }
@@ -117,7 +123,7 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
             Platform: System Healthy
           </div>
           <button 
-            onClick={() => supabase.auth.signOut().then(() => window.location.href = '/')}
+            onClick={() => supabase.auth.signOut().then(() => router.push("/"))}
             className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-red-50 hover:text-red-500 rounded-xl text-xs font-bold transition-all"
           >
             Sign Out
@@ -132,8 +138,9 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
 
 // ─── Main Admin Dashboard ────────────────────────────────
 export default function AdminDashboard() {
+  const router = useRouter();
   const [pulse, setPulse] = useState<PulseState | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [roleOverride, setRoleOverride] = useState<UserRole | null>(null);
@@ -152,7 +159,7 @@ export default function AdminDashboard() {
         
         if (authError || !session) {
           console.log("Admin Dashboard: No valid session, redirecting to login...");
-          window.location.href = "/login?callbackUrl=%2Fadmin";
+          router.push("/login?callbackUrl=%2Fadmin");
           return;
         }
 
@@ -171,7 +178,7 @@ export default function AdminDashboard() {
         }
 
         console.log("Admin Dashboard: Profile role detected:", profileData.role);
-        const fullProfile = profileData as any;
+        const fullProfile = profileData as AdminProfile;
         setProfile({
           ...fullProfile,
           department_name: fullProfile.departments?.name
@@ -198,11 +205,11 @@ export default function AdminDashboard() {
         const res = await fetch("/api/pulse");
         const data = await res.json();
         setPulse(data);
-      } catch (e) {}
+      } catch {}
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
   if (loading) return (
     <div className="flex h-[60vh] items-center justify-center">
@@ -222,7 +229,7 @@ export default function AdminDashboard() {
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Access Denied</h2>
         <p className="text-slate-500 dark:text-slate-400 mb-8">{error || "You do not have permission to view this resource."}</p>
         <button 
-           onClick={() => window.location.href = '/login'}
+           onClick={() => router.push("/login")}
            className="w-full py-3 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-xl font-bold shadow-lg hover:scale-[1.02] transition-transform"
         >
           Return to Login
