@@ -26,13 +26,13 @@ export default function LoginPage() {
       console.log("Submitting auth request...");
       
       // Add a safety timeout
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("Uplink timeout: Server not responding.")), 15000)
       );
 
       if (mode === "signin") {
         const authPromise = supabase.auth.signInWithPassword({ email, password });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { error: authError } = await Promise.race([authPromise, timeoutPromise]);
         
         if (authError) {
           console.error("SignIn Error:", authError);
@@ -52,7 +52,7 @@ export default function LoginPage() {
           password,
           options: { data: { full_name: "Admin User" } }
         });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]);
         
         if (authError) {
           console.error("SignUp Error:", authError);
@@ -64,9 +64,9 @@ export default function LoginPage() {
         setSuccess("Success: Identity record created. IMPORTANT: Check your email to CONFIRM your account before signing in.");
         setMode("signin");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Auth Exception:", err);
-      setError(err.message || "An unexpected error occurred during uplink.");
+      setError(err instanceof Error ? err.message : "An unexpected error occurred during uplink.");
     } finally {
       setLoading(false);
     }

@@ -11,9 +11,41 @@ const BANK_DETAILS = {
   accountName: "Heartbeat of God Ministry",
 };
 
-type PaystackFormProps = {
-  config: any;
+type Currency = "NGN" | "CAD" | "USD" | "EUR";
+
+interface PaystackConfig {
+  publicKey: string;
+}
+
+interface PaystackResponse {
+  reference: string;
+}
+
+interface PaystackSetupOptions {
+  key: string;
+  email: string;
+  amount: number;
   currency: string;
+  ref: string;
+  callback: (response: PaystackResponse) => void | Promise<void>;
+  onClose: () => void;
+}
+
+interface PaystackHandler {
+  openIframe: () => void;
+}
+
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: PaystackSetupOptions) => PaystackHandler;
+    };
+  }
+}
+
+type PaystackFormProps = {
+  config: PaystackConfig;
+  currency: Currency;
   amount: number | null;
   customAmount: string;
   email: string;
@@ -30,10 +62,21 @@ type PaystackFormProps = {
   setPaymentMethod: (v: "card" | "bank_transfer") => void;
   setStep: (v: 1 | 2) => void;
   setLoading: (v: boolean) => void;
-  handleCurrencyChange: (c: any) => void;
+  handleCurrencyChange: (c: Currency) => void;
 };
 
-function CardPayment({ amount, customAmount, email, frequency, symbols, publicKey, setStep, setLoading }: any) {
+interface CardPaymentProps {
+  amount: number | null;
+  customAmount: string;
+  email: string;
+  frequency: string;
+  symbols: Record<string, string>;
+  publicKey: string;
+  setStep: (value: 1 | 2) => void;
+  setLoading: (value: boolean) => void;
+}
+
+function CardPayment({ amount, customAmount, email, frequency, symbols, publicKey, setStep, setLoading }: CardPaymentProps) {
   const [err, setErr] = useState("");
 
   const handlePay = () => {
@@ -49,13 +92,19 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
     }
 
     const launchPaystack = () => {
-      const handler = (window as any).PaystackPop.setup({
+      const paystack = window.PaystackPop;
+      if (!paystack) {
+        setErr("Unable to load Paystack. Please try again.");
+        return;
+      }
+
+      const handler = paystack.setup({
         key: publicKey,
         email,
         amount: Math.round(finalAmount * 100),
         currency: "NGN",
         ref: `hbg-${Date.now()}`,
-        callback: async (response: any) => {
+        callback: async (response: PaystackResponse) => {
           setLoading(true);
           try {
             await supabase.from("donations").insert({
@@ -79,7 +128,7 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
       handler.openIframe();
     };
 
-    if ((window as any).PaystackPop) {
+    if (window.PaystackPop) {
       launchPaystack();
     } else {
       const script = document.createElement("script");
@@ -109,7 +158,15 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
   );
 }
 
-function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep, setLoading }: any) {
+interface BankTransferProps {
+  amount: number | null;
+  customAmount: string;
+  email: string;
+  frequency: string;
+  symbols: Record<string, string>;
+}
+
+function BankTransfer({ amount, customAmount, email, frequency, symbols }: BankTransferProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -154,7 +211,7 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
         </div>
         <h3 className="text-xl font-bold text-midnight mb-2">Transfer Noted!</h3>
         <p className="text-on-surface-variant text-sm max-w-xs mx-auto">
-          We'll confirm your transfer of ₦{finalAmount.toLocaleString()} within 24 hours. God bless you!
+          We&apos;ll confirm your transfer of ₦{finalAmount.toLocaleString()} within 24 hours. God bless you!
         </p>
         <button onClick={() => setConfirmed(false)} className="mt-6 px-6 py-2.5 rounded-xl bg-surface-container-high text-on-surface-variant text-sm font-medium hover:bg-surface-container-highest transition-colors">
           Back
@@ -208,7 +265,7 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
       )}
 
       <p className="text-xs text-on-surface-variant mb-4 leading-relaxed">
-        After completing your transfer, click below to notify us. We'll verify and acknowledge within 24 hours.
+        After completing your transfer, click below to notify us. We&apos;ll verify and acknowledge within 24 hours.
       </p>
 
       <button
@@ -225,10 +282,10 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
 }
 
 export default function PaystackForm({
-  config, currency, amount, customAmount, email, frequency, loading,
+  config, currency, amount, customAmount, email, frequency,
   step, presets, symbols,
   setAmount, setCustomAmount, setEmail, setFrequency,
-  setStep, setLoading, handleCurrencyChange,
+  setStep, setLoading,
 }: PaystackFormProps) {
   const [activeMethod, setActiveMethod] = useState<"card" | "transfer">("card");
   const publicKey = config.publicKey;
@@ -362,8 +419,6 @@ export default function PaystackForm({
           email={email}
           frequency={frequency}
           symbols={symbols}
-          setStep={setStep}
-          setLoading={setLoading}
         />
       )}
 

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
+}
+
 // ── Platform poster functions ──────────────────────────────────────
 
 async function postToTelegram(message: string, imageUrl?: string) {
@@ -19,8 +23,8 @@ async function postToTelegram(message: string, imageUrl?: string) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const data = await res.json();
     return { platform: "telegram", ok: data.ok, data };
-  } catch (e: any) {
-    return { platform: "telegram", ok: false, error: e.message };
+  } catch (error: unknown) {
+    return { platform: "telegram", ok: false, error: getErrorMessage(error) };
   }
 }
 
@@ -41,8 +45,8 @@ async function postToFacebook(message: string, imageUrl?: string) {
     const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const data = await res.json();
     return { platform: "facebook", ok: !data.error, data };
-  } catch (e: any) {
-    return { platform: "facebook", ok: false, error: e.message };
+  } catch (error: unknown) {
+    return { platform: "facebook", ok: false, error: getErrorMessage(error) };
   }
 }
 
@@ -70,8 +74,8 @@ async function postToInstagram(message: string, imageUrl?: string) {
     );
     const published = await publishRes.json();
     return { platform: "instagram", ok: !!published.id, data: published };
-  } catch (e: any) {
-    return { platform: "instagram", ok: false, error: e.message };
+  } catch (error: unknown) {
+    return { platform: "instagram", ok: false, error: getErrorMessage(error) };
   }
 }
 
@@ -87,7 +91,7 @@ async function postToTwitter(message: string, imageUrl?: string) {
   try {
     // OAuth 1.0a signature
     const oauth = await buildOAuth1Header("POST", "https://api.twitter.com/2/tweets", {}, apiKey, apiSecret, accessToken, accessSecret);
-    const body: any = { text: message.slice(0, 280) };
+    const body = { text: message.slice(0, 280) };
     const res = await fetch("https://api.twitter.com/2/tweets", {
       method: "POST",
       headers: { "Authorization": oauth, "Content-Type": "application/json" },
@@ -95,8 +99,8 @@ async function postToTwitter(message: string, imageUrl?: string) {
     });
     const data = await res.json();
     return { platform: "twitter", ok: !!data.data?.id, data };
-  } catch (e: any) {
-    return { platform: "twitter", ok: false, error: e.message };
+  } catch (error: unknown) {
+    return { platform: "twitter", ok: false, error: getErrorMessage(error) };
   }
 }
 
@@ -109,7 +113,7 @@ async function sendWhatsAppBroadcast(message: string, imageUrl?: string) {
   }
 
   const results = await Promise.all(recipients.map(async (to) => {
-    const body: any = imageUrl
+    const body = imageUrl
       ? { messaging_product: "whatsapp", to: to.trim(), type: "image",
           image: { link: imageUrl, caption: message } }
       : { messaging_product: "whatsapp", to: to.trim(), type: "text",
@@ -126,11 +130,11 @@ async function sendWhatsAppBroadcast(message: string, imageUrl?: string) {
 }
 
 // ── Minimal OAuth 1.0a helper ──
-async function buildOAuth1Header(method: string, url: string, params: any,
+async function buildOAuth1Header(method: string, url: string, params: Record<string, string>,
   consumerKey: string, consumerSecret: string, token: string, tokenSecret: string) {
   const nonce = Math.random().toString(36).substring(2);
   const timestamp = Math.floor(Date.now() / 1000).toString();
-  const oauthParams: any = {
+  const oauthParams: Record<string, string> = {
     oauth_consumer_key: consumerKey, oauth_nonce: nonce,
     oauth_signature_method: "HMAC-SHA1", oauth_timestamp: timestamp,
     oauth_token: token, oauth_version: "1.0"

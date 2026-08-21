@@ -72,7 +72,7 @@ export default function WatchPage() {
 
           <h1 className="font-headline text-4xl md:text-5xl mb-6">Atmosphere of Glory</h1>
           <p className="text-white/60 text-lg leading-relaxed max-w-2xl mx-auto mb-12">
-            Join us live every <strong className="text-white/80">Sunday at 9:00 AM</strong> and <strong className="text-white/80">Wednesday at 6:00 PM</strong>. If the stream doesn't load automatically, click the play button or open directly on YouTube.
+            Join us live every <strong className="text-white/80">Sunday at 9:00 AM</strong> and <strong className="text-white/80">Wednesday at 6:00 PM</strong>. If the stream doesn&apos;t load automatically, click the play button or open directly on YouTube.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">

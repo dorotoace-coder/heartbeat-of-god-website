@@ -294,9 +294,9 @@ export function MediaView() {
       setModalOpen(false);
       setEditingItem(null);
       await fetchMedia();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Save failed:", err);
-      showToast(`⚠ Save failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Save failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }
@@ -310,9 +310,9 @@ export function MediaView() {
       if (error) throw error;
       showToast(`"${item?.title}" deleted.`);
       await fetchMedia();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete failed:", err);
-      showToast(`⚠ Delete failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Delete failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 
