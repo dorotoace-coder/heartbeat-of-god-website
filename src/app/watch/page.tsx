@@ -2,19 +2,11 @@
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ComingSoonModal from "@/components/ComingSoonModal";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
 export default function WatchPage() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFeature, setActiveFeature] = useState("");
-
-  const openModal = (feature: string) => {
-    setActiveFeature(feature);
-    setIsModalOpen(true);
-  };
   return (
     <>
       <Navbar />
@@ -98,11 +90,6 @@ export default function WatchPage() {
         </motion.div>
       </main>
       <Footer />
-      <ComingSoonModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        featureName={activeFeature} 
-      />
     </>
   );
 }

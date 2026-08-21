@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Calendar, ClipboardCheck, Plus, Settings, MessageSquare, Briefcase, X, Check } from "lucide-react";
-import { PulseState } from "@/lib/pulse";
+import { Users, Calendar, ClipboardCheck, Plus, MessageSquare, Briefcase, X, Check } from "lucide-react";
 
 interface LeaderViewProps {
-  pulse: PulseState;
   departmentName?: string;
 }
 
@@ -96,7 +94,7 @@ function TaskNoteModal({ task, onClose, onSave }: { task: Task; onClose: () => v
 }
 
 // ─── Main View ───────────────────────────────────────────
-export function LeaderView({ pulse, departmentName = "Media" }: LeaderViewProps) {
+export function LeaderView({ departmentName = "Media" }: LeaderViewProps) {
   const [tasks, setTasks] = useState<Task[]>([
     { id: 1, label: "Setup Sound System", done: true },
     { id: 2, label: "Coordinate Photography", done: false },
@@ -236,7 +234,7 @@ export function LeaderView({ pulse, departmentName = "Media" }: LeaderViewProps)
         <TaskNoteModal
           task={noteTask}
           onClose={() => setNoteTask(null)}
-          onSave={(note) => { setNoteTask(null); showToast(`Note saved for "${noteTask.label}".`); }}
+          onSave={() => { setNoteTask(null); showToast(`Note saved for "${noteTask.label}".`); }}
         />
       )}
 
