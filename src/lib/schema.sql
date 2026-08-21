@@ -1,340 +1,500 @@
--- Heartbeat of God Ministry - Database Schema
+-- ============================================================
+-- DOR-AIOS-HBOG-CLEAN-STAGING-BOOTSTRAP-R1
+--
+-- Bootstrap every table required by the public site and staff flows, then
+-- apply the verified inquiry/profile security gate. The migration is
+-- intentionally safe to re-run and supports both an empty Supabase database
+-- and the currently observed production-shaped schema.
+--
+-- Existing department rows are preserved. Because the observed production
+-- table predates its content columns, newly added content fields remain
+-- nullable there; a fresh database still requires department names.
+-- ============================================================
 
--- Staff authorization roles. Fail closed if an incompatible object already
--- owns this name rather than silently widening or converting its semantics.
-DO $$
-DECLARE
-  role_labels TEXT[];
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM pg_type
-    JOIN pg_namespace ON pg_namespace.oid = pg_type.typnamespace
-    WHERE pg_namespace.nspname = 'public'
-      AND pg_type.typname = 'app_role'
-  ) THEN
-    CREATE TYPE public.app_role AS ENUM ('owner', 'pastor', 'manager', 'leader');
-  ELSIF NOT EXISTS (
-    SELECT 1
-    FROM pg_type
-    JOIN pg_namespace ON pg_namespace.oid = pg_type.typnamespace
-    WHERE pg_namespace.nspname = 'public'
-      AND pg_type.typname = 'app_role'
-      AND pg_type.typtype = 'e'
-  ) THEN
-    RAISE EXCEPTION 'public.app_role exists but is not an enum';
-  ELSE
-    SELECT array_agg(pg_enum.enumlabel ORDER BY pg_enum.enumsortorder)
-      INTO role_labels
-    FROM pg_enum
-    JOIN pg_type ON pg_type.oid = pg_enum.enumtypid
-    JOIN pg_namespace ON pg_namespace.oid = pg_type.typnamespace
-    WHERE pg_namespace.nspname = 'public'
-      AND pg_type.typname = 'app_role';
+begin;
 
-    IF role_labels IS DISTINCT FROM ARRAY['owner', 'pastor', 'manager', 'leader']::TEXT[] THEN
-      RAISE EXCEPTION 'public.app_role has incompatible labels: %', role_labels;
-    END IF;
-  END IF;
-END
+create table if not exists public.sermons (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  title text not null,
+  preacher text not null,
+  description text,
+  video_url text,
+  audio_url text,
+  thumbnail_url text,
+  category text default 'General',
+  duration text,
+  date_preached date default current_date,
+  is_featured boolean default false,
+  youtube_url text
+);
+
+alter table public.sermons add column if not exists id uuid default gen_random_uuid();
+alter table public.sermons add column if not exists created_at timestamptz default now();
+alter table public.sermons add column if not exists title text;
+alter table public.sermons add column if not exists preacher text;
+alter table public.sermons add column if not exists description text;
+alter table public.sermons add column if not exists video_url text;
+alter table public.sermons add column if not exists audio_url text;
+alter table public.sermons add column if not exists thumbnail_url text;
+alter table public.sermons add column if not exists category text default 'General';
+alter table public.sermons add column if not exists duration text;
+alter table public.sermons add column if not exists date_preached date default current_date;
+alter table public.sermons add column if not exists is_featured boolean default false;
+alter table public.sermons add column if not exists youtube_url text;
+alter table public.sermons alter column id set default gen_random_uuid();
+alter table public.sermons alter column created_at set default now();
+alter table public.sermons alter column category set default 'General';
+alter table public.sermons alter column date_preached set default current_date;
+alter table public.sermons alter column is_featured set default false;
+
+do $$
+begin
+  if exists (select 1 from public.sermons where title is null or preacher is null) then
+    raise exception 'public.sermons contains rows incompatible with the required media contract';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.sermons'::regclass and contype = 'p'
+  ) then
+    alter table public.sermons add primary key (id);
+  end if;
+end
 $$;
 
--- 1. Sermons/Media Table
-CREATE TABLE IF NOT EXISTS sermons (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  title TEXT NOT NULL,
-  preacher TEXT NOT NULL,
-  description TEXT,
-  video_url TEXT,
-  audio_url TEXT,
-  thumbnail_url TEXT,
-  category TEXT DEFAULT 'General',
-  duration TEXT,
-  date_preached DATE DEFAULT CURRENT_DATE,
-  is_featured BOOLEAN DEFAULT false
+alter table public.sermons alter column title set not null;
+alter table public.sermons alter column preacher set not null;
+
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  name text not null,
+  description text,
+  event_date timestamptz not null,
+  location text default 'Online / Main Sanctuary',
+  image_url text,
+  registration_link text,
+  is_highlighted boolean default false,
+  recurrence text default 'one-time',
+  end_date timestamptz
 );
 
--- 2. Events Table
-CREATE TABLE IF NOT EXISTS events (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  name TEXT NOT NULL,
-  description TEXT,
-  event_date TIMESTAMPTZ NOT NULL,
-  location TEXT DEFAULT 'Online / Main Sanctuary',
-  image_url TEXT,
-  registration_link TEXT,
-  is_highlighted BOOLEAN DEFAULT false
+alter table public.events add column if not exists id uuid default gen_random_uuid();
+alter table public.events add column if not exists created_at timestamptz default now();
+alter table public.events add column if not exists name text;
+alter table public.events add column if not exists description text;
+alter table public.events add column if not exists event_date timestamptz;
+alter table public.events add column if not exists location text default 'Online / Main Sanctuary';
+alter table public.events add column if not exists image_url text;
+alter table public.events add column if not exists registration_link text;
+alter table public.events add column if not exists is_highlighted boolean default false;
+alter table public.events add column if not exists recurrence text default 'one-time';
+alter table public.events add column if not exists end_date timestamptz;
+alter table public.events alter column id set default gen_random_uuid();
+alter table public.events alter column created_at set default now();
+alter table public.events alter column location set default 'Online / Main Sanctuary';
+alter table public.events alter column is_highlighted set default false;
+alter table public.events alter column recurrence set default 'one-time';
+
+do $$
+begin
+  if exists (select 1 from public.events where name is null or event_date is null) then
+    raise exception 'public.events contains rows incompatible with the required calendar contract';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.events'::regclass and contype = 'p'
+  ) then
+    alter table public.events add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.events'::regclass and conname = 'events_recurrence_check'
+  ) then
+    alter table public.events add constraint events_recurrence_check
+      check (recurrence in ('one-time', 'weekly', 'monthly', 'quarterly', 'yearly'));
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.events'::regclass and conname = 'unique_event_name_date'
+  ) then
+    alter table public.events add constraint unique_event_name_date unique (name, event_date);
+  end if;
+end
+$$;
+
+alter table public.events alter column name set not null;
+alter table public.events alter column event_date set not null;
+
+create table if not exists public.pulse (
+  id integer primary key check (id = 1),
+  is_live boolean default false,
+  active_event_id uuid references public.events(id),
+  sermon_of_the_day_id uuid references public.sermons(id),
+  updated_at timestamptz default now()
 );
 
--- 3. Ministry Pulse (Live Status)
-CREATE TABLE IF NOT EXISTS pulse (
-  id INTEGER PRIMARY KEY CHECK (id = 1), -- Single row for global state
-  is_live BOOLEAN DEFAULT false,
-  active_event_id UUID REFERENCES events(id),
-  sermon_of_the_day_id UUID REFERENCES sermons(id),
-  updated_at TIMESTAMPTZ DEFAULT now()
+alter table public.pulse add column if not exists id integer;
+alter table public.pulse add column if not exists is_live boolean default false;
+alter table public.pulse add column if not exists active_event_id uuid;
+alter table public.pulse add column if not exists sermon_of_the_day_id uuid;
+alter table public.pulse add column if not exists updated_at timestamptz default now();
+alter table public.pulse alter column is_live set default false;
+alter table public.pulse alter column updated_at set default now();
+
+do $$
+begin
+  if exists (select 1 from public.pulse where id <> 1 or id is null) then
+    raise exception 'public.pulse contains rows incompatible with the singleton contract';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.pulse'::regclass and contype = 'p'
+  ) then
+    alter table public.pulse add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.pulse'::regclass and conname = 'pulse_id_check'
+  ) then
+    alter table public.pulse add constraint pulse_id_check check (id = 1);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.pulse'::regclass and conname = 'pulse_active_event_id_fkey'
+  ) then
+    alter table public.pulse add constraint pulse_active_event_id_fkey
+      foreign key (active_event_id) references public.events(id) not valid;
+    alter table public.pulse validate constraint pulse_active_event_id_fkey;
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.pulse'::regclass and conname = 'pulse_sermon_of_the_day_id_fkey'
+  ) then
+    alter table public.pulse add constraint pulse_sermon_of_the_day_id_fkey
+      foreign key (sermon_of_the_day_id) references public.sermons(id) not valid;
+    alter table public.pulse validate constraint pulse_sermon_of_the_day_id_fkey;
+  end if;
+end
+$$;
+
+create index if not exists pulse_active_event_id_idx on public.pulse (active_event_id);
+create index if not exists pulse_sermon_of_the_day_id_idx on public.pulse (sermon_of_the_day_id);
+
+create table if not exists public.donations (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  currency text not null,
+  amount numeric not null,
+  frequency text not null,
+  payment_method text not null,
+  status text not null default 'completed',
+  reference text,
+  donor_email text,
+  donor_name text
 );
 
--- 4. Inquiries & Applications (Connect Form)
-CREATE TABLE IF NOT EXISTS inquiries (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  full_name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  type TEXT NOT NULL, -- 'General Inquiry', 'Prayer Request', 'Testimony', 'Department Application', 'Event Registration'
-  message TEXT,
-  status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'reviewed', 'contacted'
-  phone TEXT,
-  category TEXT,
-  confidential BOOLEAN DEFAULT false,
-  area TEXT,
-  visit_type TEXT,
-  invited_by TEXT,
-  prayer_need TEXT
+alter table public.donations add column if not exists id uuid default gen_random_uuid();
+alter table public.donations add column if not exists created_at timestamptz default now();
+alter table public.donations add column if not exists currency text;
+alter table public.donations add column if not exists amount numeric;
+alter table public.donations add column if not exists frequency text;
+alter table public.donations add column if not exists payment_method text;
+alter table public.donations add column if not exists status text default 'completed';
+alter table public.donations add column if not exists reference text;
+alter table public.donations add column if not exists donor_email text;
+alter table public.donations add column if not exists donor_name text;
+alter table public.donations alter column id set default gen_random_uuid();
+alter table public.donations alter column created_at set default now();
+alter table public.donations alter column status set default 'completed';
+
+do $$
+begin
+  if exists (
+    select 1 from public.donations
+    where currency is null or btrim(currency) = ''
+       or amount is null or amount <= 0
+       or frequency is null or btrim(frequency) = ''
+       or payment_method is null or btrim(payment_method) = ''
+       or status is null or status not in ('pending', 'completed')
+  ) then
+    raise exception 'public.donations contains rows incompatible with the required giving contract';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.donations'::regclass and contype = 'p'
+  ) then
+    alter table public.donations add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.donations'::regclass and conname = 'donations_amount_check'
+  ) then
+    alter table public.donations add constraint donations_amount_check check (amount > 0);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.donations'::regclass and conname = 'donations_status_check'
+  ) then
+    alter table public.donations add constraint donations_status_check
+      check (status in ('pending', 'completed'));
+  end if;
+end
+$$;
+
+alter table public.donations alter column currency set not null;
+alter table public.donations alter column amount set not null;
+alter table public.donations alter column frequency set not null;
+alter table public.donations alter column payment_method set not null;
+alter table public.donations alter column status set not null;
+
+create unique index if not exists donations_reference_unique_idx
+  on public.donations (reference)
+  where reference is not null;
+
+do $$
+declare
+  role_labels text[];
+begin
+  if not exists (
+    select 1
+    from pg_type
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role'
+  ) then
+    create type public.app_role as enum ('owner', 'pastor', 'manager', 'leader');
+  elsif not exists (
+    select 1
+    from pg_type
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role'
+      and pg_type.typtype = 'e'
+  ) then
+    raise exception 'public.app_role exists but is not an enum';
+  else
+    select array_agg(pg_enum.enumlabel order by pg_enum.enumsortorder)
+      into role_labels
+    from pg_enum
+    join pg_type on pg_type.oid = pg_enum.enumtypid
+    join pg_namespace on pg_namespace.oid = pg_type.typnamespace
+    where pg_namespace.nspname = 'public'
+      and pg_type.typname = 'app_role';
+
+    if role_labels is distinct from array['owner', 'pastor', 'manager', 'leader']::text[] then
+      raise exception 'public.app_role has incompatible labels: %', role_labels;
+    end if;
+  end if;
+end
+$$;
+
+create table if not exists public.departments (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  name text not null,
+  description text,
+  what_they_do text,
+  who_should_join text,
+  cta_text text,
+  display_order integer not null default 0
 );
 
--- 5. Departments Table
-CREATE TABLE IF NOT EXISTS departments (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  name TEXT NOT NULL,
-  description TEXT,
-  what_they_do TEXT,
-  who_should_join TEXT,
-  cta_text TEXT,
-  display_order INTEGER NOT NULL DEFAULT 0
+alter table public.departments add column if not exists id uuid default gen_random_uuid();
+alter table public.departments add column if not exists created_at timestamptz default now();
+alter table public.departments add column if not exists name text;
+alter table public.departments add column if not exists description text;
+alter table public.departments add column if not exists what_they_do text;
+alter table public.departments add column if not exists who_should_join text;
+alter table public.departments add column if not exists cta_text text;
+alter table public.departments add column if not exists display_order integer not null default 0;
+alter table public.departments alter column id set default gen_random_uuid();
+alter table public.departments alter column created_at set default now();
+alter table public.departments alter column display_order set default 0;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.departments'::regclass and contype = 'p'
+  ) then
+    alter table public.departments add primary key (id);
+  end if;
+end
+$$;
+
+create unique index if not exists departments_name_unique_idx
+  on public.departments (name)
+  where name is not null;
+
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text,
+  role public.app_role default 'leader',
+  department_id uuid references public.departments(id),
+  updated_at timestamptz default now()
 );
 
--- Staff profiles are owned by auth.users. Role assignment is managed only by
--- trusted server/service-role code; authenticated users receive no role write.
-CREATE TABLE IF NOT EXISTS profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  full_name TEXT,
-  role app_role DEFAULT 'leader',
-  department_id UUID REFERENCES departments(id),
-  updated_at TIMESTAMPTZ DEFAULT now()
+alter table public.profiles add column if not exists id uuid;
+alter table public.profiles add column if not exists full_name text;
+alter table public.profiles add column if not exists role public.app_role default 'leader';
+alter table public.profiles add column if not exists department_id uuid;
+alter table public.profiles add column if not exists updated_at timestamptz default now();
+alter table public.profiles alter column role set default 'leader';
+alter table public.profiles alter column updated_at set default now();
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and contype = 'p'
+  ) then
+    alter table public.profiles add primary key (id);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and conname = 'profiles_id_fkey'
+  ) then
+    alter table public.profiles
+      add constraint profiles_id_fkey
+      foreign key (id) references auth.users(id) on delete cascade not valid;
+    alter table public.profiles validate constraint profiles_id_fkey;
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass and conname = 'profiles_department_id_fkey'
+  ) then
+    alter table public.profiles
+      add constraint profiles_department_id_fkey
+      foreign key (department_id) references public.departments(id) not valid;
+    alter table public.profiles validate constraint profiles_department_id_fkey;
+  end if;
+end
+$$;
+
+create index if not exists profiles_department_id_idx
+  on public.profiles (department_id);
+
+create table if not exists public.inquiries (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  full_name text not null,
+  email text not null,
+  type text not null,
+  message text,
+  status text not null default 'pending',
+  phone text,
+  category text,
+  confidential boolean default false,
+  area text,
+  visit_type text,
+  invited_by text,
+  prayer_need text
 );
 
--- Compatibility bootstrap for the observed production-shaped schema, where
--- departments predates its content columns. Existing rows are preserved and
--- can be populated deliberately before a future NOT NULL tightening.
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS id UUID DEFAULT gen_random_uuid();
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS name TEXT;
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS description TEXT;
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS what_they_do TEXT;
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS who_should_join TEXT;
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS cta_text TEXT;
-ALTER TABLE departments ADD COLUMN IF NOT EXISTS display_order INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE departments ALTER COLUMN id SET DEFAULT gen_random_uuid();
-ALTER TABLE departments ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE departments ALTER COLUMN display_order SET DEFAULT 0;
+alter table public.inquiries add column if not exists id uuid default gen_random_uuid();
+alter table public.inquiries add column if not exists created_at timestamptz default now();
+alter table public.inquiries add column if not exists full_name text;
+alter table public.inquiries add column if not exists email text;
+alter table public.inquiries add column if not exists type text;
+alter table public.inquiries add column if not exists message text;
+alter table public.inquiries add column if not exists status text default 'pending';
+alter table public.inquiries add column if not exists phone text;
+alter table public.inquiries add column if not exists category text;
+alter table public.inquiries add column if not exists confidential boolean default false;
+alter table public.inquiries add column if not exists area text;
+alter table public.inquiries add column if not exists visit_type text;
+alter table public.inquiries add column if not exists invited_by text;
+alter table public.inquiries add column if not exists prayer_need text;
+alter table public.inquiries alter column id set default gen_random_uuid();
+alter table public.inquiries alter column created_at set default now();
+alter table public.inquiries alter column status set default 'pending';
+alter table public.inquiries alter column confidential set default false;
 
-DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.departments'::regclass AND contype = 'p'
-  ) THEN
-    ALTER TABLE departments ADD PRIMARY KEY (id);
-  END IF;
-END $$;
+do $$
+begin
+  if exists (
+    select 1 from public.inquiries
+    where full_name is null or email is null or type is null or status is null
+       or status not in ('pending', 'reviewed', 'contacted')
+  ) then
+    raise exception 'public.inquiries contains rows incompatible with the required intake contract';
+  end if;
+end
+$$;
 
-CREATE UNIQUE INDEX IF NOT EXISTS departments_name_unique_idx
-  ON departments (name) WHERE name IS NOT NULL;
+alter table public.inquiries alter column full_name set not null;
+alter table public.inquiries alter column email set not null;
+alter table public.inquiries alter column type set not null;
+alter table public.inquiries alter column status set not null;
 
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS id UUID;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role app_role DEFAULT 'leader';
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS department_id UUID;
-ALTER TABLE profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
-ALTER TABLE profiles ALTER COLUMN role SET DEFAULT 'leader';
-ALTER TABLE profiles ALTER COLUMN updated_at SET DEFAULT now();
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.inquiries'::regclass and contype = 'p'
+  ) then
+    alter table public.inquiries add primary key (id);
+  end if;
 
-DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.profiles'::regclass AND contype = 'p'
-  ) THEN
-    ALTER TABLE profiles ADD PRIMARY KEY (id);
-  END IF;
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.inquiries'::regclass and conname = 'inquiries_status_check'
+  ) then
+    alter table public.inquiries
+      add constraint inquiries_status_check
+      check (status in ('pending', 'reviewed', 'contacted'));
+  end if;
+end
+$$;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.profiles'::regclass AND conname = 'profiles_id_fkey'
-  ) THEN
-    ALTER TABLE profiles ADD CONSTRAINT profiles_id_fkey
-      FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE NOT VALID;
-    ALTER TABLE profiles VALIDATE CONSTRAINT profiles_id_fkey;
-  END IF;
-
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.profiles'::regclass AND conname = 'profiles_department_id_fkey'
-  ) THEN
-    ALTER TABLE profiles ADD CONSTRAINT profiles_department_id_fkey
-      FOREIGN KEY (department_id) REFERENCES departments(id) NOT VALID;
-    ALTER TABLE profiles VALIDATE CONSTRAINT profiles_department_id_fkey;
-  END IF;
-END $$;
-
-CREATE INDEX IF NOT EXISTS profiles_department_id_idx ON profiles (department_id);
-
--- 6. Donations Table
-CREATE TABLE IF NOT EXISTS donations (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  currency TEXT NOT NULL,
-  amount NUMERIC NOT NULL,
-  frequency TEXT NOT NULL,
-  payment_method TEXT NOT NULL,
-  status TEXT DEFAULT 'completed',
-  reference TEXT
-);
-
-ALTER TABLE sermons ENABLE ROW LEVEL SECURITY;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read access for sermons') THEN
-    CREATE POLICY "Public read access for sermons" ON sermons FOR SELECT USING (true);
-  END IF;
-END $$;
-
-ALTER TABLE events ENABLE ROW LEVEL SECURITY;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read access for events') THEN
-    CREATE POLICY "Public read access for events" ON events FOR SELECT USING (true);
-  END IF;
-END $$;
-
-ALTER TABLE pulse ENABLE ROW LEVEL SECURITY;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read access for pulse') THEN
-    CREATE POLICY "Public read access for pulse" ON pulse FOR SELECT USING (true);
-  END IF;
-END $$;
-
-ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Departments are viewable by authenticated users." ON departments;
-DROP POLICY IF EXISTS "Public read access for departments" ON departments;
-DROP POLICY IF EXISTS departments_public_select ON departments;
-REVOKE ALL PRIVILEGES ON TABLE departments FROM public, anon, authenticated, service_role;
-GRANT SELECT ON TABLE departments TO anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE departments TO service_role;
-CREATE POLICY departments_public_select
-  ON departments FOR SELECT TO anon, authenticated USING (true);
-
-ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public insert access for donations') THEN
-    CREATE POLICY "Public insert access for donations" ON donations FOR INSERT WITH CHECK (true);
-  END IF;
-END $$;
-
--- ─── Write Policies for Authenticated Users ───────────────
-
--- Sermons: authenticated users can insert, update, delete
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated write access for sermons') THEN
-    CREATE POLICY "Authenticated write access for sermons" ON sermons FOR INSERT TO authenticated WITH CHECK (true);
-  END IF;
-END $$;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated update access for sermons') THEN
-    CREATE POLICY "Authenticated update access for sermons" ON sermons FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-  END IF;
-END $$;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated delete access for sermons') THEN
-    CREATE POLICY "Authenticated delete access for sermons" ON sermons FOR DELETE TO authenticated USING (true);
-  END IF;
-END $$;
-
--- Events: authenticated users can insert, update, delete
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated write access for events') THEN
-    CREATE POLICY "Authenticated write access for events" ON events FOR INSERT TO authenticated WITH CHECK (true);
-  END IF;
-END $$;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated update access for events') THEN
-    CREATE POLICY "Authenticated update access for events" ON events FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-  END IF;
-END $$;
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated delete access for events') THEN
-    CREATE POLICY "Authenticated delete access for events" ON events FOR DELETE TO authenticated USING (true);
-  END IF;
-END $$;
-
--- Insert Initial Pulse State
-INSERT INTO pulse (id, is_live) VALUES (1, false) ON CONFLICT (id) DO NOTHING;
-
--- ═══════════════════════════════════════════════════════════
--- MIGRATIONS (idempotent) — safe to re-run against any state.
--- This file is the SINGLE canonical schema. Run the whole file
--- in the Supabase SQL editor to bring the database up to date.
--- ═══════════════════════════════════════════════════════════
-
--- Sermons: YouTube URL powers the homepage Heartbeat Vlog player.
-ALTER TABLE sermons ADD COLUMN IF NOT EXISTS youtube_url TEXT;
-
--- Inquiries: richer intake fields for Prayer Request / First-Timer Card.
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS id UUID DEFAULT gen_random_uuid();
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS full_name TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS email TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS type TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS message TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS phone TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS category TEXT;      -- General, Healing, Family, Work / Business, Salvation, Testimony
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS confidential BOOLEAN DEFAULT false;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS area TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS visit_type TEXT;    -- First time, Returning guest, New convert
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS invited_by TEXT;
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS prayer_need TEXT;
-ALTER TABLE inquiries ALTER COLUMN id SET DEFAULT gen_random_uuid();
-ALTER TABLE inquiries ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE inquiries ALTER COLUMN status SET DEFAULT 'pending';
-ALTER TABLE inquiries ALTER COLUMN confidential SET DEFAULT false;
-
-DO $$ BEGIN
-  IF EXISTS (
-    SELECT 1 FROM inquiries
-    WHERE full_name IS NULL OR email IS NULL OR type IS NULL OR status IS NULL
-       OR status NOT IN ('pending', 'reviewed', 'contacted')
-  ) THEN
-    RAISE EXCEPTION 'public.inquiries contains rows incompatible with the required intake contract';
-  END IF;
-END $$;
-
-ALTER TABLE inquiries ALTER COLUMN full_name SET NOT NULL;
-ALTER TABLE inquiries ALTER COLUMN email SET NOT NULL;
-ALTER TABLE inquiries ALTER COLUMN type SET NOT NULL;
-ALTER TABLE inquiries ALTER COLUMN status SET NOT NULL;
-
-DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.inquiries'::regclass AND contype = 'p'
-  ) THEN
-    ALTER TABLE inquiries ADD PRIMARY KEY (id);
-  END IF;
-
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'public.inquiries'::regclass AND conname = 'inquiries_status_check'
-  ) THEN
-    ALTER TABLE inquiries ADD CONSTRAINT inquiries_status_check
-      CHECK (status IN ('pending', 'reviewed', 'contacted'));
-  END IF;
-END $$;
-
-DO $$ BEGIN
-  IF EXISTS (
-    SELECT 1
-    FROM (VALUES
+do $$
+begin
+  if exists (
+    select 1
+    from (values
+      ('sermons', 'id', 'uuid'),
+      ('sermons', 'created_at', 'timestamptz'),
+      ('sermons', 'title', 'text'),
+      ('sermons', 'preacher', 'text'),
+      ('sermons', 'description', 'text'),
+      ('sermons', 'video_url', 'text'),
+      ('sermons', 'audio_url', 'text'),
+      ('sermons', 'thumbnail_url', 'text'),
+      ('sermons', 'category', 'text'),
+      ('sermons', 'duration', 'text'),
+      ('sermons', 'date_preached', 'date'),
+      ('sermons', 'is_featured', 'bool'),
+      ('sermons', 'youtube_url', 'text'),
+      ('events', 'id', 'uuid'),
+      ('events', 'created_at', 'timestamptz'),
+      ('events', 'name', 'text'),
+      ('events', 'description', 'text'),
+      ('events', 'event_date', 'timestamptz'),
+      ('events', 'location', 'text'),
+      ('events', 'image_url', 'text'),
+      ('events', 'registration_link', 'text'),
+      ('events', 'is_highlighted', 'bool'),
+      ('events', 'recurrence', 'text'),
+      ('events', 'end_date', 'timestamptz'),
+      ('pulse', 'id', 'int4'),
+      ('pulse', 'is_live', 'bool'),
+      ('pulse', 'active_event_id', 'uuid'),
+      ('pulse', 'sermon_of_the_day_id', 'uuid'),
+      ('pulse', 'updated_at', 'timestamptz'),
       ('departments', 'id', 'uuid'),
       ('departments', 'created_at', 'timestamptz'),
       ('departments', 'name', 'text'),
@@ -361,99 +521,154 @@ DO $$ BEGIN
       ('inquiries', 'area', 'text'),
       ('inquiries', 'visit_type', 'text'),
       ('inquiries', 'invited_by', 'text'),
-      ('inquiries', 'prayer_need', 'text')
-    ) AS expected(table_name, column_name, udt_name)
-    LEFT JOIN information_schema.columns AS actual
-      ON actual.table_schema = 'public'
-     AND actual.table_name = expected.table_name
-     AND actual.column_name = expected.column_name
-     AND actual.udt_name = expected.udt_name
-    WHERE actual.column_name IS NULL
-  ) THEN
-    RAISE EXCEPTION 'protected table column types are incompatible with the required application contract';
-  END IF;
-END $$;
+      ('inquiries', 'prayer_need', 'text'),
+      ('donations', 'id', 'uuid'),
+      ('donations', 'created_at', 'timestamptz'),
+      ('donations', 'currency', 'text'),
+      ('donations', 'amount', 'numeric'),
+      ('donations', 'frequency', 'text'),
+      ('donations', 'payment_method', 'text'),
+      ('donations', 'status', 'text'),
+      ('donations', 'reference', 'text'),
+      ('donations', 'donor_email', 'text'),
+      ('donations', 'donor_name', 'text')
+    ) as expected(table_name, column_name, udt_name)
+    left join information_schema.columns as actual
+      on actual.table_schema = 'public'
+     and actual.table_name = expected.table_name
+     and actual.column_name = expected.column_name
+     and actual.udt_name = expected.udt_name
+    where actual.column_name is null
+  ) then
+    raise exception 'protected table column types are incompatible with the required application contract';
+  end if;
+end
+$$;
 
-GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+grant usage on schema public to anon, authenticated, service_role;
 
--- Profile authorization: authenticated staff may read only their own profile.
--- Role assignment remains server/service-role managed so users cannot promote
--- themselves into a privileged inquiry-reading role.
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON profiles;
-DROP POLICY IF EXISTS "Users can update their own profiles." ON profiles;
-DROP POLICY IF EXISTS profiles_authenticated_select_own ON profiles;
-REVOKE ALL PRIVILEGES ON TABLE profiles FROM public, anon, authenticated, service_role;
-GRANT SELECT (id, full_name, role, department_id, updated_at)
-  ON TABLE profiles TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE profiles TO service_role;
-CREATE POLICY profiles_authenticated_select_own
-  ON profiles FOR SELECT TO authenticated
-  USING ((SELECT auth.uid()) = id);
+alter table public.sermons enable row level security;
+drop policy if exists "Public read access for sermons" on public.sermons;
+drop policy if exists "Authenticated write access for sermons" on public.sermons;
+drop policy if exists "Authenticated update access for sermons" on public.sermons;
+drop policy if exists "Authenticated delete access for sermons" on public.sermons;
+drop policy if exists sermons_public_select on public.sermons;
+revoke all privileges on table public.sermons from public, anon, authenticated, service_role;
+grant select on table public.sermons to anon, authenticated;
+grant select, insert, update, delete on table public.sermons to service_role;
+create policy sermons_public_select
+  on public.sermons for select to anon, authenticated using (true);
 
--- Inquiries RLS: anyone may submit through the public form. Only manager,
--- pastor, and owner profiles may read submissions or change their status.
-ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Public insert access for inquiries" ON inquiries;
-DROP POLICY IF EXISTS "Authenticated read access for inquiries" ON inquiries;
-DROP POLICY IF EXISTS inquiries_public_insert ON inquiries;
-DROP POLICY IF EXISTS inquiries_manager_select ON inquiries;
-DROP POLICY IF EXISTS inquiries_manager_update_status ON inquiries;
+alter table public.events enable row level security;
+drop policy if exists "Public read access for events" on public.events;
+drop policy if exists "Authenticated write access for events" on public.events;
+drop policy if exists "Authenticated update access for events" on public.events;
+drop policy if exists "Authenticated delete access for events" on public.events;
+drop policy if exists events_public_select on public.events;
+revoke all privileges on table public.events from public, anon, authenticated, service_role;
+grant select on table public.events to anon, authenticated;
+grant select, insert, update, delete on table public.events to service_role;
+create policy events_public_select
+  on public.events for select to anon, authenticated using (true);
 
-REVOKE ALL PRIVILEGES ON TABLE inquiries FROM public, anon, authenticated, service_role;
-GRANT INSERT (
-  full_name,
-  email,
-  type,
-  message,
-  phone,
-  category,
-  confidential,
-  area,
-  visit_type,
-  invited_by,
-  prayer_need
-) ON TABLE inquiries TO anon, authenticated;
-GRANT SELECT ON TABLE inquiries TO authenticated;
-GRANT UPDATE (status) ON TABLE inquiries TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE inquiries TO service_role;
+alter table public.pulse enable row level security;
+drop policy if exists "Public read access for pulse" on public.pulse;
+drop policy if exists pulse_public_select on public.pulse;
+revoke all privileges on table public.pulse from public, anon, authenticated, service_role;
+grant select on table public.pulse to anon, authenticated;
+grant select, insert, update, delete on table public.pulse to service_role;
+create policy pulse_public_select
+  on public.pulse for select to anon, authenticated using (true);
 
-CREATE POLICY inquiries_public_insert
-  ON inquiries FOR INSERT TO anon, authenticated
-  WITH CHECK (
-    btrim(full_name) <> ''
-    AND btrim(email) <> ''
-    AND btrim(type) <> ''
-    AND status = 'pending'
+alter table public.donations enable row level security;
+drop policy if exists "Public insert access for donations" on public.donations;
+drop policy if exists donations_public_insert on public.donations;
+revoke all privileges on table public.donations from public, anon, authenticated, service_role;
+grant insert (
+  currency, amount, frequency, payment_method, status,
+  reference, donor_email, donor_name
+) on table public.donations to anon, authenticated;
+grant select, insert, update, delete on table public.donations to service_role;
+create policy donations_public_insert
+  on public.donations for insert to anon, authenticated
+  with check (
+    btrim(currency) <> ''
+    and amount > 0
+    and btrim(frequency) <> ''
+    and btrim(payment_method) <> ''
+    and status in ('pending', 'completed')
   );
 
-CREATE POLICY inquiries_manager_select
-  ON inquiries FOR SELECT TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1
-      FROM profiles
-      WHERE profiles.id = (SELECT auth.uid())
-        AND profiles.role IN ('owner', 'pastor', 'manager')
+alter table public.departments enable row level security;
+drop policy if exists "Departments are viewable by authenticated users." on public.departments;
+drop policy if exists "Public read access for departments" on public.departments;
+drop policy if exists departments_public_select on public.departments;
+revoke all privileges on table public.departments from public, anon, authenticated, service_role;
+grant select on table public.departments to anon, authenticated;
+grant select, insert, update, delete on table public.departments to service_role;
+create policy departments_public_select
+  on public.departments for select to anon, authenticated using (true);
+
+alter table public.profiles enable row level security;
+drop policy if exists "Public profiles are viewable by everyone." on public.profiles;
+drop policy if exists "Users can update their own profiles." on public.profiles;
+drop policy if exists profiles_authenticated_select_own on public.profiles;
+revoke all privileges on table public.profiles from public, anon, authenticated, service_role;
+grant select (id, full_name, role, department_id, updated_at)
+  on table public.profiles to authenticated;
+grant select, insert, update, delete on table public.profiles to service_role;
+create policy profiles_authenticated_select_own
+  on public.profiles for select to authenticated
+  using ((select auth.uid()) = id);
+
+alter table public.inquiries enable row level security;
+drop policy if exists "Public insert access for inquiries" on public.inquiries;
+drop policy if exists "Authenticated read access for inquiries" on public.inquiries;
+drop policy if exists inquiries_public_insert on public.inquiries;
+drop policy if exists inquiries_manager_select on public.inquiries;
+drop policy if exists inquiries_manager_update_status on public.inquiries;
+revoke all privileges on table public.inquiries from public, anon, authenticated, service_role;
+grant insert (
+  full_name, email, type, message, phone, category, confidential,
+  area, visit_type, invited_by, prayer_need
+) on table public.inquiries to anon, authenticated;
+grant select on table public.inquiries to authenticated;
+grant update (status) on table public.inquiries to authenticated;
+grant select, insert, update, delete on table public.inquiries to service_role;
+
+create policy inquiries_public_insert
+  on public.inquiries for insert to anon, authenticated
+  with check (
+    btrim(full_name) <> '' and btrim(email) <> '' and btrim(type) <> ''
+    and status = 'pending'
+  );
+
+create policy inquiries_manager_select
+  on public.inquiries for select to authenticated
+  using (
+    exists (
+      select 1 from public.profiles
+      where profiles.id = (select auth.uid())
+        and profiles.role in ('owner', 'pastor', 'manager')
     )
   );
 
-CREATE POLICY inquiries_manager_update_status
-  ON inquiries FOR UPDATE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1
-      FROM profiles
-      WHERE profiles.id = (SELECT auth.uid())
-        AND profiles.role IN ('owner', 'pastor', 'manager')
+create policy inquiries_manager_update_status
+  on public.inquiries for update to authenticated
+  using (
+    exists (
+      select 1 from public.profiles
+      where profiles.id = (select auth.uid())
+        and profiles.role in ('owner', 'pastor', 'manager')
     )
   )
-  WITH CHECK (
-    status IN ('pending', 'reviewed', 'contacted')
-    AND EXISTS (
-      SELECT 1
-      FROM profiles
-      WHERE profiles.id = (SELECT auth.uid())
-        AND profiles.role IN ('owner', 'pastor', 'manager')
+  with check (
+    status in ('pending', 'reviewed', 'contacted')
+    and exists (
+      select 1 from public.profiles
+      where profiles.id = (select auth.uid())
+        and profiles.role in ('owner', 'pastor', 'manager')
     )
   );
+
+commit;
