@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, CheckCircle2, CreditCard, Landmark, Mail } from "lucide-react";
 import dynamic from "next/dynamic";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const PaystackForm = dynamic(() => import("@/components/PaystackForm"), {
   ssr: false,
@@ -109,6 +109,11 @@ export default function GivePage() {
 
   const handleInteracNotify = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      alert("Giving records are not configured for this environment.");
+      return;
+    }
+
     setInteracLoading(true);
     try {
       await supabase.from("donations").insert({

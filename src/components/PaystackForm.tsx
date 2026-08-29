@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, Landmark, CheckCircle2, AlertCircle, Copy, Check } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -38,6 +38,11 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
 
   const handlePay = () => {
     setErr("");
+    if (!isSupabaseConfigured) {
+      setErr("Online giving is not configured for this environment.");
+      return;
+    }
+
     if (!email || email === "anonymous@heartbeatofgod.com") {
       setErr("Please enter your email address to continue.");
       return;
@@ -63,7 +68,7 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
               amount: finalAmount,
               frequency,
               payment_method: "Card",
-              status: "completed",
+              status: "pending",
               reference: response.reference,
               donor_email: email,
             });
@@ -123,6 +128,11 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
   };
 
   const handleConfirm = async () => {
+    if (!isSupabaseConfigured) {
+      alert("Giving records are not configured for this environment.");
+      return;
+    }
+
     if (!email || email === "anonymous@heartbeatofgod.com") {
       alert("Please enter your email address above so we can confirm your transfer.");
       return;

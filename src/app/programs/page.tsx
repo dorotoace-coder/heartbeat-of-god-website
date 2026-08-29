@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
 import TiltCard from "@/components/TiltCard";
 import FlipClock from "@/components/FlipClock";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 
 interface EventItem {
@@ -42,6 +42,11 @@ export default function ProgramsPage() {
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('events')

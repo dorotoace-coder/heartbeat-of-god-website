@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Fingerprint, Loader2, Mail, UserPlus, LogIn } from "lucide-react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,6 +17,11 @@ export default function LoginPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      setError("Database access is not configured for this environment.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -76,6 +81,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     const checkSupabase = async () => {
+      if (!isSupabaseConfigured) {
+        setStatus("offline");
+        return;
+      }
+
       try {
         const { data, error } = await supabase.from('departments').select('count', { count: 'exact', head: true });
         if (error && error.code !== 'PGRST116') throw error; // Head check might error on empty, that's fine

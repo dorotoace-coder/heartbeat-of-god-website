@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { PulseState } from "@/lib/pulse";
 import { Activity, ShieldAlert, Lock, ShieldOff } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { Profile, UserRole } from "@/lib/types";
 import { AdminContext, hasNavAccess, canPerformAction } from "@/lib/permissions";
 
@@ -145,6 +145,11 @@ export default function AdminDashboard() {
       console.log("Admin Dashboard: Initializing...");
       try {
         setLoading(true);
+
+        if (!isSupabaseConfigured) {
+          setError("Database access is not configured for this environment.");
+          return;
+        }
         
         // 1. Get Session
         const { data: { session }, error: authError } = await supabase.auth.getSession();

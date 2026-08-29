@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 
 interface Department {
@@ -24,6 +24,11 @@ export default function DepartmentsPage() {
   useEffect(() => {
     async function fetchDepartments() {
       setLoading(true);
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('departments')

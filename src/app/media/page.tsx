@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Sermon {
@@ -27,6 +27,11 @@ export default function MediaPage() {
   useEffect(() => {
     async function fetchSermons() {
       setLoading(true);
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+
       try {
         let query = supabase.from('sermons').select('*').order('date_preached', { ascending: false });
         

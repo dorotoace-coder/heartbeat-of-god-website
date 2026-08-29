@@ -8,7 +8,7 @@ import ComingSoonModal from "@/components/ComingSoonModal";
 import TiltCard from "@/components/TiltCard";
 import VlogSection from "@/components/VlogSection";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
 
 export default function Home() {
@@ -35,6 +35,8 @@ export default function Home() {
 
     // Fetch Upcoming Events
     const fetchEvents = async () => {
+      if (!isSupabaseConfigured) return;
+
       try {
         const { data, error } = await supabase
           .from('events')

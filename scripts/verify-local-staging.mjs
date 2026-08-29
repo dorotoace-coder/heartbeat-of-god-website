@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -107,7 +108,12 @@ const publicEmail = `hbog-public-${runId}@example.invalid`;
 const authEmail = `hbog-authz-${runId}@example.invalid`;
 const managerEmail = `hbog-manager-${runId}@example.invalid`;
 const leaderEmail = `hbog-leader-${runId}@example.invalid`;
+const pastorEmail = `hbog-pastor-${runId}@example.invalid`;
 const donationReference = `HBOG-LOCAL-${runId}`;
+const completedDonationReference = `HBOG-LOCAL-COMPLETED-${runId}`;
+const eventId = randomUUID();
+const leaderEventId = randomUUID();
+const sermonId = randomUUID();
 const createdUserIds = [];
 
 console.log("Starting isolated HBOG local staging verification...");
@@ -115,7 +121,7 @@ console.log("Starting isolated HBOG local staging verification...");
 try {
   run("docker", ["info", "--format", "{{.ServerVersion}}"]);
   run("supabase", ["start", "--workdir", repoRoot, "--yes"]);
-  run("supabase", ["db", "reset", "--local", "--no-seed", "--workdir", repoRoot, "--yes"]);
+  run("supabase", ["db", "reset", "--local", "--workdir", repoRoot, "--yes"]);
   run("supabase", [
     "db",
     "lint",
@@ -152,7 +158,18 @@ try {
   `);
   assert(catalog.includes("tables=7"), `Expected 7 public tables. Received:\n${catalog}`);
   assert(catalog.includes("rls=7"), `Expected RLS on 7 tables. Received:\n${catalog}`);
-  assert(catalog.includes("policies=9"), `Expected 9 policies. Received:\n${catalog}`);
+  assert(catalog.includes("policies=15"), `Expected 15 policies. Received:\n${catalog}`);
+
+  const seedCatalog = sql(`
+    select 'seed_departments=' || count(*) from public.departments;
+    select 'seed_sermons=' || count(*) from public.sermons;
+    select 'seed_events=' || count(*) from public.events;
+    select 'seed_pulse=' || count(*) from public.pulse where id = 1;
+  `);
+  assert(seedCatalog.includes("seed_departments=2"), `Expected two seeded departments. Received:\n${seedCatalog}`);
+  assert(seedCatalog.includes("seed_sermons=1"), `Expected one seeded sermon. Received:\n${seedCatalog}`);
+  assert(seedCatalog.includes("seed_events=1"), `Expected one seeded event. Received:\n${seedCatalog}`);
+  assert(seedCatalog.includes("seed_pulse=1"), `Expected the seeded pulse singleton. Received:\n${seedCatalog}`);
 
   const migration = sql(
     "select version from supabase_migrations.schema_migrations order by version;",
@@ -160,6 +177,10 @@ try {
   assert(
     migration.split("\n").includes("20260814232004"),
     `Expected migration 20260814232004. Received: ${migration}`,
+  );
+  assert(
+    migration.split("\n").includes("20260829165103"),
+    `Expected migration 20260829165103. Received: ${migration}`,
   );
 
   const restUrl = `${status.API_URL}/rest/v1`;
@@ -198,6 +219,25 @@ try {
   });
   assert(donationInsert.status === 201, `Public donation insert returned ${donationInsert.status}.`);
 
+  const completedDonationInsert = await request(`${restUrl}/donations`, {
+    apiKey: status.ANON_KEY,
+    method: "POST",
+    body: {
+      currency: "CAD",
+      amount: 1,
+      frequency: "one-time",
+      payment_method: "local-test",
+      status: "completed",
+      reference: completedDonationReference,
+      donor_email: publicEmail,
+      donor_name: "Local Staging Test",
+    },
+  });
+  assert(
+    completedDonationInsert.status !== 201,
+    "An anonymous browser client forged a completed donation.",
+  );
+
   const publicInquiryRead = await request(`${restUrl}/inquiries?select=id`, {
     apiKey: status.ANON_KEY,
   });
@@ -218,13 +258,91 @@ try {
 
   const manager = await signUp(managerEmail, "LocalOnly!Manager2026");
   const leader = await signUp(leaderEmail, "LocalOnly!Leader2026");
+  const pastor = await signUp(pastorEmail, "LocalOnly!Pastor2026");
 
   sql(`
     insert into public.profiles (id, full_name, role)
     values ('${manager.id}', 'Local Manager', 'manager');
     insert into public.profiles (id, full_name, role)
     values ('${leader.id}', 'Local Leader', 'leader');
+    insert into public.profiles (id, full_name, role)
+    values ('${pastor.id}', 'Local Pastor', 'pastor');
   `);
+
+  const managerEventInsert = await request(`${restUrl}/events`, {
+    apiKey: status.ANON_KEY,
+    token: manager.token,
+    method: "POST",
+    body: {
+      id: eventId,
+      name: "Manager Authorized Event",
+      description: "Synthetic authorization check",
+      event_date: new Date(Date.now() + 86_400_000).toISOString(),
+      location: "Local only",
+    },
+  });
+  assert(managerEventInsert.status === 201, `Manager event insert returned ${managerEventInsert.status}.`);
+
+  const leaderEventInsert = await request(`${restUrl}/events`, {
+    apiKey: status.ANON_KEY,
+    token: leader.token,
+    method: "POST",
+    body: {
+      id: leaderEventId,
+      name: "Leader Unauthorized Event",
+      event_date: new Date(Date.now() + 172_800_000).toISOString(),
+      location: "Local only",
+    },
+  });
+  assert(leaderEventInsert.status !== 201, "A leader created an event without authorization.");
+  assert(sql(`select count(*) from public.events where id = '${leaderEventId}';`) === "0", "Unauthorized leader event persisted.");
+
+  const managerEventUpdate = await request(`${restUrl}/events?id=eq.${eventId}`, {
+    apiKey: status.ANON_KEY,
+    token: manager.token,
+    method: "PATCH",
+    body: { location: "Manager updated locally" },
+  });
+  assert(managerEventUpdate.status === 204, `Manager event update returned ${managerEventUpdate.status}.`);
+  assert(sql(`select location from public.events where id = '${eventId}';`) === "Manager updated locally", "Manager event update did not persist.");
+
+  const managerSermonInsert = await request(`${restUrl}/sermons`, {
+    apiKey: status.ANON_KEY,
+    token: manager.token,
+    method: "POST",
+    body: {
+      id: sermonId,
+      title: "Manager Authorized Sermon",
+      preacher: "Local Test",
+      category: "General",
+      date_preached: new Date().toISOString().slice(0, 10),
+    },
+  });
+  assert(managerSermonInsert.status === 201, `Manager sermon insert returned ${managerSermonInsert.status}.`);
+
+  const managerSermonDelete = await request(`${restUrl}/sermons?id=eq.${sermonId}`, {
+    apiKey: status.ANON_KEY,
+    token: manager.token,
+    method: "DELETE",
+  });
+  assert(managerSermonDelete.status === 204, `Manager sermon delete returned ${managerSermonDelete.status}.`);
+  assert(sql(`select count(*) from public.sermons where id = '${sermonId}';`) === "1", "A manager deleted pastor-protected media.");
+
+  const pastorSermonDelete = await request(`${restUrl}/sermons?id=eq.${sermonId}`, {
+    apiKey: status.ANON_KEY,
+    token: pastor.token,
+    method: "DELETE",
+  });
+  assert(pastorSermonDelete.status === 204, `Pastor sermon delete returned ${pastorSermonDelete.status}.`);
+  assert(sql(`select count(*) from public.sermons where id = '${sermonId}';`) === "0", "Pastor sermon delete did not persist.");
+
+  const managerEventDelete = await request(`${restUrl}/events?id=eq.${eventId}`, {
+    apiKey: status.ANON_KEY,
+    token: manager.token,
+    method: "DELETE",
+  });
+  assert(managerEventDelete.status === 204, `Manager event delete returned ${managerEventDelete.status}.`);
+  assert(sql(`select count(*) from public.events where id = '${eventId}';`) === "0", "Manager event delete did not persist.");
 
   const authInquiryInsert = await request(`${restUrl}/inquiries`, {
     apiKey: status.ANON_KEY,
@@ -298,7 +416,7 @@ try {
     `Manager protected-field update returned ${protectedFieldUpdate.status}.`,
   );
 
-  console.log("PASS: migration replay, lint, Data API, Auth, grants, and RLS checks succeeded.");
+  console.log("PASS: migrations, seed, lint, Data API, Auth, grants, staff roles, and RLS checks succeeded.");
 } finally {
   const userIds = createdUserIds.map((id) => `'${id}'`).join(",");
   const userCleanup = userIds
@@ -320,7 +438,9 @@ try {
       "-Atc",
       `
         delete from public.inquiries where email in ('${publicEmail}', '${authEmail}');
-        delete from public.donations where reference = '${donationReference}';
+        delete from public.donations where reference in ('${donationReference}', '${completedDonationReference}');
+        delete from public.events where id in ('${eventId}', '${leaderEventId}');
+        delete from public.sermons where id = '${sermonId}';
         ${userCleanup}
       `,
     ],
