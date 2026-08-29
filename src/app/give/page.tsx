@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, CheckCircle2, CreditCard, Landmark, Mail } from "lucide-react";
+import { Heart, CheckCircle2, CreditCard, Landmark, Mail, AlertCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -46,6 +46,8 @@ export default function GivePage() {
   const [interacAmount, setInteracAmount] = useState("");
   const [interacSent, setInteracSent] = useState(false);
   const [interacLoading, setInteracLoading] = useState(false);
+  const [interacError, setInteracError] = useState("");
+  const [interacReference] = useState(() => `INTERAC-${Date.now()}`);
 
   // Stripe state
   const [stripeLoading, setStripeLoading] = useState(false);
@@ -76,8 +78,13 @@ export default function GivePage() {
   };
 
   const handleStripePay = async () => {
+    if (!isSupabaseConfigured) {
+      alert("Giving records are not configured for this environment.");
+      return;
+    }
+
     const finalAmount = stripeCustom ? Number(stripeCustom) : stripeAmount || 0;
-    if (!stripeEmail || finalAmount <= 0) {
+    if (!stripeEmail || !Number.isFinite(finalAmount) || finalAmount <= 0) {
       alert("Please enter your email and an amount.");
       return;
     }
@@ -91,17 +98,17 @@ export default function GivePage() {
           currency: stripeCurrency,
           email: stripeEmail,
           frequency: stripeFrequency,
-          label: stripeFrequency === "Monthly Partner" ? "Monthly Kingdom Partner" : "Kingdom Offering",
         }),
       });
       const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
+      if (!res.ok || !data.url || !data.sessionId) {
         alert(data.error || "Stripe checkout failed. Please try again.");
+        return;
       }
+
+      window.location.href = data.url;
     } catch {
-      alert("Network error. Please try again.");
+      alert("Unable to prepare checkout. No payment was taken. Please try again.");
     } finally {
       setStripeLoading(false);
     }
@@ -109,26 +116,40 @@ export default function GivePage() {
 
   const handleInteracNotify = async (e: React.FormEvent) => {
     e.preventDefault();
+    setInteracError("");
     if (!isSupabaseConfigured) {
-      alert("Giving records are not configured for this environment.");
+      setInteracError("Giving records are not configured for this environment.");
+      return;
+    }
+
+    const finalAmount = Number(interacAmount);
+    if (!interacEmail || !Number.isFinite(finalAmount) || finalAmount <= 0) {
+      setInteracError("Please enter your email and the amount you transferred.");
       return;
     }
 
     setInteracLoading(true);
     try {
-      await supabase.from("donations").insert({
+      const { error } = await supabase.from("donations").insert({
         currency: "CAD",
-        amount: Number(interacAmount),
+        amount: finalAmount,
         frequency: "One Time",
         payment_method: "Interac e-Transfer",
         status: "pending",
-        reference: `INTERAC-${Date.now()}`,
+        reference: interacReference,
         donor_email: interacEmail,
         donor_name: interacName,
       });
-    } catch { /* silent — still show confirmation */ }
-    setInteracSent(true);
-    setInteracLoading(false);
+      if (error) {
+        setInteracError(`We could not record your transfer notice. Save reference ${interacReference} and contact the ministry; do not send another transfer.`);
+        return;
+      }
+      setInteracSent(true);
+    } catch {
+      setInteracError(`Your transfer notice is uncertain. Save reference ${interacReference} and contact the ministry; do not send another transfer.`);
+    } finally {
+      setInteracLoading(false);
+    }
   };
 
   const tabClass = (t: GatewayTab) =>
@@ -186,7 +207,7 @@ export default function GivePage() {
                   className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3"
                 >
                   <CheckCircle2 className="text-emerald-500 shrink-0" size={20} />
-                  <p className="text-emerald-700 font-semibold text-sm">Payment received — thank you! Heaven rejoices over your seed.</p>
+                  <p className="text-emerald-700 font-semibold text-sm">Payment verification is pending. We&apos;ll confirm after the provider record is verified.</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -368,6 +389,12 @@ export default function GivePage() {
                             <input required type="number" min="1" value={interacAmount} onChange={(e) => setInteracAmount(e.target.value)} placeholder="0.00" className="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant text-sm bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-sky/50" />
                           </div>
                         </div>
+                        {interacError && (
+                          <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+                            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                            {interacError}
+                          </div>
+                        )}
                         <button type="submit" disabled={interacLoading} className="w-full py-4 bg-gradient-to-r from-midnight to-midnight-light text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-midnight/30 transition-all active:scale-95 disabled:opacity-70">
                           <Landmark size={18} />
                           {interacLoading ? "Submitting…" : "I've Sent My Transfer"}

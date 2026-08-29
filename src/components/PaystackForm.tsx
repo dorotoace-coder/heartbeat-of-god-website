@@ -112,7 +112,7 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
         callback: async (response: PaystackResponse) => {
           setLoading(true);
           try {
-            await supabase.from("donations").insert({
+            const { error } = await supabase.from("donations").insert({
               currency: "NGN",
               amount: finalAmount,
               frequency,
@@ -121,11 +121,15 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
               reference: response.reference,
               donor_email: email,
             });
-          } catch (e) {
-            console.error("Supabase record failed:", e);
+            if (error) {
+              setErr(`We received payment reference ${response.reference}, but could not record it. Save the reference and do not pay again.`);
+              return;
+            }
+            setStep(2);
+          } catch {
+            setErr(`Payment status is uncertain. Save reference ${response.reference} and do not pay again.`);
           } finally {
             setLoading(false);
-            setStep(2);
           }
         },
         onClose: () => {},
@@ -175,6 +179,8 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols }: BankT
   const [copied, setCopied] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [transferReference] = useState(() => `BANK-${Date.now()}`);
   const finalAmount = customAmount ? Number(customAmount) : amount || 0;
 
   const copy = (text: string, key: string) => {
@@ -185,31 +191,40 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols }: BankT
   };
 
   const handleConfirm = async () => {
+    setSubmitError("");
     if (!isSupabaseConfigured) {
-      alert("Giving records are not configured for this environment.");
+      setSubmitError("Giving records are not configured for this environment.");
       return;
     }
 
     if (!email || email === "anonymous@heartbeatofgod.com") {
-      alert("Please enter your email address above so we can confirm your transfer.");
+      setSubmitError("Please enter your email address above so we can confirm your transfer.");
+      return;
+    }
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
+      setSubmitError("Please select or enter the amount you transferred.");
       return;
     }
     setConfirmLoading(true);
     try {
-      await supabase.from("donations").insert({
+      const { error } = await supabase.from("donations").insert({
         currency: "NGN",
         amount: finalAmount,
         frequency,
         payment_method: "Bank Transfer",
         status: "pending",
-        reference: `BANK-${Date.now()}`,
+        reference: transferReference,
         donor_email: email,
       });
-    } catch (e) {
-      console.error("Supabase record failed:", e);
+      if (error) {
+        setSubmitError(`We could not record your transfer notice. Save reference ${transferReference} and contact the ministry; do not transfer again.`);
+        return;
+      }
+      setConfirmed(true);
+    } catch {
+      setSubmitError(`Your transfer notice is uncertain. Save reference ${transferReference} and contact the ministry; do not transfer again.`);
     } finally {
       setConfirmLoading(false);
-      setConfirmed(true);
     }
   };
 
@@ -278,6 +293,13 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols }: BankT
         After completing your transfer, click below to notify us. We&apos;ll verify and acknowledge within 24 hours.
       </p>
 
+      {submitError && (
+        <div className="flex items-start gap-2 mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
+          {submitError}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={handleConfirm}
@@ -309,7 +331,7 @@ export default function PaystackForm({
         </div>
         <h2 className="text-3xl font-bold text-midnight mb-2">Thank You!</h2>
         <p className="text-on-surface-variant mb-8 max-w-sm mx-auto">
-          Your generous seed of {symbols[currency]}{(customAmount || amount || 0).toLocaleString()} has been received. Heaven rejoices!
+          Your payment reference for {symbols[currency]}{(customAmount || amount || 0).toLocaleString()} has been recorded and is awaiting provider verification.
         </p>
         <button onClick={() => setStep(1)} className="px-8 py-3 bg-surface-container-high text-on-surface-variant font-medium rounded-xl hover:bg-surface-container-highest transition-colors">
           Give Again

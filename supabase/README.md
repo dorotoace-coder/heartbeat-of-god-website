@@ -17,9 +17,10 @@ npx tsc --noEmit
 ```
 
 The verifier resets only the isolated local database, applies all migrations
-and seed data, runs database linting, and uses synthetic users to verify Auth,
-Data API grants, and RLS. It never contacts or mutates a hosted Supabase
-project.
+and seed data, runs database linting, injects a synthetic permissive policy to
+prove the final migration removes drift, checks the exact policy and privilege
+manifest, and uses synthetic users to verify Auth, Data API grants, and RLS. It
+never contacts or mutates a hosted Supabase project.
 
 ## Run the application against the local stack
 
@@ -49,5 +50,6 @@ submissions, and avoids placeholder network calls.
 - Managers and above can read inquiries and update only their status.
 - Browser code never receives a service-role or secret key.
 
+Every checkout or transfer notice must first create a pending donation record.
 Payment completion must eventually be performed by a trusted, verified
-server-side webhook. A browser callback is not payment proof.
+server-side webhook. A browser callback or redirect is not payment proof.

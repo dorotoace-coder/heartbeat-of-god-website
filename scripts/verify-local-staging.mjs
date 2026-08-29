@@ -2,12 +2,18 @@
 
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const projectId = "hbog-local-staging";
 const databaseContainer = `supabase_db_${projectId}`;
+const integrityMigration = path.join(
+  repoRoot,
+  "supabase/migrations/20260829204238_hbog_policy_manifest_integrity_r2.sql",
+);
+const schemaSnapshot = path.join(repoRoot, "src/lib/schema.sql");
 
 function redact(value) {
   return String(value ?? "")
@@ -15,11 +21,12 @@ function redact(value) {
     .replace(/eyJ[A-Za-z0-9_.-]+/g, "[REDACTED]");
 }
 
-function run(command, args, { allowFailure = false } = {}) {
+function run(command, args, { allowFailure = false, input } = {}) {
   const result = spawnSync(command, args, {
     cwd: repoRoot,
     encoding: "utf8",
     env: process.env,
+    input,
   });
 
   if (result.error) {
@@ -78,6 +85,59 @@ function sql(statement) {
   ]).stdout.trim();
 }
 
+function sqlFile(filePath) {
+  return run(
+    "docker",
+    [
+      "exec",
+      "-i",
+      databaseContainer,
+      "psql",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "-v",
+      "ON_ERROR_STOP=1",
+    ],
+    { input: readFileSync(filePath, "utf8") },
+  ).stdout.trim();
+}
+
+const expectedPolicies = [
+  "departments|departments_public_select|SELECT|anon,authenticated",
+  "donations|donations_public_insert|INSERT|anon,authenticated",
+  "events|events_manager_delete|DELETE|authenticated",
+  "events|events_manager_insert|INSERT|authenticated",
+  "events|events_manager_update|UPDATE|authenticated",
+  "events|events_public_select|SELECT|anon,authenticated",
+  "inquiries|inquiries_manager_select|SELECT|authenticated",
+  "inquiries|inquiries_manager_update_status|UPDATE|authenticated",
+  "inquiries|inquiries_public_insert|INSERT|anon,authenticated",
+  "profiles|profiles_authenticated_select_own|SELECT|authenticated",
+  "pulse|pulse_public_select|SELECT|anon,authenticated",
+  "sermons|sermons_manager_insert|INSERT|authenticated",
+  "sermons|sermons_manager_update|UPDATE|authenticated",
+  "sermons|sermons_pastor_delete|DELETE|authenticated",
+  "sermons|sermons_public_select|SELECT|anon,authenticated",
+].join("\n");
+
+function assertExactPolicyManifest() {
+  const policies = sql(`
+    select tablename || '|' || policyname || '|' || cmd || '|' || array_to_string(roles, ',')
+      from pg_policies
+     where schemaname = 'public'
+       and tablename in (
+         'sermons','events','pulse','donations','departments','profiles','inquiries'
+       )
+     order by tablename, policyname;
+  `);
+  assert(
+    policies === expectedPolicies,
+    `Protected-table policy manifest mismatch. Received:\n${policies}`,
+  );
+}
+
 async function request(url, { apiKey, token = apiKey, method = "GET", body } = {}) {
   const response = await fetch(url, {
     method,
@@ -134,6 +194,42 @@ try {
     repoRoot,
   ]);
 
+  sql(`
+    create policy synthetic_drift_allow_all
+      on public.events for all to anon, authenticated
+      using (true) with check (true);
+    grant update (title) on table public.sermons to anon;
+    grant create on schema public to anon;
+  `);
+  assert(
+    sql("select count(*) from pg_policies where schemaname = 'public' and policyname = 'synthetic_drift_allow_all';") === "1",
+    "Synthetic policy drift was not created for the convergence test.",
+  );
+  assert(
+    sql("select has_column_privilege('anon', 'public.sermons', 'title', 'update');") === "t",
+    "Synthetic column privilege drift was not created for the convergence test.",
+  );
+  assert(
+    sql("select has_schema_privilege('anon', 'public', 'create');") === "t",
+    "Synthetic schema privilege drift was not created for the convergence test.",
+  );
+  sqlFile(integrityMigration);
+  assert(
+    sql("select count(*) from pg_policies where schemaname = 'public' and policyname = 'synthetic_drift_allow_all';") === "0",
+    "The integrity migration did not remove synthetic policy drift.",
+  );
+  assert(
+    sql("select has_column_privilege('anon', 'public.sermons', 'title', 'update');") === "f",
+    "The integrity migration did not remove synthetic column privilege drift.",
+  );
+  assert(
+    sql("select has_schema_privilege('anon', 'public', 'create');") === "f",
+    "The integrity migration did not remove synthetic schema privilege drift.",
+  );
+  assertExactPolicyManifest();
+  sqlFile(schemaSnapshot);
+  assertExactPolicyManifest();
+
   const status = parseStatusEnv(
     run("supabase", ["status", "--workdir", repoRoot, "-o", "env"]).stdout,
   );
@@ -160,6 +256,51 @@ try {
   assert(catalog.includes("rls=7"), `Expected RLS on 7 tables. Received:\n${catalog}`);
   assert(catalog.includes("policies=15"), `Expected 15 policies. Received:\n${catalog}`);
 
+  const privilegeManifest = sql(`
+    select 'anon_sermons_select=' || has_table_privilege('anon', 'public.sermons', 'select');
+    select 'anon_sermons_insert=' || has_table_privilege('anon', 'public.sermons', 'insert');
+    select 'anon_sermons_title_update=' || has_column_privilege('anon', 'public.sermons', 'title', 'update');
+    select 'auth_sermons_insert=' || has_table_privilege('authenticated', 'public.sermons', 'insert');
+    select 'anon_events_select=' || has_table_privilege('anon', 'public.events', 'select');
+    select 'anon_events_insert=' || has_table_privilege('anon', 'public.events', 'insert');
+    select 'auth_events_insert=' || has_table_privilege('authenticated', 'public.events', 'insert');
+    select 'anon_pulse_select=' || has_table_privilege('anon', 'public.pulse', 'select');
+    select 'auth_pulse_update=' || has_table_privilege('authenticated', 'public.pulse', 'update');
+    select 'anon_donations_select=' || has_table_privilege('anon', 'public.donations', 'select');
+    select 'anon_donations_status_insert=' || has_column_privilege('anon', 'public.donations', 'status', 'insert');
+    select 'anon_departments_select=' || has_table_privilege('anon', 'public.departments', 'select');
+    select 'anon_profiles_select=' || has_table_privilege('anon', 'public.profiles', 'select');
+    select 'auth_profiles_role_select=' || has_column_privilege('authenticated', 'public.profiles', 'role', 'select');
+    select 'anon_inquiries_select=' || has_table_privilege('anon', 'public.inquiries', 'select');
+    select 'anon_inquiries_email_insert=' || has_column_privilege('anon', 'public.inquiries', 'email', 'insert');
+    select 'auth_inquiries_status_update=' || has_column_privilege('authenticated', 'public.inquiries', 'status', 'update');
+    select 'anon_schema_create=' || has_schema_privilege('anon', 'public', 'create');
+  `);
+  const expectedPrivileges = [
+    "anon_sermons_select=true",
+    "anon_sermons_insert=false",
+    "anon_sermons_title_update=false",
+    "auth_sermons_insert=true",
+    "anon_events_select=true",
+    "anon_events_insert=false",
+    "auth_events_insert=true",
+    "anon_pulse_select=true",
+    "auth_pulse_update=false",
+    "anon_donations_select=false",
+    "anon_donations_status_insert=true",
+    "anon_departments_select=true",
+    "anon_profiles_select=false",
+    "auth_profiles_role_select=true",
+    "anon_inquiries_select=false",
+    "anon_inquiries_email_insert=true",
+    "auth_inquiries_status_update=true",
+    "anon_schema_create=false",
+  ].join("\n");
+  assert(
+    privilegeManifest === expectedPrivileges,
+    `Protected-table privilege manifest mismatch. Received:\n${privilegeManifest}`,
+  );
+
   const seedCatalog = sql(`
     select 'seed_departments=' || count(*) from public.departments;
     select 'seed_sermons=' || count(*) from public.sermons;
@@ -181,6 +322,10 @@ try {
   assert(
     migration.split("\n").includes("20260829165103"),
     `Expected migration 20260829165103. Received: ${migration}`,
+  );
+  assert(
+    migration.split("\n").includes("20260829204238"),
+    `Expected migration 20260829204238. Received: ${migration}`,
   );
 
   const restUrl = `${status.API_URL}/rest/v1`;
