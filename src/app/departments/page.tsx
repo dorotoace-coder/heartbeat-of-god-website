@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface Department {
   id: string;
@@ -24,6 +25,11 @@ export default function DepartmentsPage() {
   useEffect(() => {
     async function fetchDepartments() {
       setLoading(true);
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('departments')
@@ -126,9 +132,12 @@ export default function DepartmentsPage() {
               className="relative aspect-video lg:aspect-square rounded-[3rem] overflow-hidden shadow-2xl group"
             >
               <div className="absolute inset-0 bg-midnight/10 mix-blend-overlay"></div>
-              <img 
+              <Image
                 src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=2070&auto=format&fit=crop" 
                 alt="Heartbeat of God Ministry Community - A group of believers gathered in fellowship" 
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                unoptimized
                 className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-midnight/60 via-transparent to-transparent"></div>
@@ -149,7 +158,7 @@ export default function DepartmentsPage() {
                 <div className="flex -space-x-4 overflow-hidden">
                   {[1,2,3,4].map(i => (
                     <div key={i} className="inline-block h-12 w-12 rounded-full ring-4 ring-white bg-surface-container-high overflow-hidden">
-                      <img src={`https://i.pravatar.cc/150?u=${i+10}`} alt="Member avatar" className="h-full w-full object-cover" />
+                      <Image src={`https://i.pravatar.cc/150?u=${i+10}`} alt="Member avatar" width={48} height={48} unoptimized className="h-full w-full object-cover" />
                     </div>
                   ))}
                 </div>

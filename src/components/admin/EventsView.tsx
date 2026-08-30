@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Calendar, Plus, MapPin, Clock, Users, ArrowRight, MoreVertical, X, Edit3, Trash2, ChevronDown, Megaphone, Loader2 } from "lucide-react";
+import { Calendar, Plus, MapPin, Clock, ArrowRight, MoreVertical, X, Edit3, Trash2, Megaphone, Loader2 } from "lucide-react";
 import { useAdminRole, canPerformAction } from "@/lib/permissions";
 import { supabase } from "@/lib/supabase";
 import { generateRecurringEvents, type RecurringEventInstance } from './generateRecurringEvents';
@@ -281,9 +281,9 @@ export function EventsView() {
       setModalOpen(false);
       setEditingEvent(null);
       await fetchEvents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Save failed:", err);
-      showToast(`⚠ Save failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Save failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }
@@ -299,9 +299,9 @@ export function EventsView() {
       if (error) throw error;
       showToast(`"${ev?.name}" deleted.`);
       await fetchEvents();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete failed:", err);
-      showToast(`⚠ Delete failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Delete failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 

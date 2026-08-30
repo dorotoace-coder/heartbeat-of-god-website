@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from "lucide-react";
 
@@ -31,6 +31,12 @@ export default function ConnectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      setFormStep("error");
+      setTimeout(() => setFormStep("idle"), 5000);
+      return;
+    }
+
     setFormStep("sending");
 
     try {
@@ -74,7 +80,7 @@ export default function ConnectPage() {
               Connect With Us
             </h1>
             <p className="text-on-surface-variant text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              Whether you have a testimony, a prayer request, or you're ready to serve in a department, we're here to listen and guide.
+              Whether you have a testimony, a prayer request, or you&apos;re ready to serve in a department, we&apos;re here to listen and guide.
             </p>
           </motion.div>
         </section>
@@ -123,7 +129,7 @@ export default function ConnectPage() {
 
               <div className="mt-12 pt-12 border-t border-outline-variant/30 text-center">
                  <p className="text-on-surface-variant text-sm italic">
-                    "Call to me and I will answer you, and tell you great and unsearchable things you do not know." — Jeremiah 33:3
+                    &ldquo;Call to me and I will answer you, and tell you great and unsearchable things you do not know.&rdquo; — Jeremiah 33:3
                  </p>
               </div>
             </div>
