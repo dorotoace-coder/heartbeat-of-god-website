@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const PLATFORMS = [
   { id: "telegram",  label: "Telegram",  icon: "✈️",  color: "#229ED9" },
@@ -30,16 +32,51 @@ const QUICK_TEMPLATES = [
 interface BroadcastResult {
   platform: string;
   ok: boolean;
-  error?: string;
+  errorCode?: string;
 }
 
+type AccessState = "checking" | "allowed" | "signed-out" | "forbidden" | "unavailable";
+const STAFF_ROLES = new Set(["owner", "pastor", "manager"]);
+
 export default function BroadcastPage() {
+  const [access, setAccess] = useState<AccessState>("checking");
   const [message, setMessage] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [selected, setSelected] = useState<string[]>(["telegram", "facebook", "instagram", "twitter", "whatsapp"]);
-  const [secret, setSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<BroadcastResult[]>([]);
+  const [requestError, setRequestError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    const checkAccess = async () => {
+      if (!isSupabaseConfigured) {
+        if (active) setAccess("unavailable");
+        return;
+      }
+
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        if (active) setAccess("signed-out");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!active) return;
+      if (profileError) setAccess("unavailable");
+      else if (!profile?.role || !STAFF_ROLES.has(profile.role)) setAccess("forbidden");
+      else setAccess("allowed");
+    };
+
+    void checkAccess();
+    return () => { active = false; };
+  }, []);
 
   const toggle = (id: string) =>
     setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
@@ -50,22 +87,71 @@ export default function BroadcastPage() {
   };
 
   const broadcast = async () => {
-    if (!message.trim() || !secret.trim()) return;
+    if (!message.trim() || !selected.length || access !== "allowed") return;
     setLoading(true);
     setResults([]);
+    setRequestError("");
     try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        setAccess("signed-out");
+        setRequestError("Your session has expired. Sign in again before broadcasting.");
+        return;
+      }
+
       const res = await fetch("/api/broadcast", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-broadcast-secret": secret },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({ message, imageUrl: imageUrl || undefined, platforms: selected }),
       });
       const data = await res.json();
       setResults(data.results || []);
+      if (!res.ok && res.status !== 207) {
+        const messages: Record<string, string> = {
+          BROADCASTS_DISABLED: "Broadcasting is disabled for this environment.",
+          FORBIDDEN: "Your account is not authorized to broadcast.",
+          PROVIDER_NOT_CONFIGURED: "One or more selected platforms are not configured.",
+          RATE_LIMITED: "Too many attempts. Wait before trying again.",
+          TWITTER_MESSAGE_TOO_LONG: "Messages sent to Twitter/X must be 280 characters or fewer.",
+          INSTAGRAM_IMAGE_REQUIRED: "Instagram broadcasts require an approved image URL.",
+          INVALID_IMAGE_URL: "Use an approved HTTPS image URL.",
+        };
+        setRequestError(messages[data.error] || "Broadcast was blocked. No unconfirmed retry was attempted.");
+      }
     } catch {
-      setResults([]);
+      setRequestError("Broadcast status could not be confirmed. Do not retry until the provider status is checked.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  if (access !== "allowed") {
+    const copy = {
+      checking: ["Checking staff access…", "Please wait while your identity is verified."],
+      "signed-out": ["Staff sign-in required", "This console is available only to authorized ministry staff."],
+      forbidden: ["Access denied", "Your account does not have broadcast permission."],
+      unavailable: ["Broadcast console unavailable", "Identity verification is not configured or is temporarily unavailable."],
+    }[access];
+
+    return (
+      <div className="min-h-screen bg-[#05000a] text-white font-sans p-6 flex items-center justify-center">
+        <div className="max-w-md w-full text-center border border-white/10 bg-white/5 rounded-2xl p-8">
+          <p className="text-xs font-black tracking-[.3em] uppercase text-[#C9972A]/60 mb-2">HBG Ministry</p>
+          <h1 className="text-2xl font-black mb-3">{copy[0]}</h1>
+          <p className="text-white/50 text-sm mb-6">{copy[1]}</p>
+          {access === "signed-out" && (
+            <Link href="/login?callbackUrl=%2Fhbg-broadcast"
+              className="inline-block px-5 py-3 rounded-xl bg-[#C9972A] text-[#0d0002] text-sm font-black uppercase tracking-wider">
+              Sign in
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#05000a] text-white font-sans p-6">
@@ -126,21 +212,19 @@ export default function BroadcastPage() {
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9972A]/40"/>
         </div>
 
-        {/* Secret */}
-        <div className="mb-6">
-          <p className="text-xs font-bold tracking-widest uppercase text-white/30 mb-2">Broadcast Key</p>
-          <input type="password" value={secret} onChange={e => setSecret(e.target.value)}
-            placeholder="Enter your broadcast key"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9972A]/40"/>
-        </div>
-
         {/* Send button */}
-        <button onClick={broadcast} disabled={loading || !message.trim() || !secret.trim() || !selected.length}
+        <button onClick={broadcast} disabled={loading || !message.trim() || !selected.length}
           className="w-full py-4 rounded-xl font-black text-sm tracking-widest uppercase transition-all disabled:opacity-30"
           style={{ background: "linear-gradient(135deg, #ff6b2b, #C9972A)", color: "#0d0002",
             boxShadow: loading ? "none" : "0 0 30px rgba(201,151,42,0.35)" }}>
           {loading ? "Broadcasting..." : `🔥 Broadcast to ${selected.length} Platform${selected.length !== 1 ? "s" : ""}`}
         </button>
+
+        {requestError && (
+          <p role="alert" className="mt-4 px-4 py-3 rounded-xl border border-red-500/20 bg-red-500/5 text-red-300 text-sm">
+            {requestError}
+          </p>
+        )}
 
         {/* Results */}
         {results.length > 0 && (
@@ -151,7 +235,7 @@ export default function BroadcastPage() {
                 r.ok ? "border-green-500/20 bg-green-500/5" : "border-red-500/20 bg-red-500/5"}`}>
                 <span className="text-sm font-bold capitalize">{r.platform}</span>
                 <span className={`text-xs font-bold ${r.ok ? "text-green-400" : "text-red-400"}`}>
-                  {r.ok ? "✅ Posted" : `❌ ${r.error || "Failed"}`}
+                  {r.ok ? "✅ Posted" : `❌ ${r.errorCode || "Failed"}`}
                 </span>
               </div>
             ))}

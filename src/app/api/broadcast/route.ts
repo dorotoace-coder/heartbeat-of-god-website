@@ -1,4 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/database.types";
+import {
+  allowedImageHosts,
+  createFixedWindowRateLimiter,
+  handleBroadcastRequest,
+  type BroadcastPlatform,
+} from "@/lib/broadcastSecurity.mjs";
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unknown error";
@@ -160,41 +168,86 @@ async function buildOAuth1Header(method: string, url: string, params: Record<str
 
 // ── Main route ──────────────────────────────────────────────────────
 
-export async function POST(req: NextRequest) {
-  // Simple secret key check
-  const secret = req.headers.get("x-broadcast-secret");
-  if (secret !== process.env.BROADCAST_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+const STAFF_ROLES = new Set(["owner", "pastor", "manager"]);
+const broadcastLimiter = createFixedWindowRateLimiter({ limit: 3, windowMs: 10 * 60 * 1000 });
+
+async function authorizeStaff(token: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { ok: false as const, status: 503, errorCode: "AUTHORIZATION_UNAVAILABLE" };
   }
 
-  const { message, imageUrl, platforms } = await req.json();
-  if (!message) return NextResponse.json({ error: "message is required" }, { status: 400 });
+  const authClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
 
-  const selected: string[] = platforms || ["telegram", "facebook", "instagram", "twitter", "whatsapp"];
+  const { data: { user }, error: authError } = await authClient.auth.getUser(token);
+  if (authError || !user) {
+    return { ok: false as const, status: 401, errorCode: "UNAUTHORIZED" };
+  }
 
-  const jobs = [];
-  if (selected.includes("telegram"))  jobs.push(postToTelegram(message, imageUrl));
-  if (selected.includes("facebook"))  jobs.push(postToFacebook(message, imageUrl));
-  if (selected.includes("instagram")) jobs.push(postToInstagram(message, imageUrl));
-  if (selected.includes("twitter"))   jobs.push(postToTwitter(message));
-  if (selected.includes("whatsapp"))  jobs.push(sendWhatsAppBroadcast(message, imageUrl));
+  const { data: profile, error: profileError } = await authClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  const results = await Promise.all(jobs);
-  const allOk = results.every(r => r.ok);
+  if (profileError) {
+    return { ok: false as const, status: 503, errorCode: "AUTHORIZATION_UNAVAILABLE" };
+  }
+  if (!profile?.role || !STAFF_ROLES.has(profile.role)) {
+    return { ok: false as const, status: 403, errorCode: "FORBIDDEN" };
+  }
 
-  return NextResponse.json({ success: allOk, results }, { status: allOk ? 200 : 207 });
+  return { ok: true as const, userId: user.id };
 }
 
-export async function GET() {
-  return NextResponse.json({
-    service: "HBG Broadcast API",
-    platforms: ["telegram", "facebook", "instagram", "twitter", "whatsapp"],
-    status: {
-      telegram:  !!process.env.TELEGRAM_BOT_TOKEN,
-      facebook:  !!process.env.FACEBOOK_PAGE_TOKEN,
-      instagram: !!process.env.INSTAGRAM_ACCESS_TOKEN,
-      twitter:   !!process.env.TWITTER_API_KEY,
-      whatsapp:  !!process.env.WHATSAPP_ACCESS_TOKEN,
-    }
+const senders: Record<BroadcastPlatform, (message: string, imageUrl?: string) => Promise<{ ok?: boolean }>> = {
+  telegram: postToTelegram,
+  facebook: postToFacebook,
+  instagram: postToInstagram,
+  twitter: postToTwitter,
+  whatsapp: sendWhatsAppBroadcast,
+};
+
+export async function POST(req: NextRequest) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "INVALID_JSON" },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  const result = await handleBroadcastRequest({
+    enabled: process.env.BROADCASTS_ENABLED === "true",
+    authorizationHeader: req.headers.get("authorization"),
+    body,
+    authorize: authorizeStaff,
+    env: process.env,
+    limiter: broadcastLimiter,
+    senders,
+    imageHosts: allowedImageHosts(process.env.BROADCAST_IMAGE_HOSTS),
+  });
+
+  if (!result.ok) {
+    const headers: Record<string, string> = { "Cache-Control": "no-store" };
+    if (result.retryAfterSeconds) headers["Retry-After"] = String(result.retryAfterSeconds);
+    return NextResponse.json(
+      {
+        error: result.errorCode,
+        ...(result.unavailablePlatforms ? { unavailablePlatforms: result.unavailablePlatforms } : {}),
+      },
+      { status: result.status, headers },
+    );
+  }
+
+  return NextResponse.json(result.body, {
+    status: result.status,
+    headers: { "Cache-Control": "no-store" },
   });
 }
