@@ -33,13 +33,13 @@ function ActionDropdown({ member, onEdit, onToggleStatus, onDelete }: {
   const canEdit = canPerformAction(role, "members.edit");
   const canToggle = canPerformAction(role, "members.toggleStatus");
   const canDelete = canPerformAction(role, "members.delete");
-
-  // If the user can't do ANY action, don't show the dropdown at all
-  if (!canEdit && !canToggle && !canDelete) return null;
+  const canUseAnyAction = canEdit || canToggle || canDelete;
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!canUseAnyAction) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -47,7 +47,10 @@ function ActionDropdown({ member, onEdit, onToggleStatus, onDelete }: {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [canUseAnyAction]);
+
+  // Hooks must run in the same order on every render, including unauthorized ones.
+  if (!canUseAnyAction) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>

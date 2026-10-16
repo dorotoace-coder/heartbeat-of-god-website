@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getAutonomousPulse } from '@/lib/pulse';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 export async function GET() {
   let pulse = getAutonomousPulse();
+
+  if (!isSupabaseConfigured) {
+    return NextResponse.json(pulse, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',
+      },
+    });
+  }
 
   try {
     // Attempt to fetch from Supabase if configured
@@ -17,14 +25,14 @@ export async function GET() {
        // Merge with Supabase data if available
        pulse = {
          ...pulse,
-         isLive: data.is_live,
+         isLive: data.is_live ?? pulse.isLive,
          activeEvent: data.active_event?.name || pulse.activeEvent,
          nextEventName: data.active_event?.name || pulse.nextEventName,
          nextEventDate: data.active_event?.event_date || pulse.nextEventDate,
          sermonOfTheDay: data.sermon_of_the_day ? {
            title: data.sermon_of_the_day.title,
            preacher: data.sermon_of_the_day.preacher,
-           imageUrl: data.sermon_of_the_day.thumbnail_url
+           imageUrl: data.sermon_of_the_day.thumbnail_url ?? pulse.sermonOfTheDay.imageUrl
          } : pulse.sermonOfTheDay
        };
     }

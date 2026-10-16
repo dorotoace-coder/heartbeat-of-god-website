@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, Landmark, CheckCircle2, AlertCircle, Copy, Check } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -11,9 +11,41 @@ const BANK_DETAILS = {
   accountName: "Heartbeat of God Ministry",
 };
 
-type PaystackFormProps = {
-  config: any;
+type Currency = "NGN" | "CAD" | "USD" | "EUR";
+
+interface PaystackConfig {
+  publicKey: string;
+}
+
+interface PaystackResponse {
+  reference: string;
+}
+
+interface PaystackSetupOptions {
+  key: string;
+  email: string;
+  amount: number;
   currency: string;
+  ref: string;
+  callback: (response: PaystackResponse) => void | Promise<void>;
+  onClose: () => void;
+}
+
+interface PaystackHandler {
+  openIframe: () => void;
+}
+
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: PaystackSetupOptions) => PaystackHandler;
+    };
+  }
+}
+
+type PaystackFormProps = {
+  config: PaystackConfig;
+  currency: Currency;
   amount: number | null;
   customAmount: string;
   email: string;
@@ -30,14 +62,30 @@ type PaystackFormProps = {
   setPaymentMethod: (v: "card" | "bank_transfer") => void;
   setStep: (v: 1 | 2) => void;
   setLoading: (v: boolean) => void;
-  handleCurrencyChange: (c: any) => void;
+  handleCurrencyChange: (c: Currency) => void;
 };
 
-function CardPayment({ amount, customAmount, email, frequency, symbols, publicKey, setStep, setLoading }: any) {
+interface CardPaymentProps {
+  amount: number | null;
+  customAmount: string;
+  email: string;
+  frequency: string;
+  symbols: Record<string, string>;
+  publicKey: string;
+  setStep: (value: 1 | 2) => void;
+  setLoading: (value: boolean) => void;
+}
+
+function CardPayment({ amount, customAmount, email, frequency, symbols, publicKey, setStep, setLoading }: CardPaymentProps) {
   const [err, setErr] = useState("");
 
   const handlePay = () => {
     setErr("");
+    if (!isSupabaseConfigured) {
+      setErr("Online giving is not configured for this environment.");
+      return;
+    }
+
     if (!email || email === "anonymous@heartbeatofgod.com") {
       setErr("Please enter your email address to continue.");
       return;
@@ -49,29 +97,39 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
     }
 
     const launchPaystack = () => {
-      const handler = (window as any).PaystackPop.setup({
+      const paystack = window.PaystackPop;
+      if (!paystack) {
+        setErr("Unable to load Paystack. Please try again.");
+        return;
+      }
+
+      const handler = paystack.setup({
         key: publicKey,
         email,
         amount: Math.round(finalAmount * 100),
         currency: "NGN",
         ref: `hbg-${Date.now()}`,
-        callback: async (response: any) => {
+        callback: async (response: PaystackResponse) => {
           setLoading(true);
           try {
-            await supabase.from("donations").insert({
+            const { error } = await supabase.from("donations").insert({
               currency: "NGN",
               amount: finalAmount,
               frequency,
               payment_method: "Card",
-              status: "completed",
+              status: "pending",
               reference: response.reference,
               donor_email: email,
             });
-          } catch (e) {
-            console.error("Supabase record failed:", e);
+            if (error) {
+              setErr(`We received payment reference ${response.reference}, but could not record it. Save the reference and do not pay again.`);
+              return;
+            }
+            setStep(2);
+          } catch {
+            setErr(`Payment status is uncertain. Save reference ${response.reference} and do not pay again.`);
           } finally {
             setLoading(false);
-            setStep(2);
           }
         },
         onClose: () => {},
@@ -79,7 +137,7 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
       handler.openIframe();
     };
 
-    if ((window as any).PaystackPop) {
+    if (window.PaystackPop) {
       launchPaystack();
     } else {
       const script = document.createElement("script");
@@ -109,10 +167,20 @@ function CardPayment({ amount, customAmount, email, frequency, symbols, publicKe
   );
 }
 
-function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep, setLoading }: any) {
+interface BankTransferProps {
+  amount: number | null;
+  customAmount: string;
+  email: string;
+  frequency: string;
+  symbols: Record<string, string>;
+}
+
+function BankTransfer({ amount, customAmount, email, frequency, symbols }: BankTransferProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [transferReference] = useState(() => `BANK-${Date.now()}`);
   const finalAmount = customAmount ? Number(customAmount) : amount || 0;
 
   const copy = (text: string, key: string) => {
@@ -123,26 +191,40 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
   };
 
   const handleConfirm = async () => {
+    setSubmitError("");
+    if (!isSupabaseConfigured) {
+      setSubmitError("Giving records are not configured for this environment.");
+      return;
+    }
+
     if (!email || email === "anonymous@heartbeatofgod.com") {
-      alert("Please enter your email address above so we can confirm your transfer.");
+      setSubmitError("Please enter your email address above so we can confirm your transfer.");
+      return;
+    }
+    if (!Number.isFinite(finalAmount) || finalAmount <= 0) {
+      setSubmitError("Please select or enter the amount you transferred.");
       return;
     }
     setConfirmLoading(true);
     try {
-      await supabase.from("donations").insert({
+      const { error } = await supabase.from("donations").insert({
         currency: "NGN",
         amount: finalAmount,
         frequency,
         payment_method: "Bank Transfer",
         status: "pending",
-        reference: `BANK-${Date.now()}`,
+        reference: transferReference,
         donor_email: email,
       });
-    } catch (e) {
-      console.error("Supabase record failed:", e);
+      if (error) {
+        setSubmitError(`We could not record your transfer notice. Save reference ${transferReference} and contact the ministry; do not transfer again.`);
+        return;
+      }
+      setConfirmed(true);
+    } catch {
+      setSubmitError(`Your transfer notice is uncertain. Save reference ${transferReference} and contact the ministry; do not transfer again.`);
     } finally {
       setConfirmLoading(false);
-      setConfirmed(true);
     }
   };
 
@@ -154,7 +236,7 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
         </div>
         <h3 className="text-xl font-bold text-midnight mb-2">Transfer Noted!</h3>
         <p className="text-on-surface-variant text-sm max-w-xs mx-auto">
-          We'll confirm your transfer of ₦{finalAmount.toLocaleString()} within 24 hours. God bless you!
+          We&apos;ll confirm your transfer of ₦{finalAmount.toLocaleString()} within 24 hours. God bless you!
         </p>
         <button onClick={() => setConfirmed(false)} className="mt-6 px-6 py-2.5 rounded-xl bg-surface-container-high text-on-surface-variant text-sm font-medium hover:bg-surface-container-highest transition-colors">
           Back
@@ -208,8 +290,15 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
       )}
 
       <p className="text-xs text-on-surface-variant mb-4 leading-relaxed">
-        After completing your transfer, click below to notify us. We'll verify and acknowledge within 24 hours.
+        After completing your transfer, click below to notify us. We&apos;ll verify and acknowledge within 24 hours.
       </p>
+
+      {submitError && (
+        <div className="flex items-start gap-2 mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
+          {submitError}
+        </div>
+      )}
 
       <button
         type="button"
@@ -225,10 +314,10 @@ function BankTransfer({ amount, customAmount, email, frequency, symbols, setStep
 }
 
 export default function PaystackForm({
-  config, currency, amount, customAmount, email, frequency, loading,
+  config, currency, amount, customAmount, email, frequency,
   step, presets, symbols,
   setAmount, setCustomAmount, setEmail, setFrequency,
-  setStep, setLoading, handleCurrencyChange,
+  setStep, setLoading,
 }: PaystackFormProps) {
   const [activeMethod, setActiveMethod] = useState<"card" | "transfer">("card");
   const publicKey = config.publicKey;
@@ -242,7 +331,7 @@ export default function PaystackForm({
         </div>
         <h2 className="text-3xl font-bold text-midnight mb-2">Thank You!</h2>
         <p className="text-on-surface-variant mb-8 max-w-sm mx-auto">
-          Your generous seed of {symbols[currency]}{(customAmount || amount || 0).toLocaleString()} has been received. Heaven rejoices!
+          Your payment reference for {symbols[currency]}{(customAmount || amount || 0).toLocaleString()} has been recorded and is awaiting provider verification.
         </p>
         <button onClick={() => setStep(1)} className="px-8 py-3 bg-surface-container-high text-on-surface-variant font-medium rounded-xl hover:bg-surface-container-highest transition-colors">
           Give Again
@@ -362,8 +451,6 @@ export default function PaystackForm({
           email={email}
           frequency={frequency}
           symbols={symbols}
-          setStep={setStep}
-          setLoading={setLoading}
         />
       )}
 

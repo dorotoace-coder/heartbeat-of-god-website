@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ComingSoonModal from "@/components/ComingSoonModal";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 interface Sermon {
   id: string;
@@ -27,6 +28,11 @@ export default function MediaPage() {
   useEffect(() => {
     async function fetchSermons() {
       setLoading(true);
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+
       try {
         let query = supabase.from('sermons').select('*').order('date_preached', { ascending: false });
         
@@ -169,9 +175,12 @@ export default function MediaPage() {
                          </button>
                       </div>
                     </div>
-                    <img 
+                    <Image
                       src={sermon.thumbnail_url || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"} 
                       alt={sermon.title} 
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      unoptimized
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                     />
                     <div className="absolute bottom-4 right-4 bg-midnight/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded z-20">{sermon.duration}</div>

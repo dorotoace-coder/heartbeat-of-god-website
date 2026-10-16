@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Radio, Calendar, Video, Edit, Plus, FileText, Settings, LayoutDashboard, X, ChevronDown } from "lucide-react";
+import { Radio, Calendar, Video, Edit, Plus, FileText, Settings, LayoutDashboard, X } from "lucide-react";
 import { PulseState } from "@/lib/pulse";
+import Image from "next/image";
 
 interface ManagerViewProps {
   pulse: PulseState;
@@ -148,7 +149,7 @@ export function ManagerView({ pulse }: ManagerViewProps) {
           </div>
           <div className="flex gap-4">
             <div className="w-24 h-24 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
-              <img src={pulse.sermonOfTheDay.imageUrl} alt="Sermon" className="w-full h-full object-cover" />
+              <Image src={pulse.sermonOfTheDay.imageUrl} alt="Sermon" width={96} height={96} unoptimized className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 space-y-2">
               <h4 className="font-bold text-slate-800 dark:text-slate-100">{currentSermon.title}</h4>

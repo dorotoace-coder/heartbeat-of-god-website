@@ -3,6 +3,8 @@
  * from Supabase event records.
  */
 
+type EventRecurrence = 'one-time' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+
 interface SupabaseEvent {
   id: string;
   name: string;
@@ -11,7 +13,7 @@ interface SupabaseEvent {
   description: string | null;
   image_url: string | null;
   is_highlighted: boolean;
-  recurrence: 'one-time' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  recurrence: string;
   end_date: string | null;
 }
 
@@ -23,7 +25,7 @@ export interface RecurringEventInstance {
   description: string | null;
   image_url: string | null;
   is_highlighted: boolean;
-  recurrence: 'one-time' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  recurrence: EventRecurrence;
   end_date: string | null;
 }
 
@@ -42,13 +44,21 @@ export function generateRecurringEvents(
   const instances: RecurringEventInstance[] = [];
 
   for (const event of events) {
+    const recurrence: EventRecurrence =
+      event.recurrence === 'weekly' ||
+      event.recurrence === 'monthly' ||
+      event.recurrence === 'quarterly' ||
+      event.recurrence === 'yearly'
+        ? event.recurrence
+        : 'one-time';
+    const normalizedEvent = { ...event, recurrence };
     const startDate = new Date(event.event_date);
     const endDate = event.end_date ? new Date(event.end_date) : cutoff;
     const effectiveEnd = endDate < cutoff ? endDate : cutoff;
 
-    if (event.recurrence === 'one-time') {
+    if (recurrence === 'one-time') {
       instances.push({
-        ...event,
+        ...normalizedEvent,
         id: event.id,
         instance_date: startDate,
       });
@@ -60,13 +70,13 @@ export function generateRecurringEvents(
     while (current <= effectiveEnd) {
       if (current >= new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)) {
         instances.push({
-          ...event,
+          ...normalizedEvent,
           id: `${event.id}_${current.toISOString()}`,
           instance_date: new Date(current),
         });
       }
 
-      switch (event.recurrence) {
+      switch (recurrence) {
         case 'weekly':
           current.setDate(current.getDate() + 7);
           break;

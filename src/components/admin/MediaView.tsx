@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Video, Play, Upload, MoreVertical, Eye, Share2, Trash2, X, Edit3, ChevronDown, Link2, CheckCircle, Loader2 } from "lucide-react";
+import { Video, Play, Upload, MoreVertical, Share2, Trash2, X, Edit3, ChevronDown, Link2, CheckCircle, Loader2 } from "lucide-react";
 import { useAdminRole, canPerformAction } from "@/lib/permissions";
 import { supabase } from "@/lib/supabase";
+import Image from "next/image";
 
 interface MediaItem {
   id: string;
@@ -294,9 +295,9 @@ export function MediaView() {
       setModalOpen(false);
       setEditingItem(null);
       await fetchMedia();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Save failed:", err);
-      showToast(`⚠ Save failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Save failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }
@@ -310,9 +311,9 @@ export function MediaView() {
       if (error) throw error;
       showToast(`"${item?.title}" deleted.`);
       await fetchMedia();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Delete failed:", err);
-      showToast(`⚠ Delete failed: ${err.message || "Unknown error"}`);
+      showToast(`⚠ Delete failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
   };
 
@@ -351,9 +352,12 @@ export function MediaView() {
           {media.map((item) => (
             <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden group hover:shadow-xl transition-all h-full flex flex-col">
               <div className="aspect-video bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
-                 <img
+                 <Image
                    src={item.thumbnail_url || "https://images.unsplash.com/photo-1544427928-142ec24aa861"}
                    alt={item.title}
+                   fill
+                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                   unoptimized
                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 dark:opacity-40"
                  />
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900/40 backdrop-blur-[2px]">
@@ -431,7 +435,7 @@ export function MediaView() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setPlayingItem(null)}>
           <div className="bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="aspect-video bg-slate-800 relative flex items-center justify-center">
-              <img src={playingItem.thumbnail_url || "https://images.unsplash.com/photo-1544427928-142ec24aa861"} alt={playingItem.title} className="w-full h-full object-cover opacity-40" />
+              <Image src={playingItem.thumbnail_url || "https://images.unsplash.com/photo-1544427928-142ec24aa861"} alt={playingItem.title} fill sizes="(max-width: 768px) 100vw, 672px" unoptimized className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                 <Play size={48} className="mb-4 opacity-60" />
                 <p className="font-bold text-lg">{playingItem.title}</p>
