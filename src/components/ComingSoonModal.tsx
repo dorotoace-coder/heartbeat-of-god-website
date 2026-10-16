@@ -55,7 +55,7 @@ export default function ComingSoonModal({ isOpen, onClose, featureName }: Coming
               
               <div className="p-6 bg-surface-container-low rounded-2xl mb-8 border border-outline-variant/10 text-sm">
                 <p className="text-on-surface-variant/70 italic mb-4">
-                  "But the vision is yet for an appointed time... wait for it; because it will surely come."
+                  &ldquo;But the vision is yet for an appointed time... wait for it; because it will surely come.&rdquo;
                 </p>
                 <div className="relative mt-4">
                   <input 

@@ -14,6 +14,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://heartbeatofgod.ca"),
   title: {
     default: "Heartbeat of God | Divine Presence",
     template: "%s | Heartbeat of God"
@@ -50,6 +51,8 @@ export default function RootLayout({
       className={`light ${newsreader.variable} ${manrope.variable} h-full antialiased`}
     >
       <head>
+        {/* Material Symbols is a global icon font; next/font does not provide it. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col">

@@ -1,4 +1,4 @@
-import { format, isSunday, getHours, addDays, nextSunday, setHours, setMinutes } from 'date-fns';
+import { isSunday, getHours, nextSunday, setHours, setMinutes } from 'date-fns';
 
 export type PulseState = {
   isLive: boolean;

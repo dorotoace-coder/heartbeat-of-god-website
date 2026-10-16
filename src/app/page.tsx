@@ -10,8 +10,20 @@ import VlogSection from "@/components/VlogSection";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+interface UpcomingEvent {
+  id: string;
+  name: string;
+  event_date: string;
+  location: string | null;
+  description: string | null;
+  image_url: string | null;
+}
 
 export default function Home() {
+  const router = useRouter();
   const { scrollY } = useScroll();
   const yBg  = useTransform(scrollY, [0, 1000], [0, 300]);   // deepest — moves fastest
   const yMid = useTransform(scrollY, [0, 1000], [0, 150]);   // mid depth
@@ -19,7 +31,7 @@ export default function Home() {
   const [pulse, setPulse] = useState<PulseState | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState("");
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
 
   const openModal = (feature: string) => {
     setActiveFeature(feature);
@@ -176,9 +188,11 @@ export default function Home() {
                   {/* Photo frame */}
                   <div className="relative w-72 h-[420px] rounded-[1.75rem] overflow-hidden border border-white/15 shadow-2xl shadow-midnight/70"
                     style={{ boxShadow: "0 40px 90px rgba(10,4,22,0.7), 0 0 0 1px rgba(255,255,255,0.08), 0 8px 40px rgba(200,162,208,0.2)" }}>
-                    <img
+                    <Image
                       src="/pastor-amos.png"
                       alt="Pastor Amos Unogwu"
+                      fill
+                      sizes="288px"
                       className="w-full h-full object-cover object-top"
                     />
                     {/* Subtle gradient fade at bottom */}
@@ -249,7 +263,7 @@ export default function Home() {
                   MTA 2026 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
                 </h3>
                 <p className="text-white/50 text-sm mb-3 italic" style={{ color: "rgba(212,175,55,0.7)" }}>
-                  "There is a river whose streams make glad the city of God" — Psalm 46:4
+                  &ldquo;There is a river whose streams make glad the city of God&rdquo; — Psalm 46:4
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   {[
@@ -310,7 +324,7 @@ export default function Home() {
               </Link>
               </TiltCard>
               <TiltCard className="rounded-2xl" glowColor="rgba(200,162,208,0.18)">
-              <motion.div onClick={() => window.location.href='/departments'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64">
+              <motion.div onClick={() => router.push("/departments")} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className="group p-10 bg-surface-container-lowest rounded-2xl shadow-sm transition-all hover:bg-surface-container-high cursor-pointer flex flex-col justify-between h-64">
                 <div className="w-12 h-12 rounded-xl bg-sky-light/10 flex items-center justify-center text-sky group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-3xl">groups</span>
                 </div>
@@ -321,7 +335,7 @@ export default function Home() {
               </motion.div>
               </TiltCard>
               <TiltCard className="rounded-2xl" glowColor="rgba(255,255,255,0.12)" intensity={8}>
-              <motion.div onClick={() => window.location.href='/watch'} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-midnight to-primary text-white shadow-midnight/20'}`}>
+              <motion.div onClick={() => router.push("/watch")} variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }} className={`group p-10 rounded-2xl shadow-xl cursor-pointer flex flex-col justify-between h-64 overflow-hidden relative transition-all ${pulse?.isLive ? 'bg-red-600 text-white shadow-red-500/30 animate-[pulse_3s_ease-in-out_infinite]' : 'bg-gradient-to-br from-midnight to-primary text-white shadow-midnight/20'}`}>
                 <motion.div 
                   initial={{ rotate: 0 }}
                   whileHover={{ rotate: 15, scale: 1.1 }}
@@ -408,10 +422,13 @@ export default function Home() {
               }}
             >
               {pulse && (
-                <img
+                <Image
                   alt="Sermon thumbnail"
                   className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700"
                   src={pulse.sermonOfTheDay.imageUrl}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  unoptimized
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
@@ -481,9 +498,12 @@ export default function Home() {
                 className="w-full lg:w-1/2"
               >
                 <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-blue-500/10 group-hover:shadow-blue-500/20 transition-all duration-500">
-                  <img 
+                  <Image
                     src="https://images.unsplash.com/photo-1593784991095-a205039470b6?q=80&w=2070&auto=format&fit=crop" 
                     alt="Heart Beat Television Control Room" 
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    unoptimized
                     className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
@@ -620,7 +640,7 @@ export default function Home() {
               className="flex justify-between items-end mb-16"
             >
               <div>
-                <span className="text-sky font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don't Miss Out</span>
+                <span className="text-sky font-bold text-[0.7rem] tracking-[0.2em] uppercase">Don&apos;t Miss Out</span>
                 <h2 className="font-headline text-5xl text-midnight mt-2">Upcoming Encounters</h2>
               </div>
               <Link className="text-midnight font-semibold border-b border-midnight pb-1 hover:text-sky hover:border-sky transition-colors" href="/programs">View Calendar</Link>
@@ -662,7 +682,7 @@ export default function Home() {
 
                   <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                     <div className="relative h-64 overflow-hidden">
-                      <img alt="Sunday Service" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation.jpg" />
+                      <Image alt="Sunday Service" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="/salvation.jpg" fill sizes="(max-width: 768px) 100vw, 33vw" />
                       <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">WEEKLY</div>
                     </div>
                     <div className="p-8">
@@ -727,10 +747,13 @@ export default function Home() {
                   {upcomingEvents.slice(1, 3).map((event, i) => (
                     <motion.div key={event.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + (i * 0.1) }} className="group bg-surface-container-low rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                       <div className="relative h-64 overflow-hidden">
-                        <img
+                        <Image
                           alt={event.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                           src={event.image_url || "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070&auto=format&fit=crop"}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          unoptimized
                         />
                         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-midnight shadow-sm">
                           {new Date(event.event_date).toLocaleDateString([], { month: 'short', day: '2-digit' }).toUpperCase()}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
@@ -151,7 +151,7 @@ export default function GivePage() {
               Sow into the <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-dark to-sky italic">Movement</span>
             </h1>
             <p className="text-lg text-on-surface-variant leading-relaxed mb-8">
-              Your giving enables us to take the message of God's presence to the ends of the earth. Thank you for partnering with the heartbeat of God.
+              Your giving enables us to take the message of God&apos;s presence to the ends of the earth. Thank you for partnering with the heartbeat of God.
             </p>
             <div className="space-y-5">
               {[
@@ -376,7 +376,7 @@ export default function GivePage() {
                       </div>
                       <h2 className="text-2xl font-bold text-midnight mb-2">Thank You, {interacName}!</h2>
                       <p className="text-on-surface-variant text-sm max-w-sm mx-auto mb-2">
-                        Your Interac transfer of <strong>C${interacAmount}</strong> has been noted. We'll confirm receipt within 24 hours.
+                        Your Interac transfer of <strong>C${interacAmount}</strong> has been noted. We&apos;ll confirm receipt within 24 hours.
                       </p>
                       <p className="text-sky-dark text-xs font-semibold">God bless you — Pastor Amos Unogwu</p>
                     </motion.div>

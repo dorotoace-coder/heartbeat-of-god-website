@@ -27,14 +27,19 @@ const QUICK_TEMPLATES = [
   },
 ];
 
+interface BroadcastResult {
+  platform: string;
+  ok: boolean;
+  error?: string;
+}
+
 export default function BroadcastPage() {
   const [message, setMessage] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [selected, setSelected] = useState<string[]>(["telegram", "facebook", "instagram", "twitter", "whatsapp"]);
   const [secret, setSecret] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
-  const [status, setStatus] = useState<"idle" | "success" | "partial" | "error">("idle");
+  const [results, setResults] = useState<BroadcastResult[]>([]);
 
   const toggle = (id: string) =>
     setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
@@ -56,9 +61,8 @@ export default function BroadcastPage() {
       });
       const data = await res.json();
       setResults(data.results || []);
-      setStatus(data.success ? "success" : res.status === 207 ? "partial" : "error");
-    } catch (e) {
-      setStatus("error");
+    } catch {
+      setResults([]);
     }
     setLoading(false);
   };
