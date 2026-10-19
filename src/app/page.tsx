@@ -636,9 +636,24 @@ export default function Home() {
                 <>
                   {/* Featured event card — content from src/config/currentEvent.ts */}
                   <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative col-span-1" style={{ background: "linear-gradient(135deg, #1a0008 0%, #2a0d10 100%)", border: "2px solid rgba(255,107,43,0.35)" }}>
-                    <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity -z-10">
-                      <span className="material-symbols-outlined text-9xl" style={{ color: "#ff6b2b" }}>local_fire_department</span>
-                    </div>
+                    {/* Flyer shown properly, matching the image band the other
+                        event cards use. Falls back to the flame glyph for a
+                        programme with no flyer yet. */}
+                    {currentEvent.flyer ? (
+                      <div className="relative h-56 overflow-hidden">
+                        <img
+                          src={currentEvent.flyer}
+                          alt={`${currentEvent.name} — ${currentEvent.subtitle}`}
+                          loading="lazy"
+                          className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-x-0 bottom-0 h-20" style={{ background: "linear-gradient(to top, #1a0008, transparent)" }} />
+                      </div>
+                    ) : (
+                      <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity -z-10">
+                        <span className="material-symbols-outlined text-9xl" style={{ color: "#ff6b2b" }}>local_fire_department</span>
+                      </div>
+                    )}
                     <div className="p-8 h-full flex flex-col justify-between">
                       <div>
                         <div className="inline-block px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider" style={{ background: "rgba(255,107,43,0.15)", color: "#ff9a3c", border: "1px solid rgba(255,107,43,0.3)" }}>

@@ -44,6 +44,9 @@ export type MinistryEvent = {
 
   /** Short line for the featured card. */
   cardBlurb: string;
+
+  /** Event flyer in /public. Omit and the card falls back to the flame glyph. */
+  flyer?: string;
 };
 
 export const currentEvent: MinistryEvent = {
@@ -68,6 +71,8 @@ export const currentEvent: MinistryEvent = {
 
   cardBlurb:
     "A night of prophetic worship and the Word. Come before the throne of God.",
+
+  flyer: "/tribe-x-throne-room.jpg",
 };
 
 /** True once the event has finished — drives honest past-tense copy. */
