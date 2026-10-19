@@ -65,9 +65,9 @@ export const currentEvent: MinistryEvent = {
   admission: "Free Entry",
   host: "Host: Pastor Amos Unogwu",
 
-  registerUrl: "https://mta.heartbeatofgod.ca",
+  registerUrl: "https://tribex.heartbeatofgod.ca",
   registerLabel: "Reserve Your Place",
-  learnMoreUrl: "https://mta.heartbeatofgod.ca#about",
+  learnMoreUrl: "https://tribex.heartbeatofgod.ca#about",
 
   cardBlurb:
     "A night of prophetic worship and the Word. Come before the throne of God.",
