@@ -9,6 +9,7 @@ import TiltCard from "@/components/TiltCard";
 import FlipClock from "@/components/FlipClock";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
+import { currentEvent } from "@/config/currentEvent";
 
 interface EventItem {
   id: string;
@@ -225,7 +226,7 @@ export default function ProgramsPage() {
                       className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl shadow-white/10 inline-block text-center"
                       style={{ boxShadow: '0 0 0 2px rgba(212,175,55,0.4), 0 12px 32px rgba(255,255,255,0.08)' }}
                     >
-                      Register Free — MTA 2026 →
+                      {currentEvent.registerLabel} — {currentEvent.name} →
                     </motion.a>
                   ) : (
                     <motion.div
@@ -338,11 +339,11 @@ export default function ProgramsPage() {
               style={{ background: "linear-gradient(90deg, transparent, #ff6b2b, #d4af37, #ff6b2b, transparent)", backgroundSize: "300%" }}
             />
             <div className="relative z-10">
-              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>September 4–6, 2026</span>
+              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>{currentEvent.dateLabel}</span>
               <h2 className="font-headline text-4xl md:text-5xl mb-3">
-                <span style={{ color: "#d4af37" }}>MTA26</span>
+                <span style={{ color: "#d4af37" }}>{currentEvent.name}</span>
               </h2>
-              <p className="text-white/60 text-lg font-medium">Mighty Turn Around Assembly — a gathering of fire, prayer &amp; prophetic power.</p>
+              <p className="text-white/60 text-lg font-medium">{currentEvent.subtitle} — {currentEvent.cardBlurb}</p>
             </div>
             <div className="relative z-10 flex-shrink-0">
               <span className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-base" style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", boxShadow: "0 8px 32px rgba(255,107,43,0.35)" }}>

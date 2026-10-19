@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, CheckCircle2, CreditCard, Landmark, Mail } from "lucide-react";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
+import { currentEvent } from "@/config/currentEvent";
 
 const PaystackForm = dynamic(() => import("@/components/PaystackForm"), {
   ssr: false,
@@ -157,7 +158,7 @@ export default function GivePage() {
               {[
                 { title: "Global Outreach", body: "Funding crusades, media broadcasts, and international missions." },
                 { title: "Feed the Future", body: "Feeding vulnerable families monthly with dignity, structure, and follow-up." },
-                { title: "MTA 2026", body: "Supporting the Mighty Turn Around Assembly — September 4–6, Akute, Nigeria & Online." },
+                { title: currentEvent.name, body: `Supporting ${currentEvent.subtitle} — ${currentEvent.dateLabel}, ${currentEvent.venue}.` },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 items-start">
                   <div className="w-10 h-10 rounded-full bg-sky/10 flex items-center justify-center text-sky shrink-0 mt-0.5">

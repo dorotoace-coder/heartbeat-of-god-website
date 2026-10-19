@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { currentEvent } from "@/config/currentEvent";
 
 const PRAYER_CATEGORIES = ["General", "Healing", "Family", "Work / Business", "Salvation", "Testimony"];
 const VISIT_TYPES = ["First time", "Returning guest", "New convert"];
@@ -224,7 +225,7 @@ export default function ConnectPage() {
                       <option>First-Timer Card</option>
                       <option>Testimony Submission</option>
                       <option>Department Application</option>
-                      <option>MTA 2026 Registration</option>
+                      <option>{currentEvent.name} Registration</option>
                       <option>Event Registration</option>
                       <option>Media/Sound Inquiry</option>
                     </select>

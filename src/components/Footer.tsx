@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Youtube, Instagram } from "lucide-react";
+import { currentEvent } from "@/config/currentEvent";
 
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
@@ -48,12 +49,12 @@ export default function Footer() {
             <li><Link className="text-white/40 hover:text-sky-light hover:underline decoration-sky/30 underline-offset-4 transition-all" href="/feed-the-future">Feed the Future</Link></li>
             <li>
               <a
-                href="https://mta.heartbeatofgod.ca"
+                href={currentEvent.registerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-orange-400/80 hover:text-orange-300 hover:underline decoration-orange-400/30 underline-offset-4 transition-all font-semibold"
               >
-                MTA 2026 →
+                {currentEvent.name} →
               </a>
             </li>
           </ul>
