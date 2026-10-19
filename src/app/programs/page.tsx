@@ -215,7 +215,7 @@ export default function ProgramsPage() {
                   </motion.div>
                   {highlightedEvent.name.toLowerCase().includes('mta') ? (
                     <motion.a
-                      href="https://tribex.heartbeatofgod.ca"
+                      href="https://events.heartbeatofgod.ca"
                       target="_blank"
                       rel="noopener noreferrer"
                       initial={{ opacity: 0, y: 10 }}
