@@ -10,6 +10,7 @@ import VlogSection from "@/components/VlogSection";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import type { PulseState } from "@/lib/pulse";
+import { currentEvent } from "@/config/currentEvent";
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -224,7 +225,7 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* MTA 2026 — PRIMARY CAMPAIGN BANNER */}
+        {/* PRIMARY CAMPAIGN BANNER — content from src/config/currentEvent.ts */}
         <section className="relative overflow-hidden py-20 px-8" style={{ background: "linear-gradient(135deg, #150005 0%, #1a0008 40%, #0d0002 100%)" }}>
           <div className="absolute top-0 left-1/3 w-[600px] h-64 rounded-full opacity-20 pointer-events-none"
             style={{ background: "radial-gradient(ellipse, #ff4500, transparent)", filter: "blur(80px)" }} />
@@ -239,24 +240,24 @@ export default function Home() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff6b2b" }}>Next Major Assembly</span>
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: "#ff6b2b" }}>{currentEvent.kicker}</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
                     style={{ color: "#d4af37", background: "rgba(212,175,55,0.1)", borderColor: "rgba(212,175,55,0.3)" }}>
-                    Registration Open
+                    {currentEvent.badge}
                   </span>
                 </div>
                 <h3 className="font-headline text-3xl md:text-4xl text-white font-light mb-2">
-                  MTA 2026 — <span className="italic" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</span>
+                  {currentEvent.name} — <span className="italic" style={{ color: "#ff9a3c" }}>{currentEvent.subtitle}</span>
                 </h3>
                 <p className="text-white/50 text-sm mb-3 italic" style={{ color: "rgba(212,175,55,0.7)" }}>
-                  "There is a river whose streams make glad the city of God" — Psalm 46:4
+                  {currentEvent.scripture}
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   {[
-                    { icon: "calendar_month", text: "September 4–6, 2026", color: "#ff9a3c" },
-                    { icon: "location_on", text: "Akute, Nigeria & Online", color: "#ff9a3c" },
-                    { icon: "auto_awesome", text: "Free Admission", color: "#d4af37" },
-                    { icon: "person", text: "Host: Pastor Amos Unogwu", color: "#d4af37" },
+                    { icon: "calendar_month", text: currentEvent.dateLabel, color: "#ff9a3c" },
+                    { icon: "location_on", text: currentEvent.venue, color: "#ff9a3c" },
+                    { icon: "auto_awesome", text: currentEvent.admission, color: "#d4af37" },
+                    { icon: "person", text: currentEvent.host, color: "#d4af37" },
                   ].map((m) => (
                     <span key={m.text} className="flex items-center gap-1.5 text-white/50 text-xs">
                       <span className="material-symbols-outlined text-sm" style={{ color: m.color }}>{m.icon}</span>
@@ -268,16 +269,18 @@ export default function Home() {
             </div>
 
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
-              <a href="https://mta.heartbeatofgod.ca" target="_blank" rel="noopener noreferrer"
+              <a href={currentEvent.registerUrl} target="_blank" rel="noopener noreferrer"
                 className="px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 whitespace-nowrap"
                 style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff", boxShadow: "0 8px 24px rgba(255,107,43,0.35)" }}>
-                🔥 Register Free — MTA 2026
+                🔥 {currentEvent.registerLabel} — {currentEvent.name}
               </a>
-              <a href="/mta-2026-announcement.html" target="_blank" rel="noopener noreferrer"
-                className="px-7 py-4 rounded-xl font-semibold text-sm transition-all hover:bg-white/10 whitespace-nowrap text-center"
-                style={{ border: "1px solid rgba(255,107,43,0.25)", color: "rgba(255,150,80,0.8)" }}>
-                Learn More
-              </a>
+              {currentEvent.learnMoreUrl && (
+                <a href={currentEvent.learnMoreUrl} target="_blank" rel="noopener noreferrer"
+                  className="px-7 py-4 rounded-xl font-semibold text-sm transition-all hover:bg-white/10 whitespace-nowrap text-center"
+                  style={{ border: "1px solid rgba(255,107,43,0.25)", color: "rgba(255,150,80,0.8)" }}>
+                  Learn More
+                </a>
+              )}
             </div>
           </div>
         </section>
@@ -631,7 +634,7 @@ export default function Home() {
               {upcomingEvents.length === 0 ? (
                 // Hardcoded Fallback for Preview Perfection
                 <>
-                  {/* MTA 2026 — Featured event card */}
+                  {/* Featured event card — content from src/config/currentEvent.ts */}
                   <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative col-span-1" style={{ background: "linear-gradient(135deg, #1a0008 0%, #2a0d10 100%)", border: "2px solid rgba(255,107,43,0.35)" }}>
                     <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity -z-10">
                       <span className="material-symbols-outlined text-9xl" style={{ color: "#ff6b2b" }}>local_fire_department</span>
@@ -639,23 +642,23 @@ export default function Home() {
                     <div className="p-8 h-full flex flex-col justify-between">
                       <div>
                         <div className="inline-block px-3 py-1 rounded-full mb-6 text-xs font-bold uppercase tracking-wider" style={{ background: "rgba(255,107,43,0.15)", color: "#ff9a3c", border: "1px solid rgba(255,107,43,0.3)" }}>
-                          Signature Event · Sept 4–6
+                          Next Gathering · {currentEvent.dateLabel}
                         </div>
-                        <h3 className="font-headline text-3xl text-white mb-2">MTA 2026</h3>
-                        <p className="italic mb-4" style={{ color: "#ff9a3c" }}>Mighty Turn Around Assembly</p>
+                        <h3 className="font-headline text-3xl text-white mb-2">{currentEvent.name}</h3>
+                        <p className="italic mb-4" style={{ color: "#ff9a3c" }}>{currentEvent.subtitle}</p>
                         <p className="text-white/50 text-sm leading-relaxed mb-6">
-                          &ldquo;There is a river whose streams make glad the city of God&rdquo; · Akute, Nigeria &amp; Online
+                          {currentEvent.cardBlurb} · {currentEvent.venue}
                         </p>
                       </div>
                       <a
-                        href="https://mta.heartbeatofgod.ca"
+                        href={currentEvent.registerUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all hover:scale-105"
                         style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", color: "#fff" }}
                       >
                         <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_reg</span>
-                        Register Free
+                        {currentEvent.registerLabel}
                       </a>
                     </div>
                   </motion.div>

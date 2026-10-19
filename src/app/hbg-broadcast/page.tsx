@@ -9,15 +9,17 @@ const PLATFORMS = [
   { id: "whatsapp",  label: "WhatsApp",  icon: "💬",  color: "#25D366" },
 ];
 
+// Templates for the CURRENT campaign only.
+//
+// The MTA 2026 and "We Wait" fast templates were removed on 2026-10-18. Both
+// events finished in September, and this tool broadcasts to five platforms in
+// one click — a stale template is one mis-click away from announcing a past
+// event to the whole congregation. When a campaign ends, replace its template
+// rather than leaving it here.
 const QUICK_TEMPLATES = [
   {
-    label: "MTA 2026 Launch",
-    message: `🔥 MTA 2026 — Mighty Turn Around Assembly!\n\n📅 September 4–6, 2026\n📍 HBG Ministry, Akute, Nigeria & Online\n\n"There is a river whose streams make glad the city of God" — Psalm 46:4\n\nJoin us for 3 days of fire, prayer and prophetic power. Registration is FREE.\n\n👉 Register now: mta.heartbeatofgod.ca\n\n#MTA2026 #HBGMinistry #MightyTurnAround`,
-    imageUrl: "https://heartbeatofgod.ca/we-wait-mta-campaign.html",
-  },
-  {
-    label: "We Wait — 21 Days Fast",
-    message: `🙏 WE WAIT — 21 Days of Fasting & Prayer\n\nAugust 13 – September 2, 2026\n\nHBG Ministry enters a season of corporate consecration, intercession and spiritual sharpening — leading directly into MTA 2026.\n\n⚡ Fast. Pray. Enter your turnaround.\n\nJoin us: mta.heartbeatofgod.ca\n\n#WeWait #MTA2026 #HBGMinistry`,
+    label: "TRIBE X — Throne Room",
+    message: `🔥 TRIBE X — THRONE ROOM\n\n📅 November 27, 2026\n📍 HBG Ministry, Akute, Nigeria & Online\n\n"Be still, and know that I am God" — Psalm 46:10\n\nA night of prophetic worship and the Word. Come before the throne of God.\n\nFree entry. Message us to reserve your place.\n\n👉 heartbeatofgod.ca\n\n#TribeX #ThroneRoom #HBGMinistry`,
     imageUrl: "",
   },
   {
