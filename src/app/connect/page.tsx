@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { currentEvent } from "@/config/currentEvent";
 
+const MINISTRY_EMAIL = "heartbeatofgodf@gmail.com";
 const PRAYER_CATEGORIES = ["General", "Healing", "Family", "Work / Business", "Salvation", "Testimony"];
 const VISIT_TYPES = ["First time", "Returning guest", "New convert"];
 
@@ -55,9 +56,33 @@ export default function ConnectPage() {
       setFormStep("success");
     } catch (err) {
       console.error('Submission failed:', err);
+      // Stay on the error screen (no auto-dismiss) so the email fallback can be used.
       setFormStep("error");
-      setTimeout(() => setFormStep("idle"), 5000);
     }
+  };
+
+  // Fallback when the database can't save (e.g. paused): the same message,
+  // prefilled, by email. Nothing the visitor typed is lost.
+  const buildEmailFallback = () => {
+    const lines = [
+      `Type: ${subject}`,
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+    ];
+    if (isPrayerRequest || isFirstTimer) lines.push(`Phone: ${formData.phone || "-"}`);
+    if (isPrayerRequest) {
+      lines.push(`Category: ${formData.category}`);
+      lines.push(`Confidential: ${formData.confidential ? "Yes" : "No"}`);
+    }
+    if (isFirstTimer) {
+      lines.push(`Area: ${formData.area || "-"}`);
+      lines.push(`Visit type: ${formData.visitType}`);
+      lines.push(`Invited by: ${formData.invitedBy || "-"}`);
+    }
+    lines.push("", isFirstTimer ? "Prayer need:" : "Message:", (isFirstTimer ? formData.prayerNeed : formData.message) || "-");
+
+    const mailSubject = `${subject} - ${formData.name}`;
+    return `mailto:${MINISTRY_EMAIL}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(lines.join("\r\n"))}`;
   };
 
   return (
@@ -97,7 +122,7 @@ export default function ConnectPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Email</p>
-                    <p className="text-midnight font-medium">heartbeatofgodf@gmail.com</p>
+                    <p className="text-midnight font-medium">{MINISTRY_EMAIL}</p>
                   </div>
                 </div>
                 
@@ -168,21 +193,33 @@ export default function ConnectPage() {
                    <motion.div 
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
-                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-12"
+                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-8 md:p-12"
                    >
-                     <div className="w-24 h-24 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-8">
+                     <div className="w-24 h-24 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-8">
                        <AlertCircle size={48} />
                      </div>
-                     <h2 className="font-headline text-4xl text-midnight mb-4">Oops!</h2>
+                     <h2 className="font-headline text-3xl md:text-4xl text-midnight mb-4">We couldn&apos;t save that just now</h2>
                      <p className="text-on-surface-variant text-lg max-w-md mx-auto mb-10">
-                        Something went wrong while sending your message. Please check your connection or try again later.
+                        Your message is still here. Send it to us by email instead, and the ministry team will receive it.
                      </p>
-                     <button 
-                       onClick={() => setFormStep("idle")}
-                       className="px-8 py-3 bg-midnight text-white rounded-xl font-bold hover:scale-105 transition-all"
-                     >
-                       Try Again
-                     </button>
+                     <div className="flex flex-col sm:flex-row items-center gap-4">
+                       <a
+                         href={buildEmailFallback()}
+                         className="px-8 py-3 bg-midnight text-white rounded-xl font-bold hover:scale-105 transition-all flex items-center gap-2"
+                       >
+                         <Mail size={20} />
+                         Send by Email
+                       </a>
+                       <button
+                         onClick={() => setFormStep("idle")}
+                         className="px-8 py-3 border-2 border-midnight text-midnight rounded-xl font-bold hover:scale-105 transition-all"
+                       >
+                         Try Again
+                       </button>
+                     </div>
+                     <p className="text-on-surface-variant text-sm mt-6">
+                       Or write to <span className="font-semibold text-midnight">{MINISTRY_EMAIL}</span>
+                     </p>
                    </motion.div>
                  )}
                </AnimatePresence>
