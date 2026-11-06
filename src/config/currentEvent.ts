@@ -63,7 +63,7 @@ export const currentEvent: MinistryEvent = {
   dateLabel: "November 27, 2026",
   venue: "Akute, Nigeria & Online",
   admission: "Free Entry",
-  host: "Host: Pastor Amos Unogwu",
+  host: "Hosted by Intimacy",
 
   registerUrl: "https://events.heartbeatofgod.ca",
   registerLabel: "Reserve Your Place",
