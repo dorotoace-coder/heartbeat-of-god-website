@@ -20,6 +20,7 @@ const NAV_MIN_LEVEL: Record<string, number> = {
   events: 1,    // Everyone (leader = read-only, enforced in component)
   media: 1,     // Everyone (leader = read-only, enforced in component)
   inquiries: 2, // Manager+ (prayer requests, first-timer cards)
+  dailyword: 2, // Manager+ (Daily Word library; matches daily_words RLS)
   settings: 3,  // Pastor+ (System Rules)
 };
 
@@ -43,6 +44,10 @@ const ACTION_MIN_LEVEL: Record<string, number> = {
   "media.upload": 2,
   "media.delete": 3,
   "media.share": 1,
+
+  // Daily Word (RLS in schema.sql enforces the same levels)
+  "dailyword.edit": 2,
+  "dailyword.delete": 3,
 
   // System
   "settings.view": 3,

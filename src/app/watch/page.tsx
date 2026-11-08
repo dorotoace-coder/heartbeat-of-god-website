@@ -3,9 +3,16 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Eyebrow } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
+import LiteYouTube from "@/components/site/LiteYouTube";
 import { SERVICE_TIMES, SOCIALS, YOUTUBE_LIVE_EMBED, ZOOM_REGISTER_URL } from "@/lib/site";
+import { getLatestVideos } from "@/lib/youtube";
 
-export default function WatchPage() {
+// The latest-upload feed is cached for an hour.
+export const revalidate = 3600;
+
+export default async function WatchPage() {
+  const [latest] = await getLatestVideos(1);
+
   return (
     <>
       <Navbar />
@@ -53,6 +60,18 @@ export default function WatchPage() {
               <Radio size={18} aria-hidden /> Subscribe to @HBG_tv<span className="sr-only"> (opens in a new tab)</span>
             </a>
           </div>
+
+          {latest && (
+            <section aria-labelledby="latest-title" className="mx-auto mt-20 max-w-4xl">
+              <h2 id="latest-title" className="mb-2 flex items-center justify-center gap-2 text-center text-xs font-bold uppercase tracking-[0.24em] text-gold">
+                <Youtube size={16} aria-hidden /> Not live right now? Latest upload
+              </h2>
+              <p className="mb-6 text-center font-headline text-2xl text-white md:text-3xl">{latest.title}</p>
+              <div className="relative aspect-video overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
+                <LiteYouTube id={latest.id} title={latest.title} thumbnail={latest.thumbnail} sizes="(min-width: 1024px) 896px, 100vw" />
+              </div>
+            </section>
+          )}
 
           <section aria-labelledby="times-title" className="mt-20">
             <h2 id="times-title" className="mb-6 flex items-center justify-center gap-2 text-center text-xs font-bold uppercase tracking-[0.24em] text-gold">

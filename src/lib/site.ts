@@ -21,6 +21,12 @@ export const HQ_ADDRESS = [
   "opp. Royal Prince Supermarket, Akute, Ogun State",
 ];
 
+export const SOCIAL_HANDLES = {
+  youtube: "@HBG_tv",
+  instagram: "@hbgministries",
+  tiktok: "@hbgministries",
+};
+
 export const SOCIALS = {
   youtube: "https://youtube.com/@HBG_tv",
   youtubeLive: "https://youtube.com/@HBG_tv/live",
@@ -28,8 +34,14 @@ export const SOCIALS = {
   tiktok: "https://tiktok.com/@hbgministries",
 };
 
-/** YouTube channel behind @HBG_tv — used for the live-stream embed. */
-export const YOUTUBE_CHANNEL_ID = "UCwlSi6aHBXj9MHhpWLUfXuA";
+/**
+ * YouTube channel behind @HBG_tv — used for the live-stream embed and the
+ * "Latest from HBG TV" feed. Verified Nov 2026 from the public @HBG_tv page
+ * ("Heartbeat Of God Foundation"); the previous ID pointed to a channel that
+ * no longer exists.
+ */
+export const YOUTUBE_CHANNEL_ID = "UC2EFyzk--fBYxUUBtPVpyYA";
+export const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
 export const YOUTUBE_LIVE_EMBED = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
 
 /** Public Zoom registration link for online services. */
@@ -53,3 +65,18 @@ export const NAV_LINKS = [
 
 /** Optional public contact phone. Set NEXT_PUBLIC_CONTACT_PHONE in Vercel to show it. */
 export const CONTACT_PHONE = process.env.NEXT_PUBLIC_CONTACT_PHONE?.trim() || "";
+
+/**
+ * Optional WhatsApp Channel link. Set NEXT_PUBLIC_WHATSAPP_CHANNEL_URL in Vercel
+ * to show a "Follow on WhatsApp" button in the Follow HBG block. Empty = hidden.
+ */
+export const WHATSAPP_CHANNEL_URL = (() => {
+  const v = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL_URL?.trim() || "";
+  return /^https:\/\//.test(v) ? v : "";
+})();
+
+/**
+ * Calendar day used to decide which Daily Word is "today" (and to hide
+ * posts scheduled for a future date). The ministry publishes from Winnipeg.
+ */
+export const DAILY_WORD_TIMEZONE = "America/Winnipeg";

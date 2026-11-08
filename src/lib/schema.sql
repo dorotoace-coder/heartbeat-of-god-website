@@ -206,3 +206,79 @@ DO $$ BEGIN
     CREATE POLICY "Authenticated write feed reports" ON feed_the_future_reports FOR ALL TO authenticated USING (true) WITH CHECK (true);
   END IF;
 END $$;
+
+-- ═══════════════════════════════════════════════════════════
+-- DAILY WORD LIBRARY (/daily-word, home "Word of the Day")
+-- Anyone may read PUBLISHED rows. Only staff whose profiles.role is
+-- owner, pastor or manager may create / edit / publish; deleting needs
+-- owner or pastor. These match the admin dashboard's role levels
+-- (src/lib/permissions.ts). Idempotent: safe to re-run.
+-- ═══════════════════════════════════════════════════════════
+
+-- Role check used by RLS. SECURITY DEFINER so it can read profiles even
+-- when profiles has its own RLS; plpgsql so it is only resolved at call time.
+CREATE OR REPLACE FUNCTION public.hbg_has_staff_role(allowed TEXT[])
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles p
+    WHERE p.id = auth.uid() AND p.role::text = ANY (allowed)
+  );
+END;
+$$;
+REVOKE ALL ON FUNCTION public.hbg_has_staff_role(TEXT[]) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.hbg_has_staff_role(TEXT[]) TO anon, authenticated;
+
+CREATE TABLE IF NOT EXISTS daily_words (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  publish_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  title TEXT NOT NULL,
+  scripture_ref TEXT NOT NULL,          -- e.g. 'Psalm 46:10'
+  scripture_text TEXT NOT NULL,         -- King James Version text
+  devotional TEXT NOT NULL DEFAULT '',  -- markdown: paragraphs, ##, >, -, **bold**, *italic*, [links](https://…)
+  image_url TEXT,
+  instagram_url TEXT,
+  tiktok_url TEXT,
+  youtube_url TEXT,
+  published BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS daily_words_published_date_idx ON daily_words (published, publish_date DESC);
+
+ALTER TABLE daily_words ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'daily_words' AND policyname = 'Public read published daily words') THEN
+    CREATE POLICY "Public read published daily words" ON daily_words FOR SELECT USING (published = true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'daily_words' AND policyname = 'Staff read all daily words') THEN
+    CREATE POLICY "Staff read all daily words" ON daily_words FOR SELECT TO authenticated
+      USING (public.hbg_has_staff_role(ARRAY['owner','pastor','manager']));
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'daily_words' AND policyname = 'Staff insert daily words') THEN
+    CREATE POLICY "Staff insert daily words" ON daily_words FOR INSERT TO authenticated
+      WITH CHECK (public.hbg_has_staff_role(ARRAY['owner','pastor','manager']));
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'daily_words' AND policyname = 'Staff update daily words') THEN
+    CREATE POLICY "Staff update daily words" ON daily_words FOR UPDATE TO authenticated
+      USING (public.hbg_has_staff_role(ARRAY['owner','pastor','manager']))
+      WITH CHECK (public.hbg_has_staff_role(ARRAY['owner','pastor','manager']));
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'daily_words' AND policyname = 'Senior staff delete daily words') THEN
+    CREATE POLICY "Senior staff delete daily words" ON daily_words FOR DELETE TO authenticated
+      USING (public.hbg_has_staff_role(ARRAY['owner','pastor']));
+  END IF;
+END $$;

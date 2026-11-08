@@ -10,9 +10,14 @@ import UpcomingEvents from "@/components/site/UpcomingEvents";
 import Reveal from "@/components/ui/Reveal";
 import { Section, SectionHeader, Eyebrow } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
+import LatestVideos from "@/components/site/LatestVideos";
+import FollowHBG from "@/components/site/FollowHBG";
+import JsonLd from "@/components/site/JsonLd";
 import { verseForDate } from "@/lib/scripture";
 import { getUpcomingEvents } from "@/lib/data";
-import { SOCIALS } from "@/lib/site";
+import { getTodaysDailyWord } from "@/lib/dailyWordData";
+import { excerpt } from "@/lib/dailyWord";
+import { DESCRIPTION, FOUNDER, HQ_ADDRESS, MINISTRY_EMAIL, SITE_NAME, SITE_URL, SOCIALS } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 
 // Re-render hourly so the Word of the Day and upcoming events stay current.
@@ -36,11 +41,36 @@ const pathways = [
 ];
 
 export default async function Home() {
-  const verse = verseForDate();
-  const events = await getUpcomingEvents(3);
+  const [events, daily] = await Promise.all([getUpcomingEvents(3), getTodaysDailyWord()]);
+  // Today's published Daily Word wins; otherwise the local KJV rotation.
+  const local = verseForDate();
+  const verse = daily ? { text: daily.scripture_text, reference: daily.scripture_ref } : local;
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Church",
+          "@id": `${SITE_URL}/#church`,
+          name: SITE_NAME,
+          alternateName: ["Heartbeat of God", "HBG"],
+          url: SITE_URL,
+          logo: `${SITE_URL}/hbg-logo.png`,
+          image: `${SITE_URL}/pastor-amos-pro.jpg`,
+          description: DESCRIPTION,
+          email: MINISTRY_EMAIL,
+          founder: { "@type": "Person", name: FOUNDER },
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: HQ_ADDRESS[0],
+            addressLocality: "Akute",
+            addressRegion: "Ogun State",
+            addressCountry: "NG",
+          },
+          sameAs: [SOCIALS.youtube, SOCIALS.instagram, SOCIALS.tiktok],
+        }}
+      />
       <Navbar />
       <main id="main-content">
         <Hero />
@@ -51,7 +81,7 @@ export default async function Home() {
           <FeaturedEvent />
         </Section>
 
-        {/* Word of the Day — local KJV list, rotated by date */}
+        {/* Word of the Day — today's published Daily Word, else the local KJV rotation */}
         <Section tone="ivory" aria-labelledby="word-title">
           <div className="grid items-center gap-12 lg:grid-cols-[1.3fr_1fr]">
             <Reveal>
@@ -66,6 +96,19 @@ export default async function Home() {
                 <figcaption className="mt-6 text-sm font-bold uppercase tracking-[0.2em] text-gold-deep">
                   {verse.reference} <span className="font-medium normal-case tracking-normal text-muted">· King James Version</span>
                 </figcaption>
+                {daily ? (
+                  <div className="mt-8 border-t border-line pt-6">
+                    <p className="font-headline text-2xl text-text">{daily.title}</p>
+                    {daily.devotional && <p className="mt-2 max-w-xl leading-relaxed text-muted">{excerpt(daily.devotional, 170)}</p>}
+                    <Link href={`/daily-word/${daily.slug}`} className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-plum">
+                      Read today’s Daily Word <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden />
+                    </Link>
+                  </div>
+                ) : (
+                  <Link href="/daily-word" className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-plum">
+                    Explore the Daily Word <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden />
+                  </Link>
+                )}
               </figure>
             </Reveal>
             <Reveal delay={0.1}>
@@ -112,6 +155,8 @@ export default async function Home() {
         </Section>
 
         <VlogSection />
+
+        <LatestVideos tone="ivory" />
 
         {/* Heart Beat Television */}
         <Section tone="dark" className="overflow-hidden" aria-labelledby="hbtv-title">
@@ -180,6 +225,24 @@ export default async function Home() {
             </Link>
           </div>
           <UpcomingEvents events={events} />
+        </Section>
+
+        {/* Follow HBG */}
+        <Section tone="ivory" aria-labelledby="follow-title">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.6fr]">
+            <Reveal>
+              <Eyebrow>Stay Connected</Eyebrow>
+              <h2 id="follow-title" className="font-headline text-4xl font-light leading-tight text-text md:text-5xl">
+                Follow <em className="text-gold-deep">HBG</em>
+              </h2>
+              <p className="mt-4 max-w-md leading-relaxed text-muted">
+                Teachings, the Daily Word, worship and live encounters — wherever you already are.
+              </p>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <FollowHBG />
+            </Reveal>
+          </div>
         </Section>
 
         {/* Closing scripture */}

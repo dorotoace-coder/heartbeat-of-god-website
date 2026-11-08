@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Play, Headphones, X, ExternalLink, Youtube } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { SOCIALS } from "@/lib/site";
+import { SITE_URL, SOCIALS } from "@/lib/site";
+import ShareButtons from "@/components/site/ShareButtons";
 import { thumbFor, youtubeId, videoUrlOf, type Vlog } from "@/components/VlogSection";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -209,6 +210,14 @@ export default function MediaLibrary() {
                 </a>
               </div>
             )}
+            <div className="border-t border-white/10 px-5 py-4">
+              <ShareButtons
+                tone="dark"
+                url={vid ? `https://www.youtube.com/watch?v=${vid}` : `${SITE_URL}/media`}
+                title={`${player.sermon.title} — ${player.sermon.preacher}`}
+                text="A message from Heartbeat of God Ministry"
+              />
+            </div>
           </div>
         )}
       </dialog>

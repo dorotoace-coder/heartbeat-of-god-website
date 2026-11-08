@@ -11,6 +11,7 @@ import {
   Settings,
   CalendarDays,
   Inbox,
+  BookOpen,
   Menu,
   ChevronRight
 } from "lucide-react";
@@ -21,6 +22,7 @@ const ALL_NAV_ITEMS = [
   { id: "events", label: "Events Engine", icon: CalendarDays, href: "/admin?view=events" },
   { id: "media", label: "Media Vault", icon: Video, href: "/admin?view=media" },
   { id: "inquiries", label: "Intake Inbox", icon: Inbox, href: "/admin?view=inquiries" },
+  { id: "dailyword", label: "Daily Word", icon: BookOpen, href: "/admin?view=dailyword" },
 ];
 
 function SidebarContent() {

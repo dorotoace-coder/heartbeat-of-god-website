@@ -8,6 +8,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { SOCIALS } from "@/lib/site";
 import { buttonClass } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Section";
+import ShareButtons from "@/components/site/ShareButtons";
 
 export interface Vlog {
   id: string;
@@ -142,6 +143,16 @@ export default function VlogSection() {
                   </button>
                 )}
               </div>
+              {featuredVid && (
+                <div className="border-t border-white/10 bg-ink px-5 py-4">
+                  <ShareButtons
+                    tone="dark"
+                    url={`https://www.youtube.com/watch?v=${featuredVid}`}
+                    title={`${featured.title} — ${featured.preacher}`}
+                    text="A message from Heartbeat of God Ministry"
+                  />
+                </div>
+              )}
             </div>
             <ul className="space-y-3">
               {vlogs.slice(0, 4).map((v) => {
