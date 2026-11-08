@@ -63,7 +63,7 @@ export const FALLBACK_DEPARTMENTS: DepartmentRow[] = [
 export async function getDepartments(): Promise<DepartmentRow[]> {
   if (!isSupabaseConfigured) return FALLBACK_DEPARTMENTS;
   try {
-    const { data, error } = await supabase.from("departments").select("*").order("display_order", { ascending: true });
+    const { data, error } = await supabase.from("departments").select("*").not("name", "is", null).order("display_order", { ascending: true });
     if (error) throw error;
     return data && data.length > 0 ? (data as DepartmentRow[]) : FALLBACK_DEPARTMENTS;
   } catch (err) {
