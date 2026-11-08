@@ -11,6 +11,8 @@
   "dependencies": {
     "@stripe/stripe-js": "^9.4.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.1.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",

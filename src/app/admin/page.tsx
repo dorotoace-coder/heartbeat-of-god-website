@@ -14,6 +14,7 @@ import { MembersView } from "@/components/admin/MembersView";
 import { EventsView } from "@/components/admin/EventsView";
 import { MediaView } from "@/components/admin/MediaView";
 import { InquiriesView } from "@/components/admin/InquiriesView";
+import { DailyWordView } from "@/components/admin/DailyWordView";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -79,6 +80,8 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
         return <MediaView />;
       case 'inquiries':
         return <InquiriesView />;
+      case 'dailyword':
+        return <DailyWordView />;
       case 'settings':
         return <div className="p-12 text-center text-slate-400 font-bold">System Rules Management - Coming Soon</div>;
       case 'overview':
@@ -171,11 +174,11 @@ export default function AdminDashboard() {
         }
 
         console.log("Admin Dashboard: Profile role detected:", profileData.role);
-        const fullProfile = profileData as any;
+        const fullProfile = profileData as Profile & { departments?: { name?: string } | null };
         setProfile({
           ...fullProfile,
           department_name: fullProfile.departments?.name
-        });
+        } as Profile);
 
         // 3. Fetch Pulse Data
         console.log("Admin Dashboard: Fetching Pulse OS metrics...");

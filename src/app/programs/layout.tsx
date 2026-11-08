@@ -1,10 +1,12 @@
-import { Metadata } from 'next';
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: 'Ministry Programs',
-  description: 'Join our upcoming events, including the Salvation Challenge, CLT devotionals, and spiritual training sessions.',
-};
+export const metadata = pageMetadata({
+  title: "Programs & Calendar",
+  description: "TRIBE X — Throne Room on November 27, 2026, the weekly ministry rhythm and the annual Heartbeat of God ministry calendar.",
+  path: "/programs",
+  image: { url: "/tribe-x-throne-room.jpg", width: 1080, height: 1350, alt: "TRIBE X — Throne Room flyer" },
+});
 
-export default function ProgramsLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return children;
 }

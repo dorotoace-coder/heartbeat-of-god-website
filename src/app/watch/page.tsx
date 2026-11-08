@@ -1,108 +1,95 @@
-"use client";
-
+import { Youtube, Video, Radio, CalendarClock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ComingSoonModal from "@/components/ComingSoonModal";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { Eyebrow } from "@/components/ui/Section";
+import { buttonClass } from "@/components/ui/Button";
+import LiteYouTube from "@/components/site/LiteYouTube";
+import { SERVICE_TIMES, SOCIALS, YOUTUBE_LIVE_EMBED, ZOOM_REGISTER_URL } from "@/lib/site";
+import { getLatestVideos } from "@/lib/youtube";
 
-export default function WatchPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFeature, setActiveFeature] = useState("");
+// The latest-upload feed is cached for an hour.
+export const revalidate = 3600;
 
-  const openModal = (feature: string) => {
-    setActiveFeature(feature);
-    setIsModalOpen(true);
-  };
+export default async function WatchPage() {
+  const [latest] = await getLatestVideos(1);
+
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-midnight text-white flex flex-col items-center justify-center px-8">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-4xl w-full"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-2 border border-red-500/30 bg-red-500/10 rounded-full text-red-500 text-xs font-bold tracking-widest uppercase mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-            Live Stream
-          </span>
-          
-          <div className="relative aspect-video bg-white/5 rounded-3xl border border-white/10 overflow-hidden flex items-center justify-center group mb-12 shadow-2xl shadow-sky/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-sky/10 to-transparent"></div>
-            
-            {isPlaying ? (
+      <main id="main-content" className="hero-aura min-h-screen px-5 pb-24 pt-32 text-white sm:px-8 md:pt-40">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <Eyebrow tone="dark" className="justify-center">
+              <span className="relative mr-1 inline-flex h-2 w-2" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+              </span>
+              HBG TV · Live Stream
+            </Eyebrow>
+            <h1 className="font-headline text-5xl font-light leading-tight md:text-7xl">
+              Atmosphere of <em className="text-gold-soft">Glory</em>
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-white/70">
+              Join us live every <strong className="text-white">Sunday at 9:00 AM</strong> and <strong className="text-white">Wednesday at 6:00 PM</strong>.
+              Outside service times the player may show that the stream is offline — our past messages are always on the channel.
+            </p>
+          </div>
+
+          <div className="mt-12 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black shadow-[0_50px_120px_-40px_rgba(0,0,0,0.9)]">
+            <div className="relative aspect-video">
               <iframe
-                className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/live_stream?channel=UCwlSi6aHBXj9MHhpWLUfXuA&autoplay=1"
-                title="HBG TV — Heartbeat of God Live Stream"
-                frameBorder="0"
+                className="absolute inset-0 h-full w-full"
+                src={YOUTUBE_LIVE_EMBED}
+                title="HBG TV — Heartbeat of God live stream on YouTube"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
-            ) : (
-              <>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsPlaying(true)}
-                  className="relative z-10 w-24 h-24 rounded-full bg-sky text-white flex items-center justify-center shadow-xl shadow-sky/30"
-                >
-                  <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                </motion.button>
-                <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 text-sm font-medium tracking-widest uppercase">
-                  HBG TV — @HBG_tv
-                </p>
-                <a
-                  href="https://youtube.com/@HBG_tv"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-all backdrop-blur"
-                >
-                  <span className="material-symbols-outlined text-sm">open_in_new</span>
-                  Open on YouTube
-                </a>
-              </>
-            )}
+            </div>
           </div>
 
-          <h1 className="font-headline text-4xl md:text-5xl mb-6">Atmosphere of Glory</h1>
-          <p className="text-white/60 text-lg leading-relaxed max-w-2xl mx-auto mb-12">
-            Join us live every <strong className="text-white/80">Sunday at 9:00 AM</strong> and <strong className="text-white/80">Wednesday at 6:00 PM</strong>. If the stream doesn't load automatically, click the play button or open directly on YouTube.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://youtube.com/@HBG_tv"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-red-900/30"
-            >
-              <span className="material-symbols-outlined">play_circle</span>
-              Watch on YouTube
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a href={SOCIALS.youtubeLive} target="_blank" rel="noopener noreferrer" className={buttonClass("gold")}>
+              <Youtube size={18} aria-hidden /> Watch on YouTube<span className="sr-only"> (opens in a new tab)</span>
             </a>
-            <a
-              href="https://us06web.zoom.us/meeting/register/ISNaNBhoTWWu4PmQiEsyDg"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-900/30"
-            >
-              <span className="material-symbols-outlined">video_call</span>
-              Join on Zoom
+            <a href={ZOOM_REGISTER_URL} target="_blank" rel="noopener noreferrer" className={buttonClass("ghost-light")}>
+              <Video size={18} aria-hidden /> Join on Zoom<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a href={SOCIALS.youtube} target="_blank" rel="noopener noreferrer" className={buttonClass("ghost-light")}>
+              <Radio size={18} aria-hidden /> Subscribe to @HBG_tv<span className="sr-only"> (opens in a new tab)</span>
             </a>
           </div>
-        </motion.div>
+
+          {latest && (
+            <section aria-labelledby="latest-title" className="mx-auto mt-20 max-w-4xl">
+              <h2 id="latest-title" className="mb-2 flex items-center justify-center gap-2 text-center text-xs font-bold uppercase tracking-[0.24em] text-gold">
+                <Youtube size={16} aria-hidden /> Not live right now? Latest upload
+              </h2>
+              <p className="mb-6 text-center font-headline text-2xl text-white md:text-3xl">{latest.title}</p>
+              <div className="relative aspect-video overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
+                <LiteYouTube id={latest.id} title={latest.title} thumbnail={latest.thumbnail} sizes="(min-width: 1024px) 896px, 100vw" />
+              </div>
+            </section>
+          )}
+
+          <section aria-labelledby="times-title" className="mt-20">
+            <h2 id="times-title" className="mb-6 flex items-center justify-center gap-2 text-center text-xs font-bold uppercase tracking-[0.24em] text-gold">
+              <CalendarClock size={16} aria-hidden /> Service Times
+            </h2>
+            <ul className="grid gap-4 md:grid-cols-3">
+              {SERVICE_TIMES.map((s) => (
+                <li key={s.name} className="rounded-3xl border border-white/10 bg-white/[0.04] p-7">
+                  <p className="font-headline text-2xl">{s.name}</p>
+                  <p className="mt-2 text-gold-soft">{s.day} · {s.time}</p>
+                  <p className="mt-2 text-sm text-white/60">{s.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </main>
       <Footer />
-      <ComingSoonModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        featureName={activeFeature} 
-      />
     </>
   );
 }

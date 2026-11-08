@@ -55,7 +55,7 @@ export const currentEvent: MinistryEvent = {
   kicker: "Next Gathering",
   badge: "Save The Date",
   scripture:
-    '"Be still, and know that I am God" — Psalm 46:10',
+    '"A great multitude, which no man could number, of all nations, and kindreds, and people, and tongues, stood before the throne, and before the Lamb." — Revelation 7:9 (KJV)',
 
   startsAt: "2026-11-27T19:00:00",
   endsAt: "2026-11-27T21:30:00",

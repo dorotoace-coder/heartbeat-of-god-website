@@ -1,375 +1,126 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Clock, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ComingSoonModal from "@/components/ComingSoonModal";
-import TiltCard from "@/components/TiltCard";
-import FlipClock from "@/components/FlipClock";
-import { supabase } from "@/lib/supabase";
-import { motion } from "framer-motion";
-import { currentEvent } from "@/config/currentEvent";
+import PageHero from "@/components/site/PageHero";
+import FeaturedEvent from "@/components/site/FeaturedEvent";
+import UpcomingEvents from "@/components/site/UpcomingEvents";
+import Countdown from "@/components/programs/Countdown";
+import Reveal from "@/components/ui/Reveal";
+import { Section, SectionHeader } from "@/components/ui/Section";
+import { buttonClass } from "@/components/ui/Button";
+import { currentEvent, hasEnded } from "@/config/currentEvent";
+import { getUpcomingEvents } from "@/lib/data";
+import { cn } from "@/lib/cn";
+import { isPastDay } from "@/lib/format";
 
-interface EventItem {
-  id: string;
-  name: string;
-  description: string;
-  event_date: string;
-  location: string;
-  image_url?: string;
-  is_highlighted?: boolean;
+export const revalidate = 3600;
+
+/** currentEvent times are local to the venue (Akute, Nigeria — WAT, UTC+1). */
+function withVenueOffset(iso: string) {
+  return /([+-]\d\d:\d\d|Z)$/.test(iso) ? iso : `${iso}+01:00`;
 }
 
-export default function ProgramsPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeFeature, setActiveFeature] = useState("");
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [highlightedEvent, setHighlightedEvent] = useState<EventItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0 });
+const CORE_PROGRAMS = [
+  { name: "Evangelism and Outreach", time: "Quarterly", desc: "Our primary engine for soul-winning and global mission impact." },
+  { name: "CLT Devotionals", time: "Daily / Weekly", desc: "Small group spiritual nourishment and intimate Word study." },
+  { name: "Prayer & Fasting Seasons", time: "Monthly", desc: "Consecrated windows for seeking God’s face and corporate breakthrough." },
+  { name: "Mentorship Services", time: "By Appointment", desc: "One-on-one spiritual guidance and personalized life coaching." },
+  { name: "Revival Gatherings", time: "Special Scheduled", desc: "High-intensity atmosphere of worship and prophetic demonstration." },
+  { name: "Leadership Development", time: "Monthly", desc: "Training the next generation of Kingdom-focused administrators." },
+  { name: "Discipleship Meetings", time: "Weekly", desc: "Deep-dives into the doctrine of Christ and spiritual maturity." },
+  { name: "Spiritual Training", time: "Enrollment Based", desc: "Certificated courses covering biblical foundations and ministry." },
+];
 
-  // Compute next occurrence of a given weekday (0=Sun, 3=Wed)
-  const getNextWeekday = (weekday: number) => {
-    const now = new Date();
-    const day = now.getDay();
-    const diff = (weekday - day + 7) % 7 || 7;
-    const next = new Date(now);
-    next.setDate(now.getDate() + diff);
-    next.setHours(weekday === 0 ? 9 : 18, 0, 0, 0);
-    return next.toISOString();
-  };
+/** `ends` is the last day of each item (2026), used only to mark past entries. */
+const ANNUAL_CALENDAR = [
+  { months: "Jan 1 – Feb 1", ends: "2026-02-01", focus: "STIR UP — Prayer & Fasting", details: "Month-long consecration, fasting and alignment to begin the year in God." },
+  { months: "Feb 1", ends: "2026-02-01", focus: "First Fruit Sunday", details: "Thanksgiving and seed sowing — honouring God with the first of everything." },
+  { months: "Mar 29–30", ends: "2026-03-30", focus: "Salvation Challenge Conference", details: "Leadership prayer, intercession and major soul-winning initiative." },
+  { months: "Apr 3", ends: "2026-04-03", focus: "RISEN Crusade", details: "Easter Friday crusade — integrated departmental execution and outreach." },
+  { months: "Jun 5–7", ends: "2026-06-07", focus: "ILPC 2026 — Mid-Year Conference", details: "International Leaders & Pastors Conference. Volunteer training and evaluation." },
+  { months: "Aug 13 – Sep 2", ends: "2026-09-02", focus: "We Wait — 21 Days Fasting & Prayer", details: "Spiritual focus, intercession and fasting emphasis leading into MTA26." },
+  { months: "Sep 4–6", ends: "2026-09-06", focus: "MTA26 — Mighty Turn Around Assembly", details: "Full programme integration. Our major annual gathering of fire and power." },
+  { months: "Nov 27", ends: "2026-11-27", focus: "TRIBE X CONCERT — Throne Room", details: "A night of worship and prophecy. Come before the throne of God." },
+  { months: "Dec 9", ends: "2026-12-09", focus: "Christmas Carol", details: "Community outreach and celebration of the birth of Christ." },
+  { months: "Dec 31", ends: "2026-12-31", focus: "Captured in Glory Night", details: "Year-end celebration — entering the new year in God’s glory." },
+];
 
-  useEffect(() => {
-    async function fetchEvents() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select('*')
-          .order('event_date', { ascending: true });
-
-        if (error) throw error;
-
-        // Fix recurring past events: update their date to next occurrence
-        const fixed = (data as EventItem[])?.map(e => {
-          const isPast = new Date(e.event_date) < new Date();
-          if (isPast && e.name.toLowerCase().includes('sunday')) {
-            return { ...e, event_date: getNextWeekday(0), location: '100/102 Akute Rd, Martins Bus Stop, Akute & Online' };
-          }
-          if (isPast && e.name.toLowerCase().includes('wednesday')) {
-            return { ...e, event_date: getNextWeekday(3), location: '100/102 Akute Rd, Martins Bus Stop, Akute & Online' };
-          }
-          return e;
-        }) || [];
-
-        setEvents(fixed);
-
-        // Prefer explicitly highlighted → MTA → next upcoming
-        const highlighted =
-          fixed.find(e => e.is_highlighted) ||
-          fixed.find(e => e.name.toLowerCase().includes('mta')) ||
-          fixed.find(e => new Date(e.event_date) >= new Date()) ||
-          fixed[0];
-        setHighlightedEvent(highlighted || null);
-      } catch (err) {
-        console.error('Error fetching events:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchEvents();
-  }, []);
-
-  useEffect(() => {
-    if (!highlightedEvent) return;
-
-    // Compute initial countdown immediately
-    const computeCountdown = () => {
-      const target = new Date(highlightedEvent.event_date).getTime();
-      const now = new Date().getTime();
-      const diff = target - now;
-
-      if (diff <= 0) {
-        return { days: 0, hours: 0, mins: 0 };
-      }
-      return {
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      };
-    };
-
-    setCountdown(computeCountdown());
-
-    const timer = setInterval(() => {
-      const result = computeCountdown();
-      setCountdown(result);
-      if (result.days === 0 && result.hours === 0 && result.mins === 0) {
-        clearInterval(timer);
-      }
-    }, 60000);
-
-    return () => clearInterval(timer);
-  }, [highlightedEvent]);
-
-  const openModal = (feature: string) => {
-    setActiveFeature(feature);
-    setIsModalOpen(true);
-  };
-
-  const corePrograms = [
-    { name: "Evangelism and Outreach", time: "Quarterly", desc: "Our primary engine for soul-winning and global mission impact." },
-    { name: "CLT Devotionals", time: "Daily / Weekly", desc: "Small group spiritual nourishment and intimate Word study." },
-    { name: "Prayer & Fasting Seasons", time: "Monthly", desc: "Consecrated windows for seeking God's face and corporate breakthrough." },
-    { name: "Mentorship Services", time: "By Appointment", desc: "One-on-one spiritual guidance and personalized life coaching." },
-    { name: "Revival Gatherings", time: "Special Scheduled", desc: "High-intensity atmosphere of worship and prophetic demonstration." },
-    { name: "Leadership Development", time: "Monthly", desc: "Training the next generation of Kingdom-focused administrators." },
-    { name: "Discipleship Meetings", time: "Weekly", desc: "Deep-dives into the doctrine of Christ and spiritual maturity." },
-    { name: "Spiritual Training", time: "Enrollment Based", desc: "Certificated courses covering biblical foundations and ministry." }
-  ];
+export default async function ProgramsPage() {
+  const events = await getUpcomingEvents(3);
+  const ended = hasEnded();
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-surface">
-        {/* Featured Program: Dynamic Highlight */}
-        <section className="px-8 max-w-7xl mx-auto mb-32">
-          {loading ? (
-             <div className="bg-midnight/10 animate-pulse rounded-[3rem] h-[500px]"></div>
-          ) : highlightedEvent && (
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-midnight rounded-[3rem] p-12 lg:p-24 text-white relative overflow-hidden"
-              style={{ boxShadow: '0 0 0 1px rgba(212,175,55,0.15), 0 32px 80px rgba(28,10,45,0.5)' }}
-            >
-              {/* Animated ambient blobs */}
-              <motion.div
-                animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.14, 0.08] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 pointer-events-none"
-              />
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.1, 0.06] }}
-                transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-                className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky/30 rounded-full blur-[100px] -translate-x-1/3 translate-y-1/3 pointer-events-none"
-              />
-              {/* Gold top border shimmer */}
-              <motion.div
-                animate={{ backgroundPosition: ['0% center', '200% center'] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[3rem]"
-                style={{ background: 'linear-gradient(90deg, transparent, #d4af37, #f0d060, #d4af37, transparent)', backgroundSize: '200%' }}
-              />
+      <main id="main-content">
+        <PageHero
+          eyebrow="Programs & Calendar"
+          title={<>A Rhythm of <em className="text-gold-soft">Encounter</em></>}
+          intro="Explore our consistent patterns of spiritual engagement designed to keep your focus on the Kingdom — and the gatherings that mark our year."
+          aside={!ended ? <Countdown to={withVenueOffset(currentEvent.startsAt)} label={`${currentEvent.name} begins in`} /> : undefined}
+        />
 
-              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <motion.span
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-6 inline-block"
-                  >
-                    Flagship Event
-                  </motion.span>
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.6 }}
-                    className="font-headline text-5xl md:text-7xl mb-8 leading-tight"
-                  >
-                    {highlightedEvent.name}
-                  </motion.h1>
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.45 }}
-                    className="text-white/70 text-lg md:text-xl mb-12 leading-relaxed"
-                  >
-                    {highlightedEvent.description}
-                  </motion.p>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.55 }}
-                    className="flex flex-col sm:flex-row gap-8 items-start sm:items-center"
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Upcoming Date</span>
-                      <span className="text-2xl font-headline">
-                        {(() => {
-                          const d = new Date(highlightedEvent.event_date);
-                          const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-                          return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-                        })()}
-                      </span>
-                    </div>
-                    <div className="hidden sm:block w-px h-12 bg-white/20" />
-                    <div className="flex flex-col">
-                      <span className="text-sky text-xs font-bold uppercase tracking-widest mb-1">Location</span>
-                      <span className="text-2xl font-headline">{highlightedEvent.location}</span>
-                    </div>
-                  </motion.div>
-                  {highlightedEvent.name.toLowerCase().includes('mta') ? (
-                    <motion.a
-                      href="https://events.heartbeatofgod.ca"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7 }}
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl shadow-white/10 inline-block text-center"
-                      style={{ boxShadow: '0 0 0 2px rgba(212,175,55,0.4), 0 12px 32px rgba(255,255,255,0.08)' }}
-                    >
-                      {currentEvent.registerLabel} — {currentEvent.name} →
-                    </motion.a>
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7 }}
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Link href="/connect" className="mt-12 px-10 py-5 bg-white text-midnight rounded-2xl font-bold shadow-xl inline-block text-center">
-                        Register for Free
-                      </Link>
-                    </motion.div>
-                  )}
-                </div>
-                <div className="hidden lg:block relative">
-                  <div className="flex flex-col items-center gap-6">
-                    <span className="text-sky font-black text-xs uppercase tracking-[0.22em]">Countdown</span>
-                    <FlipClock
-                      targetDate={highlightedEvent ? new Date(highlightedEvent.event_date) : new Date()}
-                      accentColor="#C8A2D0"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </section>
+        <Section tone="ink" className="pt-4 md:pt-8" aria-labelledby="flagship">
+          <h2 id="flagship" className="sr-only">Flagship event</h2>
+          <FeaturedEvent />
+        </Section>
 
-        {/* Core Ministry Programs */}
-        <section className="px-8 max-w-7xl mx-auto mb-32">
-          <div className="text-center mb-16">
-            <h2 className="font-headline text-4xl text-midnight mb-4">Ministry Rhythm</h2>
-            <p className="text-on-surface-variant max-w-2xl mx-auto">Explore our consistent patterns of spiritual engagement designed to keep your focus on the Kingdom.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {corePrograms.map((prog, i) => (
-              <TiltCard key={prog.name} className="rounded-2xl" glowColor="rgba(200,162,208,0.15)">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group p-8 bg-white border border-outline-variant/30 rounded-2xl hover:border-sky hover:shadow-xl hover:shadow-sky/5 transition-all h-full"
-              >
-                <h3 className="font-headline text-xl text-midnight mb-4 group-hover:text-sky transition-colors">{prog.name}</h3>
-                <p className="text-on-surface-variant text-sm mb-6 leading-relaxed opacity-70">{prog.desc}</p>
-                <div className="flex items-center gap-2 text-label-small font-bold text-sky uppercase tracking-widest">
-                  <span className="material-symbols-outlined text-sm">schedule</span>
-                  {prog.time}
-                </div>
-              </motion.div>
-              </TiltCard>
-            ))}
-          </div>
-        </section>
+        <Section tone="ivory" aria-labelledby="upcoming-title">
+          <SectionHeader id="upcoming-title" eyebrow="Coming Up" title="Upcoming Encounters" />
+          <UpcomingEvents events={events} />
+        </Section>
 
-        {/* Global Rhythm */}
-        <section className="px-8 max-w-7xl mx-auto py-24 mb-32 bg-surface-container-high rounded-[3rem] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-midnight/5 to-transparent"></div>
-          <div className="relative z-10">
-            <h2 className="font-headline text-4xl text-midnight mb-16 text-center">Annual Ministry Calendar</h2>
-            <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
-              {[
-                { months: "Jan 1 – Feb 1", focus: "STIR UP — Prayer & Fasting", details: "Month-long consecration, fasting and alignment to begin the year in God." },
-                { months: "Feb 1", focus: "First Fruit Sunday", details: "Thanksgiving and seed sowing — honouring God with the first of everything." },
-                { months: "Mar 29–30", focus: "Salvation Challenge Conference", details: "Leadership prayer, intercession and major soul-winning initiative." },
-                { months: "Apr 3", focus: "RISEN Crusade", details: "Easter Friday crusade — integrated departmental execution and outreach." },
-                { months: "Jun 5–7", focus: "ILPC 2026 — Mid-Year Conference", details: "International Leaders & Pastors Conference. Volunteer training and evaluation." },
-                { months: "Aug 13 – Sep 2", focus: "We Wait — 21 Days Fasting & Prayer", details: "Spiritual focus, intercession and fasting emphasis leading into MTA26." },
-                { months: "Sep 4–6", focus: "MTA26 — Mighty Turn Around Assembly", details: "Full programme integration. Our major annual gathering of fire and power." },
-                { months: "Nov 27", focus: "TRIBE X CONCERT — Throne Room", details: "A night of worship and prophecy. Come before the throne of God." },
-                { months: "Dec 9", focus: "Christmas Carol", details: "Community outreach and celebration of the birth of Christ." },
-                { months: "Dec 31", focus: "Captured in Glory Night", details: "Year-end celebration — entering the new year in God's glory." }
-              ].map((period) => (
-                <div key={period.months} className="flex flex-col md:flex-row items-center justify-between p-8 bg-white rounded-2xl border border-outline-variant/10 hover:border-sky/20 transition-all group">
-                  <div className="mb-4 md:mb-0">
-                    <span className="font-bold text-sky text-sm uppercase tracking-[0.2em] mb-2 block">{period.months}</span>
-                    <span className="text-midnight font-headline text-2xl group-hover:text-sky-dark transition-colors">{period.focus}</span>
-                  </div>
-                  <p className="text-on-surface-variant text-sm max-w-xs text-center md:text-right opacity-60 italic leading-relaxed">
-                    {period.details}
+        <Section tone="parchment" aria-labelledby="rhythm-title">
+          <SectionHeader id="rhythm-title" eyebrow="Ministry Rhythm" title="Our Core Programs" />
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {CORE_PROGRAMS.map((p, i) => (
+              <Reveal as="li" key={p.name} delay={(i % 4) * 0.06}>
+                <div className="flex h-full flex-col rounded-3xl border border-line bg-white p-7">
+                  <h3 className="font-headline text-2xl leading-snug text-text">{p.name}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">{p.desc}</p>
+                  <p className="mt-auto flex items-center gap-2 pt-6 text-xs font-bold uppercase tracking-[0.16em] text-gold-deep">
+                    <Clock size={14} aria-hidden /> {p.time}
                   </p>
                 </div>
-              ))}
+              </Reveal>
+            ))}
+          </ul>
+        </Section>
+
+        <Section tone="ivory" aria-labelledby="calendar-title">
+          <SectionHeader id="calendar-title" eyebrow="2026" title="Annual Ministry Calendar" />
+          <ol className="relative space-y-3 border-l border-line pl-6 md:pl-10">
+            {ANNUAL_CALENDAR.map((c) => {
+              const past = isPastDay(c.ends);
+              return (
+                <li key={c.focus} className={cn("relative rounded-2xl border bg-white p-6 md:grid md:grid-cols-[10rem_1fr_1.1fr] md:items-center md:gap-8", past ? "border-line opacity-70" : "border-gold/40")}>
+                  <span aria-hidden className={cn("absolute -left-[31px] top-7 h-3 w-3 rounded-full border-2 md:-left-[47px]", past ? "border-line bg-ivory" : "border-gold bg-gold")} />
+                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-gold-deep">{c.months}</p>
+                  <h3 className="mt-1 font-headline text-2xl text-text md:mt-0">
+                    {c.focus}
+                    {past && (
+                      <span className="ml-2 inline-flex items-center gap-1 align-middle text-[0.65rem] font-bold uppercase tracking-wider text-muted">
+                        <Check size={12} aria-hidden /> Past
+                      </span>
+                    )}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted md:mt-0">{c.details}</p>
+                </li>
+              );
+            })}
+          </ol>
+          <div className="mt-14 rounded-3xl border border-line bg-parchment p-8 text-center md:p-12">
+            <h3 className="font-headline text-3xl text-text">Need the detailed schedule?</h3>
+            <p className="mx-auto mt-3 max-w-xl text-muted">Ask us about any programme — dates, venues, registration or how to take part — and our team will get back to you.</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href={`/connect?type=${encodeURIComponent("Event Registration")}`} className={buttonClass("dark")}>Ask About a Programme</Link>
+              <Link href="/watch" className={buttonClass("ghost-dark")}>Watch Services Live</Link>
             </div>
           </div>
-        </section>
-
-        {/* MTA26 Teaser */}
-        <section className="px-8 max-w-7xl mx-auto mb-20">
-          <motion.a
-            href="/mta-2026-announcement.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.015 }}
-            className="flex flex-col md:flex-row items-center justify-between gap-8 p-10 md:p-14 rounded-[2.5rem] relative overflow-hidden text-white no-underline block"
-            style={{ background: "linear-gradient(135deg, #0d0518 0%, #1a0828 60%, #0d0518 100%)", border: "1px solid rgba(255,107,43,0.2)", boxShadow: "0 0 0 1px rgba(212,175,55,0.08), 0 32px 80px rgba(255,60,0,0.1)" }}
-          >
-            {/* Fire glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,107,43,0.12) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
-            {/* Gold shimmer top */}
-            <motion.div
-              animate={{ backgroundPosition: ["0% center", "300% center"] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-              className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[2.5rem]"
-              style={{ background: "linear-gradient(90deg, transparent, #ff6b2b, #d4af37, #ff6b2b, transparent)", backgroundSize: "300%" }}
-            />
-            <div className="relative z-10">
-              <span className="block text-[11px] font-black tracking-[0.22em] uppercase mb-3" style={{ color: "#ff9a3c" }}>{currentEvent.dateLabel}</span>
-              <h2 className="font-headline text-4xl md:text-5xl mb-3">
-                <span style={{ color: "#d4af37" }}>{currentEvent.name}</span>
-              </h2>
-              <p className="text-white/60 text-lg font-medium">{currentEvent.subtitle} — {currentEvent.cardBlurb}</p>
-            </div>
-            <div className="relative z-10 flex-shrink-0">
-              <span className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-base" style={{ background: "linear-gradient(135deg, #ff6b2b, #d4450a)", boxShadow: "0 8px 32px rgba(255,107,43,0.35)" }}>
-                🔥 Learn More &amp; Save the Date →
-              </span>
-            </div>
-          </motion.a>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="px-8 max-w-4xl mx-auto text-center pb-20">
-           <h3 className="font-headline text-3xl text-midnight mb-8">Need the detailed schedule?</h3>
-           <button 
-             onClick={() => openModal("Ministry Calendar PDF")}
-             className="px-8 py-4 bg-midnight text-white rounded-xl font-bold hover:shadow-2xl hover:shadow-midnight/20 transition-all"
-           >
-             Download Full PDF Calendar
-           </button>
-        </section>
+        </Section>
       </main>
       <Footer />
-      <ComingSoonModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        featureName={activeFeature} 
-      />
     </>
   );
 }

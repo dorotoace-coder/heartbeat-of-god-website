@@ -1,154 +1,106 @@
-"use client";
-
+import Image from "next/image";
+import Link from "next/link";
+import { HeartHandshake, BookOpen, Send } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { motion } from "framer-motion";
+import PageHero from "@/components/site/PageHero";
+import Reveal from "@/components/ui/Reveal";
+import { Section, SectionHeader, Eyebrow } from "@/components/ui/Section";
+import { buttonClass } from "@/components/ui/Button";
+
+const MODEL = [
+  { title: "Win", Icon: HeartHandshake, desc: "Bringing people to Christ through evangelism, outreach, and the preaching of the Gospel." },
+  { title: "Build", Icon: BookOpen, desc: "Nurturing believers through the Word of God, prayer, fellowship, discipleship, and spiritual development." },
+  { title: "Send", Icon: Send, desc: "Releasing believers to influence communities and the world through service, leadership, and Kingdom impact." },
+];
+
+const FOUNDATION = [
+  "The Lordship of Jesus Christ",
+  "Transforming Power of the Holy Spirit",
+  "Authority of Scripture",
+  "Prayer",
+  "Discipleship",
+  "Evangelism",
+  "Christian Growth & Maturity",
+];
 
 export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-surface">
-        {/* Hero Section */}
-        <section className="px-8 max-w-7xl mx-auto text-center mb-24">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block"
-          >
-            Our Identity
-          </motion.span>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-headline text-5xl md:text-7xl text-midnight mb-8"
-          >
-            Heartbeat of God Ministry
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-on-surface-variant text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed italic font-serif"
-          >
-            "A Reason to Live"
-          </motion.p>
-        </section>
+      <main id="main-content">
+        <PageHero eyebrow="Our Identity" title="Heartbeat of God Ministry" intro={<em className="font-headline text-2xl text-white/80 md:text-3xl">“A Reason to Live”</em>} />
 
-        {/* Vision & Founder */}
-        <section className="px-8 py-24 bg-surface-container-low">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              <h2 className="font-headline text-4xl text-midnight leading-tight">Our Vision</h2>
-              <p className="text-on-surface-variant text-lg leading-relaxed">
-                To bring men to the sense of God's divine presence. We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
+        <Section tone="ivory" aria-labelledby="vision-title">
+          <div className="grid items-center gap-14 lg:grid-cols-2">
+            <Reveal>
+              <Eyebrow>Our Vision</Eyebrow>
+              <h2 id="vision-title" className="font-headline text-balance text-4xl font-light leading-tight text-text md:text-5xl">
+                To bring men to the sense of God’s divine presence.
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-muted">
+                We exist to help people encounter Christ, grow spiritually, and influence the world through the power of the Holy Spirit.
               </p>
-              <div className="pt-8 border-t border-outline-variant">
-                <p className="font-headline text-2xl text-midnight mb-2">Founder & Lead Pastor</p>
-                <p className="text-sky font-bold text-lg">Pastor Amos Unogwu</p>
+              <div className="mt-10 border-t border-line pt-8">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Founder &amp; Lead Pastor</p>
+                <p className="mt-2 font-headline text-3xl text-text">Pastor Amos Unogwu</p>
               </div>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl group"
-            >
-              <div className="absolute inset-0 bg-midnight/10 mix-blend-overlay"></div>
-              <img
-                src="/pastor-amos-pro.jpg"
-                alt="Pastor Amos Unogwu - Founder and Lead Pastor of Heartbeat of God Ministry"
-                className="w-full h-full object-cover object-top group-hover:scale-105 transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-midnight/80 via-transparent to-transparent"></div>
-              <div className="absolute bottom-10 left-10">
-                <p className="text-white font-headline text-3xl">Pst. Amos Unogwu</p>
-                <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Leading the Vision</p>
-              </div>
-            </motion.div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <figure className="relative overflow-hidden rounded-[2rem] bg-ink shadow-[0_40px_90px_-40px_rgba(14,7,22,0.8)]">
+                <div className="relative aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5]">
+                  <Image
+                    src="/pastor-amos-pro.jpg"
+                    alt="Pastor Amos Unogwu, Founder and Lead Pastor of Heartbeat of God Ministry"
+                    fill
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                    className="object-cover object-[65%_center]"
+                  />
+                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/85 via-transparent to-transparent" />
+                </div>
+                <figcaption className="absolute bottom-8 left-8 text-white">
+                  <span className="block font-headline text-3xl">Pst. Amos Unogwu</span>
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-gold-soft">Leading the Vision</span>
+                </figcaption>
+              </figure>
+            </Reveal>
           </div>
-        </section>
+        </Section>
 
-        {/* Mission Model: Win Build Send */}
-        <section className="px-8 py-32 max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="font-headline text-4xl text-midnight mb-4">The Mission Model</h2>
-            <div className="text-5xl md:text-6xl font-headline text-sky/50 tracking-widest mt-4">
-              WIN • BUILD • SEND
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              { 
-                title: "WIN", 
-                desc: "Bringing people to Christ through evangelism, outreach, and the preaching of the Gospel.",
-                icon: "volunteer_activism"
-              },
-              { 
-                title: "BUILD", 
-                desc: "Nurturing believers through the Word of God, prayer, fellowship, discipleship, and spiritual development.",
-                icon: "auto_stories"
-              },
-              { 
-                title: "SEND", 
-                desc: "Releasing believers to influence communities and the world through service, leadership, and Kingdom impact.",
-                icon: "send_and_archive"
-              }
-            ].map((step, i) => (
-              <motion.div 
-                key={step.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className="p-12 bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all border border-outline-variant/30"
-              >
-                <span className="material-symbols-outlined text-5xl text-sky mb-8">{step.icon}</span>
-                <h3 className="font-headline text-3xl text-midnight mb-4">{step.title}</h3>
-                <p className="text-on-surface-variant leading-relaxed">{step.desc}</p>
-              </motion.div>
+        <Section tone="parchment" aria-labelledby="model-title">
+          <SectionHeader id="model-title" align="center" eyebrow="The Mission Model" title={<>Win <span className="text-gold-deep">•</span> Build <span className="text-gold-deep">•</span> Send</>} />
+          <ol className="grid gap-6 md:grid-cols-3">
+            {MODEL.map(({ title, Icon, desc }, i) => (
+              <Reveal as="li" key={title} delay={i * 0.08}>
+                <div className="h-full rounded-3xl border border-line bg-white p-9">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-plum text-gold-soft"><Icon size={22} aria-hidden /></span>
+                    <span className="font-headline text-5xl font-light text-line">{i + 1}</span>
+                  </div>
+                  <h3 className="mt-8 font-headline text-3xl uppercase tracking-wide text-text">{title}</h3>
+                  <p className="mt-3 leading-relaxed text-muted">{desc}</p>
+                </div>
+              </Reveal>
             ))}
-          </div>
-        </section>
+          </ol>
+        </Section>
 
-        {/* Core Emphasis */}
-        <section className="px-8 py-32 bg-midnight text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
-          
-          <div className="max-w-7xl mx-auto relative z-10">
-            <h2 className="font-headline text-4xl md:text-5xl mb-16 text-center">Spiritual Foundation</h2>
-            <div className="flex flex-wrap justify-center gap-6">
-              {[
-                "The Lordship of Jesus Christ", 
-                "Transforming Power of the Holy Spirit", 
-                "Authority of Scripture", 
-                "Prayer", 
-                "Discipleship", 
-                "Evangelism", 
-                "Christian Growth & Maturity"
-              ].map((item, i) => (
-                <motion.div 
-                  key={item}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-lg font-medium"
-                >
-                  {item}
-                </motion.div>
+        <section aria-labelledby="foundation-title" className="hero-aura px-5 py-24 text-white sm:px-8 md:py-32">
+          <div className="mx-auto max-w-5xl text-center">
+            <Eyebrow tone="dark" className="justify-center">What We Stand On</Eyebrow>
+            <h2 id="foundation-title" className="font-headline text-4xl font-light md:text-5xl">Spiritual Foundation</h2>
+            <ul className="mt-12 flex flex-wrap justify-center gap-3">
+              {FOUNDATION.map((item) => (
+                <li key={item} className="rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-base text-white/90">{item}</li>
               ))}
-            </div>
-            <p className="mt-20 text-center text-white/60 max-w-4xl mx-auto text-lg leading-relaxed italic">
-              "We believe that the Holy Spirit reveals truth, empowers believers, produces transformation, enables Christian witness, and leads believers into spiritual maturity."
+            </ul>
+            <p className="mx-auto mt-14 max-w-3xl font-headline text-xl italic leading-relaxed text-white/75 md:text-2xl">
+              “We believe that the Holy Spirit reveals truth, empowers believers, produces transformation, enables Christian witness, and leads believers into spiritual maturity.”
             </p>
+            <div className="mt-12 flex flex-wrap justify-center gap-3">
+              <Link href="/departments" className={buttonClass("gold")}>Join the Movement</Link>
+              <Link href="/connect" className={buttonClass("ghost-light")}>Connect With Us</Link>
+            </div>
           </div>
         </section>
       </main>
