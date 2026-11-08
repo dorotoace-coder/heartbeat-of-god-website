@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Give",
-  description: "Partner with Heartbeat of God Ministry through your generous giving. Support global outreach, media broadcasts, and community upliftment.",
-};
+  description:
+    "Partner with Heartbeat of God Ministry through your giving — by card (CAD/USD), Naira, or Interac e-Transfer. Support global outreach, media, Feed the Future and more.",
+  path: "/give",
+});
 
 export default function GiveLayout({ children }: { children: React.ReactNode }) {
   return children;

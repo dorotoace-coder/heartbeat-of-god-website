@@ -177,3 +177,32 @@ DO $$ BEGIN
     CREATE POLICY "Authenticated read access for inquiries" ON inquiries FOR SELECT TO authenticated USING (true);
   END IF;
 END $$;
+
+-- Donations: who gave (needed by the Interac / bank-transfer "I've sent it"
+-- notifications and the Paystack callback on /give).
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS donor_email TEXT;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS donor_name TEXT;
+
+-- Feed the Future: monthly public impact report. The /feed-the-future stats
+-- block only renders once a row with published = true exists.
+CREATE TABLE IF NOT EXISTS feed_the_future_reports (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  period_start DATE NOT NULL,          -- first day of the outreach month
+  period_label TEXT NOT NULL,          -- e.g. 'October 2026'
+  families_fed INTEGER,
+  individuals_reached INTEGER,
+  partners_involved INTEGER,
+  published BOOLEAN DEFAULT false
+);
+ALTER TABLE feed_the_future_reports ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public read published feed reports') THEN
+    CREATE POLICY "Public read published feed reports" ON feed_the_future_reports FOR SELECT USING (published = true);
+  END IF;
+END $$;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Authenticated write feed reports') THEN
+    CREATE POLICY "Authenticated write feed reports" ON feed_the_future_reports FOR ALL TO authenticated USING (true) WITH CHECK (true);
+  END IF;
+END $$;

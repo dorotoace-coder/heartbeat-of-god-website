@@ -56,15 +56,40 @@
   --color-sky-light: #E8D5ED;
   --color-sky-dark: #9B6BA6;
 
-  --font-headline: 'Newsreader', serif;
-  --font-body: 'Manrope', sans-serif;
-  --font-label: 'Manrope', sans-serif;
+  /* Premium redesign tokens */
+  --color-ink: #0E0716;          /* deepest background */
+  --color-plum: #1C0A2D;         /* brand midnight */
+  --color-plum-soft: #2A1143;
+  --color-ivory: #FAF7F2;        /* light section background */
+  --color-parchment: #F3EDE3;
+  --color-gold: #D9B45A;         /* reverent accent */
+  --color-gold-soft: #EAD49A;
+  --color-gold-deep: #8A6A1F;    /* gold that passes contrast on ivory */
+  --color-lilac: #C8A2D0;
+  --color-text: #1B1424;
+  --color-muted: #574F62;        /* 7:1 on ivory */
+  --color-line: #E4DCD0;
+
+  --font-headline: var(--font-newsreader), 'Newsreader', Georgia, serif;
+  --font-body: var(--font-manrope), 'Manrope', system-ui, sans-serif;
+  --font-label: var(--font-manrope), 'Manrope', system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), 'Newsreader', Georgia, serif;
+
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
   body {
-    background-color: var(--color-midnight);
-    color: var(--color-on-surface);
+    background-color: var(--color-ivory);
+    color: var(--color-text);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -86,4 +111,35 @@
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Visible, consistent keyboard focus across the site */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.grain {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+.hero-aura {
+  background:
+    radial-gradient(60% 50% at 78% 30%, rgba(217, 180, 90, 0.18), transparent 70%),
+    radial-gradient(50% 60% at 15% 80%, rgba(200, 162, 208, 0.16), transparent 70%),
+    linear-gradient(180deg, #0E0716 0%, #1C0A2D 60%, #0E0716 100%);
+}
+
+.text-balance { text-wrap: balance; }
+.text-pretty { text-wrap: pretty; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

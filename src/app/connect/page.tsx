@@ -1,340 +1,86 @@
-"use client";
-
-import { useState } from "react";
+import { Suspense } from "react";
+import { Mail, Phone, MapPin, HeartHandshake } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { supabase } from "@/lib/supabase";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from "lucide-react";
-import { currentEvent } from "@/config/currentEvent";
+import PageHero from "@/components/site/PageHero";
+import ConnectForm from "@/components/connect/ConnectForm";
+import SocialIcons from "@/components/site/SocialIcons";
+import { getDepartments } from "@/lib/data";
+import { CONTACT_PHONE, HQ_ADDRESS, MINISTRY_EMAIL, SERVICE_TIMES } from "@/lib/site";
 
-const PRAYER_CATEGORIES = ["General", "Healing", "Family", "Work / Business", "Salvation", "Testimony"];
-const VISIT_TYPES = ["First time", "Returning guest", "New convert"];
+export const revalidate = 3600;
 
-export default function ConnectPage() {
-  const [formStep, setFormStep] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [subject, setSubject] = useState("General Inquiry");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-    phone: "",
-    category: PRAYER_CATEGORIES[0],
-    confidential: false,
-    area: "",
-    visitType: VISIT_TYPES[0],
-    invitedBy: "",
-    prayerNeed: "",
-  });
-
-  const isPrayerRequest = subject === "Prayer Request";
-  const isFirstTimer = subject === "First-Timer Card";
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStep("sending");
-
-    try {
-      const { error } = await supabase
-        .from('inquiries')
-        .insert([{
-          full_name: formData.name,
-          email: formData.email,
-          type: subject,
-          message: isFirstTimer ? formData.prayerNeed : formData.message,
-          phone: (isPrayerRequest || isFirstTimer) ? formData.phone : null,
-          category: isPrayerRequest ? formData.category : null,
-          confidential: isPrayerRequest ? formData.confidential : false,
-          area: isFirstTimer ? formData.area : null,
-          visit_type: isFirstTimer ? formData.visitType : null,
-          invited_by: isFirstTimer ? formData.invitedBy : null,
-          prayer_need: isFirstTimer ? formData.prayerNeed : null,
-        }]);
-
-      if (error) throw error;
-      setFormStep("success");
-    } catch (err) {
-      console.error('Submission failed:', err);
-      setFormStep("error");
-      setTimeout(() => setFormStep("idle"), 5000);
-    }
-  };
+export default async function ConnectPage() {
+  const departments = (await getDepartments()).map((d) => d.name);
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-surface">
-        <section className="px-8 max-w-7xl mx-auto mb-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <span className="text-sky font-bold text-sm tracking-[0.2em] uppercase mb-4 inline-block">Get In Touch</span>
-            <h1 className="font-headline text-5xl md:text-7xl text-midnight mb-8">
-              Connect With Us
-            </h1>
-            <p className="text-on-surface-variant text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              Whether you have a testimony, a prayer request, or you're ready to serve in a department, we're here to listen and guide.
-            </p>
-          </motion.div>
-        </section>
-
-        <section className="px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Contact Info */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1 space-y-8"
-          >
-            <div className="p-8 bg-white rounded-3xl border border-outline-variant/30 shadow-sm">
-              <h3 className="font-headline text-2xl text-midnight mb-8">Ministry Channels</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
-                    <Mail size={24} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Email</p>
-                    <p className="text-midnight font-medium">heartbeatofgodf@gmail.com</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
-                    <Phone size={24} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Phone</p>
-                    <p className="text-midnight font-medium">+234 813 093 8682</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-sky/10 text-sky flex items-center justify-center shrink-0">
-                    <MapPin size={24} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-sky uppercase tracking-widest mb-1">Global Headquarters</p>
-                    <p className="text-midnight font-medium leading-relaxed">100/102 Akute Road, Martins Bus Stop<br />opp. Royal Prince Supermarket, Akute, Ogun State</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-12 pt-12 border-t border-outline-variant/30 text-center">
-                 <p className="text-on-surface-variant text-sm italic">
-                    "Call to me and I will answer you, and tell you great and unsearchable things you do not know." — Jeremiah 33:3
-                 </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Contact Form */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
-          >
-            <div className="bg-white rounded-[3rem] p-10 lg:p-16 border border-outline-variant/30 shadow-xl relative overflow-hidden">
-               {/* Success Overlay */}
-               <AnimatePresence>
-                 {formStep === "success" && (
-                   <motion.div 
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-12"
-                   >
-                     <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-8">
-                       <CheckCircle2 size={48} />
-                     </div>
-                     <h2 className="font-headline text-4xl text-midnight mb-4">Message Received!</h2>
-                     <p className="text-on-surface-variant text-lg max-w-md mx-auto mb-10">
-                        Thank you for reaching out. A coordinator from the relevant department will review your message and connect with you shortly.
-                     </p>
-                     <button 
-                       onClick={() => setFormStep("idle")}
-                       className="px-8 py-3 bg-sky text-white rounded-xl font-bold hover:scale-105 transition-all"
-                     >
-                       Send Another Message
-                     </button>
-                   </motion.div>
-                 )}
-               </AnimatePresence>
-               {/* Error Overlay */}
-               <AnimatePresence>
-                 {formStep === "error" && (
-                   <motion.div 
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     className="absolute inset-0 z-20 bg-white/95 flex flex-col items-center justify-center text-center p-12"
-                   >
-                     <div className="w-24 h-24 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-8">
-                       <AlertCircle size={48} />
-                     </div>
-                     <h2 className="font-headline text-4xl text-midnight mb-4">Oops!</h2>
-                     <p className="text-on-surface-variant text-lg max-w-md mx-auto mb-10">
-                        Something went wrong while sending your message. Please check your connection or try again later.
-                     </p>
-                     <button 
-                       onClick={() => setFormStep("idle")}
-                       className="px-8 py-3 bg-midnight text-white rounded-xl font-bold hover:scale-105 transition-all"
-                     >
-                       Try Again
-                     </button>
-                   </motion.div>
-                 )}
-               </AnimatePresence>
-
-               <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2">
-                       <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Full Name</label>
-                       <input 
-                         required 
-                         type="text" 
-                         value={formData.name}
-                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                         placeholder="John Doe" 
-                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all" 
-                       />
+      <main id="main-content">
+        <PageHero
+          eyebrow="Get In Touch"
+          title="Connect With Us"
+          intro="Whether you have a testimony, a prayer request, or you’re ready to serve in a department, we’re here to listen and guide."
+        />
+        <section className="bg-ivory px-5 pb-24 sm:px-8">
+          <div className="mx-auto -mt-12 grid max-w-6xl gap-8 lg:grid-cols-[1fr_1.7fr]">
+            <aside className="order-2 space-y-6 lg:order-1">
+              <div className="rounded-[2rem] bg-plum p-8 text-white">
+                <h2 className="font-headline text-2xl">Ministry Channels</h2>
+                <ul className="mt-8 space-y-6 text-sm">
+                  <li className="flex gap-4">
+                    <Mail size={20} className="mt-0.5 shrink-0 text-gold" aria-hidden />
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/60">Email</p>
+                      <a href={`mailto:${MINISTRY_EMAIL}`} className="mt-1 block break-all font-medium text-white hover:text-gold-soft">{MINISTRY_EMAIL}</a>
                     </div>
-                    <div className="space-y-2">
-                       <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Email Address</label>
-                       <input 
-                         required 
-                         type="email" 
-                         value={formData.email}
-                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                         placeholder="john@example.com" 
-                         className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all" 
-                       />
+                  </li>
+                  {CONTACT_PHONE && (
+                    <li className="flex gap-4">
+                      <Phone size={20} className="mt-0.5 shrink-0 text-gold" aria-hidden />
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/60">Phone</p>
+                        <a href={`tel:${CONTACT_PHONE.replace(/[^\d+]/g, "")}`} className="mt-1 block font-medium text-white hover:text-gold-soft">{CONTACT_PHONE}</a>
+                      </div>
+                    </li>
+                  )}
+                  <li className="flex gap-4">
+                    <MapPin size={20} className="mt-0.5 shrink-0 text-gold" aria-hidden />
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/60">Global Headquarters</p>
+                      <address className="mt-1 not-italic leading-relaxed text-white">{HQ_ADDRESS[0]}<br />{HQ_ADDRESS[1]}</address>
                     </div>
-                 </div>
+                  </li>
+                </ul>
+                <SocialIcons className="mt-8" />
+              </div>
+              <div className="rounded-[2rem] border border-line bg-white p-8">
+                <h2 className="font-headline text-2xl text-text">Service Times</h2>
+                <ul className="mt-5 space-y-3 text-sm">
+                  {SERVICE_TIMES.map((s) => (
+                    <li key={s.name} className="flex justify-between gap-4 border-b border-line pb-3 last:border-0">
+                      <span className="text-text">{s.name}</span>
+                      <span className="whitespace-nowrap font-semibold text-gold-deep">{s.day.replace(/s$/, "")} · {s.time}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <figure className="flex gap-3 px-2 text-sm italic leading-relaxed text-muted">
+                <HeartHandshake size={20} className="shrink-0 text-gold-deep" aria-hidden />
+                <blockquote>
+                  “Call unto me, and I will answer thee, and shew thee great and mighty things, which thou knowest not.”
+                  <cite className="mt-1 block not-italic font-semibold text-text">— Jeremiah 33:3</cite>
+                </blockquote>
+              </figure>
+            </aside>
 
-                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Inquiry Type</label>
-                    <select 
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
-                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
-                    >
-                      <option>General Inquiry</option>
-                      <option>Prayer Request</option>
-                      <option>First-Timer Card</option>
-                      <option>Testimony Submission</option>
-                      <option>Department Application</option>
-                      <option>{currentEvent.name} Registration</option>
-                      <option>Event Registration</option>
-                      <option>Media/Sound Inquiry</option>
-                    </select>
-                 </div>
-
-                 {(isPrayerRequest || isFirstTimer) && (
-                   <div className="space-y-2">
-                      <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Phone</label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        placeholder="+234 800 000 0000"
-                        className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
-                      />
-                   </div>
-                 )}
-
-                 {isPrayerRequest && (
-                   <div className="space-y-2">
-                      <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Category</label>
-                      <select
-                        value={formData.category}
-                        onChange={(e) => setFormData({...formData, category: e.target.value})}
-                        className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
-                      >
-                        {PRAYER_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-                      </select>
-                   </div>
-                 )}
-
-                 {isFirstTimer && (
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Area</label>
-                         <input
-                           type="text"
-                           value={formData.area}
-                           onChange={(e) => setFormData({...formData, area: e.target.value})}
-                           placeholder="Where do you live?"
-                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
-                         />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Visit Type</label>
-                         <select
-                           value={formData.visitType}
-                           onChange={(e) => setFormData({...formData, visitType: e.target.value})}
-                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all appearance-none cursor-pointer"
-                         >
-                           {VISIT_TYPES.map((v) => <option key={v}>{v}</option>)}
-                         </select>
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                         <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">Invited By</label>
-                         <input
-                           type="text"
-                           value={formData.invitedBy}
-                           onChange={(e) => setFormData({...formData, invitedBy: e.target.value})}
-                           placeholder="Who invited you? (optional)"
-                           className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all"
-                         />
-                      </div>
-                   </div>
-                 )}
-
-                 {isPrayerRequest && (
-                   <label className="flex items-center gap-3 ml-1 cursor-pointer select-none">
-                     <input
-                       type="checkbox"
-                       checked={formData.confidential}
-                       onChange={(e) => setFormData({...formData, confidential: e.target.checked})}
-                       className="w-5 h-5 rounded border-2 border-outline-variant accent-sky"
-                     />
-                     <span className="text-sm text-on-surface-variant">The team may contact me. Keep this confidential.</span>
-                   </label>
-                 )}
-
-                 <div className="space-y-2">
-                    <label className="text-sm font-bold text-midnight uppercase tracking-widest ml-1">
-                      {isFirstTimer ? "Prayer Need" : "Your Message"}
-                    </label>
-                    <textarea
-                      required={!isFirstTimer}
-                      rows={6}
-                      value={isFirstTimer ? formData.prayerNeed : formData.message}
-                      onChange={(e) => setFormData(isFirstTimer ? {...formData, prayerNeed: e.target.value} : {...formData, message: e.target.value})}
-                      placeholder={isFirstTimer ? "Any specific prayer need? (optional)" : "How can we help or partner with you?"}
-                      className="w-full bg-surface-container-low border-2 border-transparent focus:border-sky rounded-2xl px-6 py-4 focus:outline-none transition-all resize-none"
-                    />
-                 </div>
-
-                 <button 
-                   disabled={formStep === "sending"}
-                   type="submit" 
-                   className="w-full py-5 bg-midnight text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-midnight/20 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                 >
-                   {formStep === "sending" ? (
-                     <span className="animate-pulse">Sending...</span>
-                   ) : (
-                     <>
-                       <Send size={20} />
-                       {isPrayerRequest ? "Send Prayer Request" : isFirstTimer ? "Submit First-Timer Card" : "Send to Ministry"}
-                     </>
-                   )}
-                 </button>
-               </form>
+            <div className="order-1 rounded-[2rem] border border-line bg-white p-7 shadow-[0_40px_90px_-50px_rgba(27,20,36,0.55)] sm:p-10 lg:order-2 lg:p-12">
+              <h2 className="sr-only">Send us a message</h2>
+              <Suspense fallback={<div className="h-[560px] animate-pulse rounded-2xl bg-ivory" aria-label="Loading form" />}>
+                <ConnectForm departments={departments} />
+              </Suspense>
             </div>
-          </motion.div>
+          </div>
         </section>
       </main>
       <Footer />
