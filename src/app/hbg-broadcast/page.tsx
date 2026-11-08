@@ -19,7 +19,7 @@ const PLATFORMS = [
 const QUICK_TEMPLATES = [
   {
     label: "TRIBE X — Throne Room",
-    message: `🔥 TRIBE X — THRONE ROOM\n\n📅 November 27, 2026\n📍 HBG Ministry, Akute, Nigeria & Online\n\n"Be still, and know that I am God" — Psalm 46:10\n\nA night of prophetic worship and the Word. Come before the throne of God.\n\nFree entry. Message us to reserve your place.\n\n👉 heartbeatofgod.ca\n\n#TribeX #ThroneRoom #HBGMinistry`,
+    message: `🔥 TRIBE X — THRONE ROOM\n\n📅 November 27, 2026\n📍 HBG Ministry, Akute, Nigeria & Online\n\n"A great multitude, which no man could number, of all nations, and kindreds, and people, and tongues, stood before the throne, and before the Lamb." — Revelation 7:9 (KJV)\n\nA night of prophetic worship and the Word. Come before the throne of God.\n\nFree entry. Message us to reserve your place.\n\n👉 heartbeatofgod.ca\n\n#TribeX #ThroneRoom #HBGMinistry`,
     imageUrl: "",
   },
   {
