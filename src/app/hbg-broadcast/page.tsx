@@ -35,7 +35,7 @@ export default function BroadcastPage() {
   const [selected, setSelected] = useState<string[]>(["telegram", "facebook", "instagram", "twitter", "whatsapp"]);
   const [secret, setSecret] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<{ platform: string; ok: boolean; error?: string }[]>([]);
   const [status, setStatus] = useState<"idle" | "success" | "partial" | "error">("idle");
 
   const toggle = (id: string) =>

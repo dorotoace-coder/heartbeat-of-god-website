@@ -34,8 +34,6 @@ function ActionDropdown({ member, onEdit, onToggleStatus, onDelete }: {
   const canToggle = canPerformAction(role, "members.toggleStatus");
   const canDelete = canPerformAction(role, "members.delete");
 
-  // If the user can't do ANY action, don't show the dropdown at all
-  if (!canEdit && !canToggle && !canDelete) return null;
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +46,9 @@ function ActionDropdown({ member, onEdit, onToggleStatus, onDelete }: {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // If the user can't do ANY action, don't show the dropdown at all
+  if (!canEdit && !canToggle && !canDelete) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>

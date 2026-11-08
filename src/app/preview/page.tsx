@@ -29,7 +29,7 @@ export default function PreviewPage() {
               Coming <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-amber-400 dark:to-orange-500 italic">Soon</span>
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8 max-w-2xl mx-auto">
-              We are working hard to bring you something amazing. Check back in the future to see what we've been building!
+              We are working hard to bring you something amazing. Check back in the future to see what we&apos;ve been building!
             </p>
           </motion.div>
 

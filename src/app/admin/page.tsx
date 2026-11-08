@@ -171,11 +171,11 @@ export default function AdminDashboard() {
         }
 
         console.log("Admin Dashboard: Profile role detected:", profileData.role);
-        const fullProfile = profileData as any;
+        const fullProfile = profileData as Profile & { departments?: { name?: string } | null };
         setProfile({
           ...fullProfile,
           department_name: fullProfile.departments?.name
-        });
+        } as Profile);
 
         // 3. Fetch Pulse Data
         console.log("Admin Dashboard: Fetching Pulse OS metrics...");

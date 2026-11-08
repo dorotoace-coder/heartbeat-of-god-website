@@ -32,7 +32,7 @@ export default function LoginPage() {
 
       if (mode === "signin") {
         const authPromise = supabase.auth.signInWithPassword({ email, password });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
         
         if (authError) {
           console.error("SignIn Error:", authError);
@@ -52,7 +52,7 @@ export default function LoginPage() {
           password,
           options: { data: { full_name: "Admin User" } }
         });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
         
         if (authError) {
           console.error("SignUp Error:", authError);
@@ -64,9 +64,9 @@ export default function LoginPage() {
         setSuccess("Success: Identity record created. IMPORTANT: Check your email to CONFIRM your account before signing in.");
         setMode("signin");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Auth Exception:", err);
-      setError(err.message || "An unexpected error occurred during uplink.");
+      setError((err as Error).message || "An unexpected error occurred during uplink.");
     } finally {
       setLoading(false);
     }
