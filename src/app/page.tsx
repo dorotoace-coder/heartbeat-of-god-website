@@ -28,7 +28,7 @@ export const metadata = {
     title: "Home",
     socialTitle: "Heartbeat of God Ministry — Bringing Men to the Consciousness of God’s Presence",
     description:
-      "Heartbeat of God Ministry — bringing men to the consciousness of God’s presence. Sunday Celebration 9:00 AM, Wednesday live 6:00 PM, Night of Prayer Fridays 10:00 PM.",
+      "Heartbeat of God Ministry — bringing men to the consciousness of God’s presence. Sunday Celebration 9:00 AM, Wednesday live 6:00 PM, Night of Prayer on the third Friday of each quarter, 10:00 PM.",
     path: "/",
   }),
   title: { absolute: "Heartbeat of God | Bringing Men to the Consciousness of God’s Presence" },

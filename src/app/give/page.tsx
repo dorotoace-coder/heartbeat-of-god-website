@@ -27,8 +27,8 @@ export default function GivePage() {
           title={<>Sow into the <em className="text-gold-soft">Movement</em></>}
           intro="Your giving enables us to take the message of God’s presence to the ends of the earth. Thank you for partnering with the heartbeat of God."
         />
-        <section className="bg-ivory px-5 pb-24 sm:px-8">
-          <div className="mx-auto -mt-12 grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.15fr]">
+        <section className="relative z-10 bg-ivory px-5 pb-24 sm:px-8">
+          <div className="relative mx-auto -mt-12 grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.15fr]">
             <div className="order-2 pt-4 lg:order-1 lg:pt-20">
               <h2 className="font-headline text-3xl text-text">What your seed carries</h2>
               <ul className="mt-8 space-y-6">

@@ -553,11 +553,11 @@ export default function GiveClient({
   bank: { bankName: string; accountNumber: string; accountName: string };
 }) {
   const tabs: { id: Tab; label: string; Icon: typeof CreditCard }[] = [];
-  if (config.stripeCheckout || config.stripeLink) tabs.push({ id: "card", label: "Card · CAD/USD", Icon: CreditCard });
+  tabs.push({ id: "card", label: "Card · CAD/USD", Icon: CreditCard });
   tabs.push({ id: "naira", label: "Naira (₦)", Icon: Landmark });
   if (config.interacEmail) tabs.push({ id: "interac", label: "Interac", Icon: Mail });
 
-  const [tab, setTab] = useState<Tab>(tabs[0].id);
+  const [tab, setTab] = useState<Tab>(config.stripeCheckout || config.stripeLink ? "card" : "naira");
 
   return (
     <div>
@@ -587,7 +587,13 @@ export default function GiveClient({
           </div>
         )}
         <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={tabs.length > 1 ? `tab-${tab}` : undefined}>
-          {tab === "card" && <StripePanel config={config} />}
+          {tab === "card" && (config.stripeCheckout || config.stripeLink ? <StripePanel config={config} /> : (
+            <div className="rounded-2xl bg-ivory p-6 text-center">
+              <h3 className="font-headline text-2xl text-text">Give in Dollars</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted">Card giving in CAD and USD is opening soon. For now, please give in Naira, or reach us through the Connect page and we’ll help you give.</p>
+              <a href="/connect?type=Partnership%20Inquiry" className="mt-5 inline-flex rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white">Contact Us About Giving</a>
+            </div>
+          ))}
           {tab === "naira" && <NairaPanel config={config} bank={bank} />}
           {tab === "interac" && config.interacEmail && <InteracPanel to={config.interacEmail} />}
         </div>

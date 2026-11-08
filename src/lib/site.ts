@@ -50,7 +50,7 @@ export const ZOOM_REGISTER_URL = "https://us06web.zoom.us/meeting/register/ISNaN
 export const SERVICE_TIMES = [
   { name: "Sunday Celebration Service", day: "Sundays", time: "9:00 AM", note: "Praise, worship, and the Word" },
   { name: "Wednesday Live", day: "Wednesdays", time: "6:00 PM", note: "Join us live online" },
-  { name: "Night of Prayer", day: "Fridays", time: "10:00 PM", note: "All-night intercession and encounter with God" },
+  { name: "Night of Prayer", day: "3rd Friday of each quarter", time: "10:00 PM", note: "All-night intercession and encounter with God" },
 ] as const;
 
 export const NAV_LINKS = [
