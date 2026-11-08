@@ -10,7 +10,7 @@ import FollowHBG from "@/components/site/FollowHBG";
 import JsonLd from "@/components/site/JsonLd";
 import { Eyebrow, Section } from "@/components/ui/Section";
 import { Markdown } from "@/lib/markdown";
-import { excerpt, formatPublishDate, safeHttpsUrl } from "@/lib/dailyWord";
+import { excerpt, formatPublishDate, safeHttpsUrl, translationOf } from "@/lib/dailyWord";
 import { getDailyWordBySlug, getDailyWordNeighbours, getPublishedDailyWordSlugs } from "@/lib/dailyWordData";
 import { FOUNDER, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -63,6 +63,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
   const { prev, next } = await getDailyWordNeighbours(word);
   const url = `${SITE_URL}/daily-word/${word.slug}`;
   const image = safeHttpsUrl(word.image_url);
+  const translation = translationOf(word.scripture_ref);
   const clips = [
     { href: safeHttpsUrl(word.youtube_url), label: "Watch on YouTube", Icon: YouTubeIcon },
     { href: safeHttpsUrl(word.instagram_url), label: "View on Instagram", Icon: InstagramIcon },
@@ -89,7 +90,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
             logo: { "@type": "ImageObject", url: `${SITE_URL}/hbg-logo.png` },
           },
           articleSection: "Daily Word",
-          citation: `${word.scripture_ref} (KJV)`,
+          citation: `${translation.ref} (${translation.short})`,
         }}
       />
       <Navbar />
@@ -109,7 +110,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
                 “{word.scripture_text}”
               </blockquote>
               <figcaption className="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-gold">
-                {word.scripture_ref} <span className="font-medium normal-case tracking-normal text-white/50">· King James Version</span>
+                {translation.ref} <span className="font-medium normal-case tracking-normal text-white/50">· {translation.long}</span>
               </figcaption>
             </figure>
           </div>

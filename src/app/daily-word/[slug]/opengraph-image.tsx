@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getDailyWordBySlug } from "@/lib/dailyWordData";
-import { formatPublishDate } from "@/lib/dailyWord";
+import { formatPublishDate, translationOf } from "@/lib/dailyWord";
 
 export const alt = "Daily Word — Heartbeat of God Ministry";
 export const size = { width: 1200, height: 630 };
@@ -27,6 +27,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const verse = word ? clamp(word.scripture_text, 230) : "Thy word is a lamp unto my feet, and a light unto my path.";
   const ref = word ? word.scripture_ref : "Psalm 119:105";
+  const translation = translationOf(ref);
   const fontSize = verse.length > 170 ? 40 : verse.length > 110 ? 48 : 56;
 
   return new ImageResponse(
@@ -74,7 +75,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               fontWeight: 700,
             }}
           >
-            {ref.toUpperCase()} · KJV
+            {translation.ref.toUpperCase()} · {translation.short}
           </div>
         </div>
 

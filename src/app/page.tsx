@@ -16,7 +16,7 @@ import JsonLd from "@/components/site/JsonLd";
 import { verseForDate } from "@/lib/scripture";
 import { getUpcomingEvents } from "@/lib/data";
 import { getTodaysDailyWord } from "@/lib/dailyWordData";
-import { excerpt } from "@/lib/dailyWord";
+import { excerpt, translationOf } from "@/lib/dailyWord";
 import { DESCRIPTION, FOUNDER, HQ_ADDRESS, MINISTRY_EMAIL, SITE_NAME, SITE_URL, SOCIALS } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 
@@ -45,6 +45,7 @@ export default async function Home() {
   // Today's published Daily Word wins; otherwise the local KJV rotation.
   const local = verseForDate();
   const verse = daily ? { text: daily.scripture_text, reference: daily.scripture_ref } : local;
+  const translation = translationOf(verse.reference);
 
   return (
     <>
@@ -94,7 +95,7 @@ export default async function Home() {
                   <span aria-hidden className="text-gold">”</span>
                 </blockquote>
                 <figcaption className="mt-6 text-sm font-bold uppercase tracking-[0.2em] text-gold-deep">
-                  {verse.reference} <span className="font-medium normal-case tracking-normal text-muted">· King James Version</span>
+                  {translation.ref} <span className="font-medium normal-case tracking-normal text-muted">· {translation.long}</span>
                 </figcaption>
                 {daily ? (
                   <div className="mt-8 border-t border-line pt-6">

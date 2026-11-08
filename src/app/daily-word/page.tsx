@@ -13,7 +13,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Daily Word",
   description:
-    "The Daily Word from Heartbeat of God Ministry — a King James scripture and a short devotional to carry the consciousness of God’s presence through your day.",
+    "The Daily Word from Heartbeat of God Ministry — a scripture and a short devotional to carry the consciousness of God’s presence through your day.",
   path: "/daily-word",
 });
 
@@ -46,7 +46,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
         <PageHero
           eyebrow="Daily Word"
           title={<>A Word for <em className="text-gold-soft">Today</em></>}
-          intro="One King James scripture and a short devotional each day, to carry the consciousness of God’s presence into ordinary hours."
+          intro="One scripture and a short devotional each day, to carry the consciousness of God’s presence into ordinary hours."
         />
 
         <Section tone="ivory" aria-labelledby="archive-title">

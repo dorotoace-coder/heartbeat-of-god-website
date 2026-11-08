@@ -44,6 +44,24 @@ export function dailyWordSlug(publishDate: string, title: string): string {
   return t ? `${publishDate}-${t}` : publishDate;
 }
 
+/**
+ * Scripture translation carried by a reference, e.g. "Psalm 107:1 NKJV".
+ * The library is mixed KJV/NKJV: refs with no suffix are KJV (the original
+ * Daily Word entries); CLT entries carry an "NKJV" suffix. The returned
+ * `ref` is the bare reference (suffix stripped) for display; `short`/`long`
+ * are the version labels. The stored scripture_ref is never rewritten.
+ */
+export function translationOf(scriptureRef: string): { ref: string; short: "KJV" | "NKJV"; long: string } {
+  const trimmed = scriptureRef.trim();
+  if (/\bNKJV$/i.test(trimmed)) {
+    return { ref: trimmed.replace(/\s*NKJV$/i, "").trim(), short: "NKJV", long: "New King James Version" };
+  }
+  if (/\bKJV$/i.test(trimmed)) {
+    return { ref: trimmed.replace(/\s*KJV$/i, "").trim(), short: "KJV", long: "King James Version" };
+  }
+  return { ref: trimmed, short: "KJV", long: "King James Version" };
+}
+
 /** Today's date (YYYY-MM-DD) in the ministry's timezone. */
 export function todayISO(date: Date = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {
