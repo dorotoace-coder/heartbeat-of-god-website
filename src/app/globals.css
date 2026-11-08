@@ -132,6 +132,129 @@
     linear-gradient(180deg, #0E0716 0%, #1C0A2D 60%, #0E0716 100%);
 }
 
+/* ───────── 3D hero (home) ─────────
+   HeroStage writes --tx/--ty (tilt, -1..1) and --sx/--sy (sun position).
+   Each .hero3d-layer moves by its own depth --d and is scaled by --s so its
+   edges never show while tilting. With no JS or reduced motion the vars stay 0:
+   a static, fully composed scene. */
+.hero3d {
+  --tx: 0;
+  --ty: 0;
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+}
+.hero3d-layer {
+  --d: 0;
+  --s: 1;
+  transform:
+    translate3d(calc(var(--tx) * var(--d) * 14px), calc(var(--ty) * var(--d) * 9px), calc(var(--d) * 40px))
+    rotateX(calc(var(--ty) * -2deg))
+    rotateY(calc(var(--tx) * 3deg))
+    scale(var(--s));
+  transform-origin: 50% 50%;
+}
+.hero3d[data-motion="on"] .hero3d-layer { will-change: transform; }
+
+.hero-sunglow {
+  background:
+    radial-gradient(circle at var(--sx, 76%) var(--sy, 37%), rgba(255, 226, 160, 0.55) 0, rgba(255, 196, 110, 0.22) 6%, rgba(217, 180, 90, 0.08) 20%, transparent 42%);
+  mix-blend-mode: screen;
+  animation: hero-breathe 9s ease-in-out infinite alternate;
+}
+.hero-rays {
+  position: absolute;
+  left: var(--sx, 76%);
+  top: var(--sy, 37%);
+  width: 240vmax;
+  height: 240vmax;
+  translate: -50% -50%;
+  background: conic-gradient(from 0deg,
+    transparent 0deg 8deg, rgba(255, 220, 150, 0.16) 10deg, transparent 13deg 31deg,
+    rgba(255, 220, 150, 0.10) 34deg, transparent 38deg 52deg, rgba(255, 220, 150, 0.14) 55deg, transparent 57deg 80deg,
+    rgba(255, 220, 150, 0.09) 84deg, transparent 89deg 118deg, rgba(255, 220, 150, 0.15) 121deg, transparent 124deg 151deg,
+    rgba(255, 220, 150, 0.11) 155deg, transparent 159deg 190deg, rgba(255, 220, 150, 0.16) 193deg, transparent 196deg 222deg,
+    rgba(255, 220, 150, 0.10) 226deg, transparent 230deg 262deg, rgba(255, 220, 150, 0.14) 265deg, transparent 268deg 300deg,
+    rgba(255, 220, 150, 0.09) 304deg, transparent 309deg 333deg, rgba(255, 220, 150, 0.13) 336deg, transparent 339deg 360deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.6) 8%, transparent 26%);
+  mask-image: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.6) 8%, transparent 26%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  animation: hero-rays-turn 180s linear infinite;
+}
+.hero3d[data-sun-ready="true"] .hero-rays { opacity: 0.85; }
+
+.hero-mist::before,
+.hero-mist::after {
+  content: "";
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  pointer-events: none;
+}
+.hero-mist::before {
+  top: 52%;
+  height: 26%;
+  background:
+    radial-gradient(40% 50% at 25% 50%, rgba(232, 213, 237, 0.16), transparent 70%),
+    radial-gradient(35% 45% at 70% 55%, rgba(255, 236, 200, 0.12), transparent 70%);
+  animation: hero-mist-drift 70s ease-in-out infinite alternate;
+}
+.hero-mist::after {
+  top: 64%;
+  height: 24%;
+  background:
+    radial-gradient(45% 50% at 60% 50%, rgba(200, 162, 208, 0.14), transparent 70%),
+    radial-gradient(30% 40% at 15% 60%, rgba(255, 255, 255, 0.08), transparent 70%);
+  animation: hero-mist-drift 95s ease-in-out infinite alternate-reverse;
+}
+
+.hero-embers { opacity: 0; transition: opacity 1.5s ease; }
+.hero-embers[data-ready="true"] { opacity: 1; }
+
+/* Headline: one metallic gold sheen sweep on load */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-sheen,
+  .hero-sheen em {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-size: 300% 100%;
+    background-position: 0% 0;
+    animation: hero-sheen 2.4s 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  .hero-sheen {
+    background-image: linear-gradient(105deg, #fff 0 38%, #f3dc9c 44%, #fff6dc 48%, #d9b45a 52%, #fff 58% 100%);
+  }
+  .hero-sheen em {
+    background-image: linear-gradient(105deg, #ead49a 0 38%, #fff3cf 44%, #ffffff 48%, #c99a3a 52%, #ead49a 58% 100%);
+  }
+}
+
+@keyframes hero-sheen {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
+}
+@keyframes hero-breathe {
+  from { opacity: 0.75; }
+  to { opacity: 1; }
+}
+@keyframes hero-rays-turn {
+  to { rotate: 360deg; }
+}
+@keyframes hero-mist-drift {
+  from { transform: translateX(-6%); }
+  to { transform: translateX(6%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sunglow, .hero-rays, .hero-mist::before, .hero-mist::after, .hero-sheen, .hero-sheen em { animation: none !important; }
+}
+@media (forced-colors: active) {
+  .hero-sheen, .hero-sheen em { color: CanvasText; -webkit-text-fill-color: currentColor; background: none; }
+}
+
 .text-balance { text-wrap: balance; }
 .text-pretty { text-wrap: pretty; }
 
