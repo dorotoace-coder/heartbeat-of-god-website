@@ -4,6 +4,7 @@
 INSERT INTO departments (name, description, what_they_do, who_should_join, cta_text, display_order)
 VALUES 
 ('Pastoral Team', 'The spiritual foundation of the ministry.', 'Counseling, discipleship, and spiritual oversight of the congregation.', 'Individuals with a heart for people, strong biblical foundation, and a call to ministry.', 'Apply to Serve', 1),
+('Intimacy (Choir)', 'The choir of Heartbeat of God, leading the house in worship.', 'Leads worship at our services and gatherings, and hosts TRIBE X.', 'Singers with a heart for worship and the presence of God.', 'Join Intimacy', 2),
 ('Media & Creative', 'Amplifying the voice of the Spirit.', 'Live streaming, content creation, social media management, and technical production.', 'Creatives, tech enthusiasts, photographers, and editors.', 'Join the Crew', 2),
 ('Prayer Department', 'The engine room of the ministry.', 'Continuous intercession for the ministry, the members, and the global body of Christ.', 'Deeply committed intercessors and those with a passion for spiritual warfare.', 'Join Intercession', 3),
 ('Outreach & Evangelism', 'Winning souls for the Kingdom.', 'Local outreaches, hospital visitations, and missions to unreached areas.', 'Bold believers with a passion for souls and community impact.', 'Join Outreach', 4)
