@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { getPublishedDailyWordSlugs } from "@/lib/dailyWordData";
+import { getSermonLinks, sermonUrl } from "@/lib/sermons";
 
 // Rebuilt hourly so newly published Daily Words appear without a redeploy.
 export const revalidate = 3600;
@@ -20,7 +21,7 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const words = await getPublishedDailyWordSlugs();
+  const [words, sermons] = await Promise.all([getPublishedDailyWordSlugs(), getSermonLinks()]);
   return [
     ...STATIC_ROUTES.map((r) => ({
       url: `${SITE_URL}${r.path === "/" ? "" : r.path}`,
@@ -31,6 +32,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...words.map((w) => ({
       url: `${SITE_URL}/daily-word/${w.slug}`,
       lastModified: w.publish_date,
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
+    })),
+    ...sermons.map((m) => ({
+      url: sermonUrl(m),
+      lastModified: m.date_preached ?? now,
       changeFrequency: "yearly" as const,
       priority: 0.7,
     })),

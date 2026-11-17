@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Play, Headphones, X, ExternalLink, Youtube } from "lucide-react";
+import Link from "next/link";
+import { Play, Headphones, X, Download, ArrowRight, Youtube } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { SITE_URL, SOCIALS } from "@/lib/site";
+import { SOCIALS } from "@/lib/site";
 import ShareButtons from "@/components/site/ShareButtons";
-import { thumbFor, youtubeId, videoUrlOf, type Vlog } from "@/components/VlogSection";
+import { formatPreached, isOwnFile, sameOriginPath, sermonPath, sermonUrl, thumbFor, youtubeId, videoUrlOf, type Vlog } from "@/lib/sermons";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 
@@ -160,10 +161,12 @@ export default function MediaLibrary() {
                     )}
                   </div>
                   {s.category && <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-gold-deep">{s.category}</p>}
-                  <h3 className="mt-1 line-clamp-2 font-headline text-2xl leading-snug text-text">{s.title}</h3>
+                  <h3 className="mt-1 line-clamp-2 font-headline text-2xl leading-snug text-text">
+                    <Link href={sermonPath(s)} className="hover:text-plum focus-visible:text-plum">{s.title}</Link>
+                  </h3>
                   <p className="mt-1 text-sm text-muted">
                     {s.preacher}
-                    {s.date_preached && ` · ${new Date(s.date_preached).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}`}
+                    {s.date_preached && ` · ${formatPreached(s.date_preached)}`}
                   </p>
                   {!canVideo && !canAudio && <p className="mt-2 text-xs text-muted">Recording coming soon</p>}
                 </li>
@@ -205,18 +208,23 @@ export default function MediaLibrary() {
             {player.kind === "audio" && audio && (
               <div className="px-5 pb-6">
                 <audio className="w-full" src={audio} controls autoPlay />
-                <a href={audio} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm text-gold-soft">
-                  <ExternalLink size={14} aria-hidden /> Open audio file
-                </a>
+                {isOwnFile(audio) && (
+                  <a href={sameOriginPath(audio)} download className="mt-4 inline-flex items-center gap-2 text-sm text-gold-soft hover:text-gold">
+                    <Download size={14} aria-hidden /> Download audio
+                  </a>
+                )}
               </div>
             )}
-            <div className="border-t border-white/10 px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-4">
               <ShareButtons
                 tone="dark"
-                url={vid ? `https://www.youtube.com/watch?v=${vid}` : `${SITE_URL}/media`}
+                url={sermonUrl(player.sermon)}
                 title={`${player.sermon.title} — ${player.sermon.preacher}`}
                 text="A message from Heartbeat of God Ministry"
               />
+              <Link href={sermonPath(player.sermon)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-soft hover:text-gold">
+                Message page <ArrowRight size={14} aria-hidden />
+              </Link>
             </div>
           </div>
         )}
