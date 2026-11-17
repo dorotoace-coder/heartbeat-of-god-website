@@ -67,12 +67,13 @@ export default function VlogSection() {
       .from("sermons")
       .select("*")
       .order("date_preached", { ascending: false })
-      .limit(7)
+      .limit(30)
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) console.error("Failed to load vlogs:", error);
-        // Only list messages that can actually be played.
-        const rows = ((data as Vlog[]) || []).filter((v) => youtubeId(videoUrlOf(v)));
+        // Only list messages that can actually be played as video. Audio-only
+        // messages live in the Media library, so fetch extra rows and keep 7 videos.
+        const rows = ((data as Vlog[]) || []).filter((v) => youtubeId(videoUrlOf(v))).slice(0, 7);
         setVlogs(rows);
         setFeatured(rows[0] ?? null);
         setLoading(false);
