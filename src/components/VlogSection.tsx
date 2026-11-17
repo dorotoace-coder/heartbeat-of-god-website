@@ -9,38 +9,7 @@ import { SOCIALS } from "@/lib/site";
 import { buttonClass } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Section";
 import ShareButtons from "@/components/site/ShareButtons";
-
-export interface Vlog {
-  id: string;
-  title: string;
-  preacher: string;
-  category?: string | null;
-  date_preached?: string | null;
-  duration?: string | null;
-  thumbnail_url?: string | null;
-  youtube_url?: string | null;
-  video_url?: string | null;
-  audio_url?: string | null;
-}
-
-/** The playable video URL, whichever column the DB uses. */
-export function videoUrlOf(v?: Vlog | null): string | null {
-  return v?.youtube_url || v?.video_url || null;
-}
-
-/** Extract a YouTube video id from common URL shapes. */
-export function youtubeId(url?: string | null): string | null {
-  if (!url) return null;
-  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
-  return m ? m[1] : null;
-}
-
-/** Thumbnail: the DB image, else YouTube's own thumbnail, else null (gradient). */
-export function thumbFor(v: Vlog): string | null {
-  if (v.thumbnail_url?.startsWith("https://") || v.thumbnail_url?.startsWith("/")) return v.thumbnail_url;
-  const id = youtubeId(videoUrlOf(v));
-  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
-}
+import { sermonPath, sermonUrl, thumbFor, videoUrlOf, youtubeId, type Vlog } from "@/lib/sermons";
 
 function Thumb({ v, sizes, className = "" }: { v: Vlog; sizes: string; className?: string }) {
   const src = thumbFor(v);
@@ -145,13 +114,16 @@ export default function VlogSection() {
                 )}
               </div>
               {featuredVid && (
-                <div className="border-t border-white/10 bg-ink px-5 py-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-ink px-5 py-4">
                   <ShareButtons
                     tone="dark"
-                    url={`https://www.youtube.com/watch?v=${featuredVid}`}
+                    url={sermonUrl(featured)}
                     title={`${featured.title} — ${featured.preacher}`}
                     text="A message from Heartbeat of God Ministry"
                   />
+                  <Link href={sermonPath(featured)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-soft hover:text-gold">
+                    Message page <ArrowRight size={14} aria-hidden />
+                  </Link>
                 </div>
               )}
             </div>
