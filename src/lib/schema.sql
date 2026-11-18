@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS daily_words (
   publish_date DATE NOT NULL DEFAULT CURRENT_DATE,
   title TEXT NOT NULL,
   scripture_ref TEXT NOT NULL,          -- e.g. 'Psalm 46:10'
-  scripture_text TEXT NOT NULL,         -- King James Version text
+  scripture_text TEXT NOT NULL,         -- scripture text (KJV or NKJV; version follows the reference suffix, see translationOf in src/lib/dailyWord.ts)
   devotional TEXT NOT NULL DEFAULT '',  -- markdown: paragraphs, ##, >, -, **bold**, *italic*, [links](https://…)
   image_url TEXT,
   instagram_url TEXT,

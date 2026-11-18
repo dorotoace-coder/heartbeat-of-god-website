@@ -249,7 +249,7 @@ export function DailyWordView() {
               <input id="dw-ref" required className={input} value={form.scripture_ref} onChange={(e) => set("scripture_ref", e.target.value)} placeholder="Psalm 46:10" />
             </div>
             <div>
-              <label className={label} htmlFor="dw-text">Scripture text (KJV)</label>
+              <label className={label} htmlFor="dw-text">Scripture text (KJV or NKJV)</label>
               <textarea id="dw-text" required rows={3} className={input} value={form.scripture_text} onChange={(e) => set("scripture_text", e.target.value)} />
             </div>
           </div>
