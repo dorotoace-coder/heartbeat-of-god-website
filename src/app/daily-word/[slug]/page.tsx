@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Instagram, Youtube } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Instagram, Youtube } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/site/ShareButtons";
@@ -119,9 +119,29 @@ export default async function DailyWordPost({ params }: { params: Params }) {
         <Section tone="ivory" containerClassName="max-w-3xl" aria-labelledby="devotional-title">
           <h2 id="devotional-title" className="sr-only">Devotional</h2>
           {image && (
-            <div className="relative mb-12 aspect-[16/10] overflow-hidden rounded-3xl bg-parchment">
-              <Image src={image} alt="" fill sizes="(min-width: 768px) 768px, 100vw" unoptimized className="object-cover" />
-            </div>
+            <figure className="mb-12">
+              <div className="overflow-hidden rounded-3xl bg-parchment">
+                <Image
+                  src={image}
+                  alt={`Complete HBG-CLT devotional artwork: ${word.title}, ${formatPublishDate(word.publish_date)}`}
+                  width={995}
+                  height={1536}
+                  sizes="(min-width: 768px) 768px, 100vw"
+                  unoptimized
+                  className="h-auto w-full object-contain"
+                />
+              </div>
+              <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-sm text-muted">Complete devotional image · original aspect ratio preserved</span>
+                <a
+                  href={`/api/daily-word-image?slug=${encodeURIComponent(word.slug)}`}
+                  download={`hbg-clt-${word.publish_date}.jpg`}
+                  className="inline-flex items-center gap-2 rounded-full bg-plum px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+                >
+                  <Download size={17} aria-hidden /> Download full CLT
+                </a>
+              </figcaption>
+            </figure>
           )}
           <Markdown
             source={word.devotional}
