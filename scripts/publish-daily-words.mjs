@@ -1,7 +1,7 @@
 // Upserts every entry in data/clt-daily-words.json into the `daily_words`
 // table via the Supabase REST API. Run by the `publish-daily-word` GitHub
 // Action after the midnight CLT job appends a day's entry to the queue.
-// Idempotent: upserts on `slug` (the table's unique key), so re-running
+// Idempotent: upserts on `slug` (`on_conflict=slug`; the PK is `id`), so re-running
 // after a partial failure or a re-push is safe.
 //
 // Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment
@@ -32,7 +32,7 @@ for (const e of entries) {
 }
 
 const base = url.replace(/\/$/, "");
-const res = await fetch(`${base}/rest/v1/daily_words`, {
+const res = await fetch(`${base}/rest/v1/daily_words?on_conflict=slug`, {
   method: "POST",
   headers: {
     apikey: key,

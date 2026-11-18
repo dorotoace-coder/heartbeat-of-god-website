@@ -1,0 +1,38 @@
+# Publishes CLT devotionals queued in data/clt-daily-words.json into the
+# daily_words table (Supabase). The midnight CLT job appends one entry per
+# day to that file and pushes it to main; this workflow upserts it. No site
+# redeploy is needed — the Daily Word pages revalidate hourly (ISR) and
+# pick the new row up on their own.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (Supabase Dashboard → Settings → API).
+# The service-role key bypasses row-level security: keep it a secret, never
+# commit it, and never print it in logs.
+name: Publish Daily Word
+
+on:
+  push:
+    branches: [main]
+    paths: ["data/clt-daily-words.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-daily-word
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Upsert queued Daily Words into Supabase
+        run: node scripts/publish-daily-words.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
