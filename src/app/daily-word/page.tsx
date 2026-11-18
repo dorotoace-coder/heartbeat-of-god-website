@@ -103,6 +103,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
                         href={`/daily-word/${w.slug}`}
                         className="group flex h-full flex-col rounded-3xl border border-line bg-white p-7 transition hover:-translate-y-1 hover:border-gold/60 hover:shadow-[0_30px_60px_-35px_rgba(27,20,36,0.45)]"
                       >
+                        <span aria-hidden className="chalice-bar -mx-7 -mt-7 mb-6 block h-1.5 rounded-t-3xl" />
                         <time dateTime={w.publish_date} className="text-xs font-bold uppercase tracking-[0.18em] text-gold-deep">
                           {formatPublishDate(w.publish_date, "short")}
                         </time>
