@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BookOpen, Plus, Edit3, Trash2, Eye, EyeOff, ExternalLink, Loader2, X } from "lucide-react";
+import { BookOpen, Plus, Edit3, Trash2, Eye, EyeOff, ExternalLink, Loader2, Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAdminRole, canPerformAction } from "@/lib/permissions";
 import { dailyWordSlug, formatPublishDate, slugify, todayISO, type DailyWord } from "@/lib/dailyWord";
@@ -54,6 +54,7 @@ export function DailyWordView() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -113,6 +114,36 @@ export function DailyWordView() {
       tiktok_url: w.tiktok_url ?? "",
       published: w.published,
     });
+  };
+
+  const uploadImage = async (file: File) => {
+    if (!form) return;
+    setFormError(null);
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setFormError("Use a JPG, PNG or WebP devotional image.");
+      return;
+    }
+    if (file.size > 15_000_000) {
+      setFormError("Image must be 15 MB or smaller.");
+      return;
+    }
+    const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    const key = `${form.publish_date}/${crypto.randomUUID()}.${extension}`;
+    setUploading(true);
+    try {
+      const { error } = await supabase.storage.from("clt-devotionals").upload(key, file, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("clt-devotionals").getPublicUrl(key);
+      set("image_url", data.publicUrl);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async (publish: boolean) => {
@@ -259,6 +290,25 @@ export function DailyWordView() {
             <textarea id="dw-dev" rows={12} className={input} value={form.devotional} onChange={(e) => set("devotional", e.target.value)} />
           </div>
 
+          <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-4">
+            <label className={label} htmlFor="dw-image-upload">Complete CLT artwork (JPG, PNG or WebP, up to 15 MB)</label>
+            <input
+              id="dw-image-upload"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading || saving}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void uploadImage(file);
+                e.currentTarget.value = "";
+              }}
+              className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700"
+            />
+            {uploading && <p className="mt-2 flex items-center gap-2 text-sm text-blue-600"><Loader2 size={15} className="animate-spin" /> Uploading original artwork…</p>}
+            {form.image_url && <p className="mt-2 break-all text-xs text-slate-500">Attached image: {form.image_url}</p>}
+            <p className="mt-2 text-xs text-slate-500">Upload first, then save as draft or publish. Full portrait image will be shown without cropping.</p>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             {([
               ["image_url", "Image URL (optional)"],
@@ -276,10 +326,10 @@ export function DailyWordView() {
           {formError && <p role="alert" className="rounded-xl bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm font-medium text-red-600">{formError}</p>}
 
           <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-slate-800 pt-5">
-            <button type="button" disabled={saving} onClick={() => save(true)} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-60">
+            <button type="button" disabled={saving || uploading} onClick={() => save(true)} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-60">
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />} {form.id && form.published ? "Save (published)" : "Save & publish"}
             </button>
-            <button type="button" disabled={saving} onClick={() => save(false)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60">
+            <button type="button" disabled={saving || uploading} onClick={() => save(false)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60">
               <EyeOff size={16} /> {form.id && form.published ? "Unpublish & save as draft" : "Save as draft"}
             </button>
             {form.publish_date > today && (
