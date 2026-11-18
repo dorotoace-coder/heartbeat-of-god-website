@@ -266,3 +266,18 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ───────── Chalice echo (Daily Word, CSS-only — no photo assets) ─────────
+   Dark maroon/brown gradient with a warm gold glow, echoing the WhatsApp
+   chalice image's background. Used by the Daily Word detail header, the
+   homepage Engage card, and archive card bars. */
+.chalice-aura {
+  background:
+    radial-gradient(55% 45% at 76% 18%, rgba(217, 180, 90, 0.22), transparent 70%),
+    radial-gradient(45% 55% at 12% 82%, rgba(150, 70, 60, 0.20), transparent 70%),
+    linear-gradient(180deg, #3A1216 0%, #241016 55%, #0E0716 100%);
+}
+
+.chalice-bar {
+  background: linear-gradient(90deg, #D9B45A 0%, #8A1F2D 50%, #D9B45A 100%);
+}

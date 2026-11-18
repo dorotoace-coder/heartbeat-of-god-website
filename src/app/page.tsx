@@ -113,19 +113,22 @@ export default async function Home() {
               </figure>
             </Reveal>
             <Reveal delay={0.1}>
-              <div className="rounded-3xl border border-line bg-white p-8 md:p-10">
-                <BookOpen size={26} className="text-gold-deep" aria-hidden />
-                <h3 className="mt-5 font-headline text-3xl text-text">Engage with the Living Word</h3>
-                <p className="mt-4 leading-relaxed text-muted">
-                  Every message is a conduit for transformation. Explore our library of teachings designed to awaken the spirit of man to the divine reality.
-                </p>
-                <ul className="mt-6 space-y-3 text-sm">
-                  <li><strong className="text-text">Biblical Authority</strong> <span className="text-muted">— rooted in the uncompromised word of God.</span></li>
-                  <li><strong className="text-text">Spiritual Depth</strong> <span className="text-muted">— exploring the mysteries of the Kingdom.</span></li>
-                </ul>
-                <Link href="/media" className={buttonClass("dark", "md", "mt-8")}>
-                  Browse Media Archive <ArrowRight size={16} aria-hidden />
-                </Link>
+              <div className="chalice-aura relative overflow-hidden rounded-3xl p-8 text-white md:p-10">
+                <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-60" />
+                <div className="relative">
+                  <BookOpen size={26} className="text-gold-soft" aria-hidden />
+                  <h3 className="mt-5 font-headline text-3xl text-white">Engage with the Living Word</h3>
+                  <p className="mt-4 leading-relaxed text-white/70">
+                    Every message is a conduit for transformation. Explore our library of teachings designed to awaken the spirit of man to the divine reality.
+                  </p>
+                  <ul className="mt-6 space-y-3 text-sm">
+                    <li><strong className="text-white">Biblical Authority</strong> <span className="text-white/60">— rooted in the uncompromised word of God.</span></li>
+                    <li><strong className="text-white">Spiritual Depth</strong> <span className="text-white/60">— exploring the mysteries of the Kingdom.</span></li>
+                  </ul>
+                  <Link href="/media" className={buttonClass("gold", "md", "mt-8")}>
+                    Browse Media Archive <ArrowRight size={16} aria-hidden />
+                  </Link>
+                </div>
               </div>
             </Reveal>
           </div>

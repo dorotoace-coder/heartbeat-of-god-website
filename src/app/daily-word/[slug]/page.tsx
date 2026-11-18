@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Instagram, Youtube } from "lucide-react";
+import { ArrowLeft, ArrowRight, Heart, Instagram, Youtube } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/site/ShareButtons";
@@ -95,8 +94,20 @@ export default async function DailyWordPost({ params }: { params: Params }) {
       />
       <Navbar />
       <main id="main-content">
-        <header className="hero-aura relative overflow-hidden px-5 pb-20 pt-36 text-white sm:px-8 md:pb-24 md:pt-44">
+        <header className="chalice-aura relative overflow-hidden px-5 pb-20 pt-36 text-white sm:px-8 md:pb-24 md:pt-44">
           <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-60" />
+          <div className="relative mx-auto mb-10 flex max-w-3xl items-start justify-between animate-fade-up">
+            <div>
+              <p className="flex items-center gap-3 text-lg font-bold tracking-wide text-white">
+                <span aria-hidden className="inline-block h-[26px] w-[26px] shrink-0 bg-[#3882CD]" />
+                HBG-CLT
+              </p>
+              <p className="mt-2 text-sm text-white/70">{FOUNDER}</p>
+            </div>
+            <p className="flex items-center gap-1.5 text-lg font-bold text-[#C65C6E]">
+              HBG <Heart size={18} className="text-[#C65C6E]" fill="currentColor" aria-hidden />
+            </p>
+          </div>
           <div className="relative mx-auto max-w-3xl animate-fade-up">
             <Link href="/daily-word" className="mb-8 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white">
               <ArrowLeft size={15} aria-hidden /> All Daily Words
@@ -118,15 +129,12 @@ export default async function DailyWordPost({ params }: { params: Params }) {
 
         <Section tone="ivory" containerClassName="max-w-3xl" aria-labelledby="devotional-title">
           <h2 id="devotional-title" className="sr-only">Devotional</h2>
-          {image && (
-            <div className="relative mb-12 aspect-[16/10] overflow-hidden rounded-3xl bg-parchment">
-              <Image src={image} alt="" fill sizes="(min-width: 768px) 768px, 100vw" unoptimized className="object-cover" />
-            </div>
-          )}
           <Markdown
             source={word.devotional}
             className="text-lg leading-relaxed text-text [&_a]:font-semibold [&_a]:text-plum [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:my-8 [&_blockquote]:border-l-2 [&_blockquote]:border-gold [&_blockquote]:pl-5 [&_blockquote]:font-headline [&_blockquote]:text-2xl [&_blockquote]:italic [&_h2]:mb-4 [&_h2]:mt-12 [&_h2]:font-headline [&_h2]:text-3xl [&_h3]:mb-3 [&_h3]:mt-10 [&_h3]:font-headline [&_h3]:text-2xl [&_li]:mt-2 [&_ol]:my-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-6 [&_p:first-child]:mt-0 [&_ul]:my-6 [&_ul]:list-disc [&_ul]:pl-6"
           />
+
+          <p className="mt-14 text-center text-sm font-medium tracking-[0.35em] text-muted" aria-hidden>hbG</p>
 
           {clips.length > 0 && (
             <div className="mt-12 flex flex-wrap gap-3">
