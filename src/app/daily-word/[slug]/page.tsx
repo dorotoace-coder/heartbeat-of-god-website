@@ -64,6 +64,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
   const url = `${SITE_URL}/daily-word/${word.slug}`;
   const image = safeHttpsUrl(word.image_url);
   const translation = translationOf(word.scripture_ref);
+  const downloadable = Boolean(image && process.env.NEXT_PUBLIC_SUPABASE_URL && image.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/clt-devotionals/`));
   const clips = [
     { href: safeHttpsUrl(word.youtube_url), label: "Watch on YouTube", Icon: YouTubeIcon },
     { href: safeHttpsUrl(word.instagram_url), label: "View on Instagram", Icon: InstagramIcon },
@@ -133,13 +134,13 @@ export default async function DailyWordPost({ params }: { params: Params }) {
               </div>
               <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-muted">Complete devotional image · original aspect ratio preserved</span>
-                <a
+                {downloadable && <a
                   href={`/api/daily-word-image?slug=${encodeURIComponent(word.slug)}`}
                   download={`hbg-clt-${word.publish_date}.jpg`}
                   className="inline-flex items-center gap-2 rounded-full bg-plum px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
                 >
                   <Download size={17} aria-hidden /> Download full CLT
-                </a>
+                </a>}
               </figcaption>
             </figure>
           )}
