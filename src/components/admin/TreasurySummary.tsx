@@ -1,0 +1,146 @@
+"use client";
+
+import { useEffect, useState, type FormEvent } from "react";
+import { supabase } from "@/lib/supabase";
+
+type Summary = {
+  church_id: string;
+  month: string;
+  currency: string;
+  kind: string;
+  category: string;
+  total: number;
+  entries: number;
+};
+
+const categories = ["tithe", "sunday_offering", "seed_offering", "thanksgiving", "special_offering", "pledge_redemption", "kces_dues", "donation", "other"];
+const methods = ["cash", "bank_transfer", "pos", "online"];
+const field = "block min-h-11 w-full rounded-lg border border-slate-400 bg-white px-3 text-slate-950";
+
+function RecordCollection({ churchId }: { churchId: string }) {
+  const [method, setMethod] = useState("cash");
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState("");
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (saving) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const first = String(data.get("counter1") ?? "").trim();
+    const second = String(data.get("counter2") ?? "").trim();
+    if (method === "cash" && (!first || !second || first.toLowerCase() === second.toLowerCase())) {
+      setNotice("Enter two distinct cash counters.");
+      return;
+    }
+    setSaving(true);
+    setNotice("");
+    try {
+      const result = await supabase.from("treasury_income").insert({
+        church_id: churchId,
+        entry_date: data.get("date"),
+        service: data.get("service"),
+        category: data.get("category"),
+        amount: data.get("amount"),
+        currency: data.get("currency"),
+        method,
+        counted_by_1: first || null,
+        counted_by_2: second || null,
+      });
+      if (result.error) {
+        setNotice("Save was not confirmed. Check with the other Treasury user before resubmitting.");
+        return;
+      }
+      setNotice("Collection recorded and awaiting independent confirmation.");
+      form.reset();
+      setMethod("cash");
+    } catch {
+      setNotice("Save was not confirmed. Check with the other Treasury user before resubmitting.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
+      <fieldset disabled={saving} className="grid gap-4 sm:grid-cols-2">
+        <legend className="mb-4 text-lg font-bold">Record a collection</legend>
+        <label>Service date<input className={field} name="date" type="date" required /></label>
+        <label>Service<input className={field} name="service" maxLength={100} required /></label>
+        <label>Giving category<select className={field} name="category">{categories.map((category) =>
+          <option key={category} value={category}>{category.replaceAll("_", " ")}</option>)}</select></label>
+        <label>Payment method<select className={field} value={method} onChange={(event) => setMethod(event.target.value)}>{methods.map((value) =>
+          <option key={value} value={value}>{value.replaceAll("_", " ")}</option>)}</select></label>
+        <label>Currency<select className={field} name="currency"><option>NGN</option><option>CAD</option></select></label>
+        <label>Amount<input className={field} name="amount" type="number" inputMode="decimal" min="0.01" max="999999999999.99" step="0.01" required /></label>
+        {method === "cash" && <>
+          <label>First cash counter<input className={field} name="counter1" maxLength={100} required /></label>
+          <label>Second cash counter<input className={field} name="counter2" maxLength={100} required /></label>
+        </>}
+      </fieldset>
+      <button disabled={saving} className="min-h-11 rounded-lg bg-[#2E1252] px-5 text-white disabled:opacity-60">
+        {saving ? "Saving…" : "Record collection"}
+      </button>
+      <p role="status">{notice}</p>
+    </form>
+  );
+}
+
+export default function TreasurySummary() {
+  const [rows, setRows] = useState<Summary[]>([]);
+  const [churchId, setChurchId] = useState<string>();
+  const [status, setStatus] = useState<"loading" | "denied" | "ready" | "error">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const access = await supabase.from("treasury_portal_access").select("church_id");
+      if (cancelled) return;
+      if (access.error) return setStatus("error");
+      if (!access.data.length) return setStatus("denied");
+      if (access.data.length === 1) setChurchId(access.data[0].church_id);
+      const result = await supabase.from("treasury_monthly_summary")
+        .select("church_id,month,currency,kind,category,total,entries")
+        .order("month", { ascending: false }).limit(50);
+      if (cancelled) return;
+      if (result.error) return setStatus("error");
+      setRows(result.data);
+      setStatus("ready");
+    }
+    void load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return (
+    <section className="mx-auto max-w-4xl space-y-6">
+      <header className="rounded-2xl bg-[#2E1252] p-6 text-white sm:p-8">
+        <h1 className="text-3xl font-bold">Treasury</h1>
+        <p className="mt-2 text-white/90">Monthly income and expense summaries</p>
+      </header>
+      {status === "ready" && churchId && <RecordCollection churchId={churchId} />}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
+        {status === "loading" && <p role="status">Checking Treasury access…</p>}
+        {status === "denied" && <p>Treasury access is limited to the Pastor and Treasury Leader.</p>}
+        {status === "error" && <p role="alert">Treasury could not load. Refresh the page or contact your administrator.</p>}
+        {status === "ready" && rows.length === 0 && <p>No monthly totals are available yet.</p>}
+        {status === "ready" && rows.length > 0 && (
+          <>
+            <h2 className="text-lg font-bold">Recent monthly totals</h2>
+            <ul className="mt-3 divide-y divide-slate-200">
+              {rows.map((row) => (
+                <li key={JSON.stringify([row.church_id, row.month, row.currency, row.kind, row.category])}
+                  className="flex flex-wrap justify-between gap-2 py-3">
+                  <div>
+                    <p className="font-semibold capitalize">{row.kind} · {row.category.replaceAll("_", " ")}</p>
+                    <p className="text-sm">{row.month.slice(0, 7)} · {row.entries} entries</p>
+                  </div>
+                  <p className="font-semibold tabular-nums">{row.currency} {Number(row.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}

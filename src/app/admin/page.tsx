@@ -15,6 +15,9 @@ import { EventsView } from "@/components/admin/EventsView";
 import { MediaView } from "@/components/admin/MediaView";
 import { InquiriesView } from "@/components/admin/InquiriesView";
 import { DailyWordView } from "@/components/admin/DailyWordView";
+import ServiceAttendance from "@/components/admin/ServiceAttendance";
+import TreasurySummary from "@/components/admin/TreasurySummary";
+import Link from "next/link";
 import { PrayerWallView } from "@/components/admin/PrayerWallView";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -67,6 +70,8 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
   const view = searchParams.get("view") || "overview";
 
   const renderDashboard = () => {
+    if (view === "attendance") return <ServiceAttendance />;
+    if (view === "treasury") return <TreasurySummary />;
     // Check nav-level access first
     if (!hasNavAccess(activeRole, view)) {
       return <AccessDenied view={view} />;
@@ -131,6 +136,14 @@ function DashboardContent({ pulse, profile, activeRole, onRoleSwitch }: { pulse:
         </div>
       </div>
 
+      <nav aria-label="Service tools" className="flex flex-wrap gap-2">
+        <Link href="/admin?view=attendance" aria-current={view === "attendance" ? "page" : undefined} className="rounded-lg bg-[#2E1252] px-4 py-3 font-semibold text-white">
+          Service attendance
+        </Link>
+        <Link href="/admin?view=treasury" aria-current={view === "treasury" ? "page" : undefined} className="rounded-lg border border-[#2E1252] bg-white px-4 py-3 font-semibold text-[#2E1252]">
+          Treasury
+        </Link>
+      </nav>
       {renderDashboard()}
     </div>
   );
