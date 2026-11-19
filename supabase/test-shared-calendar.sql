@@ -9,7 +9,9 @@ create table public.treasury_members (
   church_id uuid, user_id uuid, role public.treasury_role, active boolean
 );
 create table public.treasury_income (
-  church_id uuid, entry_date date not null, service text
+  id uuid primary key default gen_random_uuid(),
+  church_id uuid, entry_date date not null, service text,
+  entered_by uuid not null default auth.uid(), confirmed_by uuid, confirmed_at timestamptz
 );
 alter table public.treasury_income enable row level security;
 grant select, insert on public.treasury_income to authenticated;
@@ -18,5 +20,5 @@ returns boolean language sql as $$ select false $$;
 create function public.treasury_has_role_text(p_church text, p_roles public.treasury_role[])
 returns boolean language sql as $$ select false $$;
 create policy fixture_income on public.treasury_income to authenticated
-  using (public.treasury_has_role(church_id, array['admin']::public.treasury_role[]));
+  using (public.treasury_has_role(church_id, array['admin','treasurer']::public.treasury_role[]));
 create view public.treasury_monthly_summary as select count(*) as entries from public.treasury_income;

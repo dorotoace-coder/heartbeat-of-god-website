@@ -30,6 +30,48 @@ begin
   end;
 end $$;
 
+reset role;
+insert into auth.users(id) values ('10000000-0000-0000-0000-000000000003');
+insert into public.treasury_members values
+  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000003', 'treasurer', true);
+insert into public.treasury_portal_access values
+  ('20000000-0000-0000-0000-000000000001', 'treasury_leader', '10000000-0000-0000-0000-000000000003');
+
+set role authenticated;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000002';
+insert into public.treasury_income(id, church_id, pulse_service_id)
+select '30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', id from public.pulse_services;
+do $$
+begin
+  begin
+    perform public.treasury_confirm_income('30000000-0000-0000-0000-000000000001');
+    raise exception 'Self confirmation was accepted';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000001';
+do $$
+begin
+  begin
+    perform public.treasury_confirm_income('30000000-0000-0000-0000-000000000001');
+    raise exception 'Usher confirmation was accepted';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000003';
+select public.treasury_confirm_income('30000000-0000-0000-0000-000000000001');
+select public.treasury_confirm_income('30000000-0000-0000-0000-000000000001');
+insert into public.treasury_income(id, church_id, pulse_service_id)
+select '30000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', id from public.pulse_services;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000002';
+select public.treasury_confirm_income('30000000-0000-0000-0000-000000000002');
+do $$
+begin
+  if (select count(*) from public.treasury_income where confirmed_at is not null) <> 2 then
+    raise exception 'Both independent confirmations must be recorded';
+  end if;
+end $$;
+
 set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000002';
 insert into public.treasury_income(church_id, pulse_service_id)
 select '20000000-0000-0000-0000-000000000001', id from public.pulse_services;

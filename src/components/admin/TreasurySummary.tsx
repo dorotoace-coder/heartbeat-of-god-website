@@ -18,7 +18,7 @@ const categories = ["tithe", "sunday_offering", "seed_offering", "thanksgiving",
 const methods = ["cash", "bank_transfer", "pos", "online"];
 const field = "block min-h-11 w-full rounded-lg border border-slate-400 bg-white px-3 text-slate-950";
 
-function RecordCollection({ churchId }: { churchId: string }) {
+function RecordCollection({ churchId, onRecorded }: { churchId: string; onRecorded: () => void }) {
   const [method, setMethod] = useState("cash");
   const [service, setService] = useState<PulseService | null>(null);
   const [saving, setSaving] = useState(false);
@@ -55,6 +55,7 @@ function RecordCollection({ churchId }: { churchId: string }) {
       setNotice("Collection recorded and awaiting independent confirmation.");
       form.reset();
       setMethod("cash");
+      onRecorded();
     } catch {
       setNotice("Save was not confirmed. Check with the other Treasury user before resubmitting.");
     } finally {
@@ -86,10 +87,98 @@ function RecordCollection({ churchId }: { churchId: string }) {
   );
 }
 
+type PendingCollection = {
+  id: string;
+  entry_date: string;
+  service: string | null;
+  category: string;
+  amount: number;
+  currency: string;
+  method: string;
+  entered_by: string | null;
+  counted_by_1: string | null;
+  counted_by_2: string | null;
+};
+
+function PendingCollections({ refresh, onConfirmed }: { refresh: number; onConfirmed: () => void }) {
+  const [rows, setRows] = useState<PendingCollection[] | null>(null);
+  const [actor, setActor] = useState<string>();
+  const [busy, setBusy] = useState<string>();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const [session, result] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from("treasury_income")
+          .select("id,entry_date,service,category,amount,currency,method,entered_by,counted_by_1,counted_by_2")
+          .is("confirmed_at", null).order("entry_date", { ascending: true }).limit(50),
+      ]);
+      if (cancelled) return;
+      if (session.error || result.error) {
+        setRows(null);
+        setMessage("Pending collections could not load. Refresh to try again.");
+        return;
+      }
+      setActor(session.data.user?.id);
+      setRows(result.data);
+    }
+    void load();
+    return () => { cancelled = true; };
+  }, [refresh]);
+
+  async function confirm(id: string) {
+    if (busy) return;
+    setBusy(id);
+    setMessage("");
+    try {
+      const result = await supabase.rpc("treasury_confirm_income", { p_id: id });
+      if (result.error) {
+        setMessage("Confirmation could not be verified. Refresh to check the collection before trying again.");
+        return;
+      }
+      setRows((current) => current?.filter((row) => row.id !== id) ?? null);
+      setMessage("Collection confirmed.");
+      onConfirmed();
+    } finally {
+      setBusy(undefined);
+    }
+  }
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
+      <h2 className="text-lg font-bold">Awaiting independent confirmation</h2>
+      <p role="status" className="mt-2 text-sm">{message}</p>
+      {rows === null && !message && <p className="mt-2">Loading collections…</p>}
+      {rows?.length === 0 && <p className="mt-2">No collections are waiting.</p>}
+      <ul className="divide-y divide-slate-200">
+        {rows?.map((row) => (
+          <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <div>
+              <p className="font-semibold">{row.currency} {Number(row.amount).toFixed(2)} · {row.category.replaceAll("_", " ")}</p>
+              <p className="text-sm">{row.entry_date} · {row.service || "Service not specified"} · {row.method.replaceAll("_", " ")}</p>
+              {row.counted_by_1 && row.counted_by_2 && <p className="text-sm">Cash counters: {row.counted_by_1} and {row.counted_by_2}</p>}
+            </div>
+            {actor && row.entered_by && actor !== row.entered_by ? (
+              <button type="button" disabled={Boolean(busy)} onClick={() => void confirm(row.id)}
+                className="min-h-11 rounded-lg bg-[#2E1252] px-4 text-white disabled:opacity-60">
+                {busy === row.id ? "Confirming…" : "Confirm collection"}
+              </button>
+            ) : <span className="text-sm">Requires the other authorized reviewer</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function TreasurySummary() {
   const [rows, setRows] = useState<Summary[]>([]);
   const [churchId, setChurchId] = useState<string>();
   const [status, setStatus] = useState<"loading" | "denied" | "ready" | "error">("loading");
+  const [refresh, setRefresh] = useState(0);
+  const reload = () => setRefresh((version) => version + 1);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +198,7 @@ export default function TreasurySummary() {
     }
     void load();
     return () => { cancelled = true; };
-  }, []);
+  }, [refresh]);
 
   return (
     <section className="mx-auto max-w-4xl space-y-6">
@@ -117,7 +206,8 @@ export default function TreasurySummary() {
         <h1 className="text-3xl font-bold">Treasury</h1>
         <p className="mt-2 text-white/90">Monthly income and expense summaries</p>
       </header>
-      {status === "ready" && churchId && <RecordCollection churchId={churchId} />}
+      {status === "ready" && churchId && <RecordCollection churchId={churchId} onRecorded={reload} />}
+      {status === "ready" && <PendingCollections refresh={refresh} onConfirmed={reload} />}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
         {status === "loading" && <p role="status">Checking Treasury access…</p>}
         {status === "denied" && <p>Treasury access is limited to the Pastor and Treasury Leader.</p>}
