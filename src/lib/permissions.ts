@@ -21,6 +21,7 @@ const NAV_MIN_LEVEL: Record<string, number> = {
   media: 1,     // Everyone (leader = read-only, enforced in component)
   inquiries: 2, // Manager+ (prayer requests, first-timer cards)
   dailyword: 2, // Manager+ (Daily Word library; matches daily_words RLS)
+  prayerwall: 2, // Manager+ (Prayer Wall moderation; matches prayer_wall.sql RLS)
   settings: 3,  // Pastor+ (System Rules)
 };
 
@@ -48,6 +49,10 @@ const ACTION_MIN_LEVEL: Record<string, number> = {
   // Daily Word (RLS in schema.sql enforces the same levels)
   "dailyword.edit": 2,
   "dailyword.delete": 3,
+
+  // Prayer Wall (RLS in supabase/migrations-pending/prayer_wall.sql enforces the same levels)
+  "prayerwall.moderate": 2,
+  "prayerwall.delete": 2,
 
   // System
   "settings.view": 3,

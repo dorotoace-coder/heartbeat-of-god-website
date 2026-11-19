@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { Mail, Phone, MapPin, HeartHandshake } from "lucide-react";
+import Link from "next/link";
+import { Mail, Phone, MapPin, HeartHandshake, HandHeart } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/site/PageHero";
@@ -65,6 +66,13 @@ export default async function ConnectPage() {
                   ))}
                 </ul>
               </div>
+              <Link href="/prayer-wall" className="group block rounded-[2rem] border border-line bg-white p-8 transition hover:border-gold-deep/40">
+                <HandHeart size={24} className="text-gold-deep" aria-hidden />
+                <h2 className="mt-4 font-headline text-2xl text-text">Prayer Wall</h2>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  Share a prayer request or testimony — and pray for others. <span className="font-semibold text-plum group-hover:text-gold-deep">Visit the wall →</span>
+                </p>
+              </Link>
               <figure className="flex gap-3 px-2 text-sm italic leading-relaxed text-muted">
                 <HeartHandshake size={20} className="shrink-0 text-gold-deep" aria-hidden />
                 <blockquote>

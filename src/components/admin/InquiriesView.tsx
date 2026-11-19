@@ -5,7 +5,7 @@ import { Inbox, Phone, Mail, Lock, ChevronDown } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { Inquiry } from "@/lib/types";
 
-const FILTERS = ["All", "Prayer Request", "First-Timer Card", "General Inquiry", "Testimony Submission", "Department Application", "Event Registration", "Media/Sound Inquiry"];
+const FILTERS = ["All", "Prayer Request", "First-Timer Card", "General Inquiry", "Testimony Submission", "Department Application", "Event Registration", "ILPC 2027 Interest", "Media/Sound Inquiry"];
 const STATUSES: Inquiry["status"][] = ["pending", "reviewed", "contacted"];
 
 const STATUS_STYLES: Record<Inquiry["status"], string> = {
