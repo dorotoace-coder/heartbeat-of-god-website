@@ -1,10 +1,10 @@
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "Resources — Books & Music",
-  socialTitle: "Books & Music | Heartbeat of God",
+  title: "Resources — Books",
+  socialTitle: "Books | Heartbeat of God",
   description:
-    "Books by Pastor Amos Unogwu, including Life After Death (2026), and gospel / Afro-soft rock music from Doroto Ace.",
+    "Books by Pastor Amos Unogwu, including Life After Death (2026).",
   path: "/resources",
 });
 

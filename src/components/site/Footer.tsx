@@ -13,7 +13,7 @@ const columns = [
       { href: "/programs", label: "Programs & Calendar" },
       { href: "/departments", label: "Join a Department" },
       { href: "/media", label: "Media Archive" },
-      { href: "/resources", label: "Books & Music" },
+      { href: "/resources", label: "Books" },
       { href: "/daily-word", label: "Daily Word" },
       { href: "/ilpc", label: "ILPC" },
     ],
