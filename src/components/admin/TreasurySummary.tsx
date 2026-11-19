@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import ServiceSelector, { type PulseService } from "./ServiceSelector";
 
@@ -23,6 +23,8 @@ function RecordCollection({ churchId, onRecorded }: { churchId: string; onRecord
   const [service, setService] = useState<PulseService | null>(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const [retryRequired, setRetryRequired] = useState(false);
+  const attempt = useRef<{ id: string; signature: string } | null>(null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,29 +37,53 @@ function RecordCollection({ churchId, onRecorded }: { churchId: string; onRecord
       setNotice("Enter two distinct cash counters.");
       return;
     }
+    const collection = {
+      church_id: churchId,
+      pulse_service_id: service.id,
+      category: data.get("category"),
+      amount: data.get("amount"),
+      currency: data.get("currency"),
+      method,
+      counted_by_1: first || null,
+      counted_by_2: second || null,
+    };
+    const signature = JSON.stringify(collection);
+    if (attempt.current && attempt.current.signature !== signature) {
+      setNotice("Retry the original collection before entering a different one.");
+      return;
+    }
+    const request = attempt.current ?? { id: crypto.randomUUID(), signature };
+    attempt.current = request;
     setSaving(true);
     setNotice("");
     try {
-      const result = await supabase.from("treasury_income").insert({
-        church_id: churchId,
-        pulse_service_id: service.id,
-        category: data.get("category"),
-        amount: data.get("amount"),
-        currency: data.get("currency"),
-        method,
-        counted_by_1: first || null,
-        counted_by_2: second || null,
-      });
+      const result = await supabase.from("treasury_income").insert({ ...collection, id: request.id });
       if (result.error) {
-        setNotice("Save was not confirmed. Check with the other Treasury user before resubmitting.");
-        return;
+        // An earlier request may have committed before its response was lost.
+        const existing = await supabase.from("treasury_income").select("id")
+          .eq("id", request.id).maybeSingle();
+        if (existing.error || !existing.data) {
+          const rejected = !retryRequired && result.status >= 400 && result.status < 500
+            && ![408, 409, 429].includes(result.status) && Boolean(result.error.code);
+          if (rejected) {
+            attempt.current = null;
+            setNotice("The database rejected this entry. Check your access and collection details before trying again.");
+          } else {
+            setRetryRequired(true);
+            setNotice("The save is unverified. Keep this page open and retry the same collection.");
+          }
+          return;
+        }
       }
+      attempt.current = null;
+      setRetryRequired(false);
       setNotice("Collection recorded and awaiting independent confirmation.");
       form.reset();
       setMethod("cash");
       onRecorded();
     } catch {
-      setNotice("Save was not confirmed. Check with the other Treasury user before resubmitting.");
+      setRetryRequired(true);
+      setNotice("The save is unverified. Keep this page open and retry the same collection.");
     } finally {
       setSaving(false);
     }
@@ -65,7 +91,7 @@ function RecordCollection({ churchId, onRecorded }: { churchId: string; onRecord
 
   return (
     <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
-      <fieldset disabled={saving} className="grid gap-4 sm:grid-cols-2">
+      <fieldset disabled={saving} aria-describedby={retryRequired ? "collection-notice" : undefined} className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-4 text-lg font-bold">Record a collection</legend>
         <ServiceSelector value={service} onChange={setService} />
         <label>Giving category<select className={field} name="category">{categories.map((category) =>
@@ -80,9 +106,9 @@ function RecordCollection({ churchId, onRecorded }: { churchId: string; onRecord
         </>}
       </fieldset>
       <button disabled={saving || !service} className="min-h-11 rounded-lg bg-[#2E1252] px-5 text-white disabled:opacity-60">
-        {saving ? "Saving…" : "Record collection"}
+        {saving ? "Saving…" : retryRequired ? "Retry collection" : "Record collection"}
       </button>
-      <p role="status">{notice}</p>
+      <p id="collection-notice" role="status">{notice}</p>
     </form>
   );
 }
