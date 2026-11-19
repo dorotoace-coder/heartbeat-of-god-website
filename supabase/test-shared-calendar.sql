@@ -11,10 +11,18 @@ create table public.treasury_members (
 create table public.treasury_income (
   id uuid primary key default gen_random_uuid(),
   church_id uuid, entry_date date not null, service text,
+  category text not null default 'sunday_offering', amount numeric not null default 100,
+  currency text not null default 'NGN',
   entered_by uuid not null default auth.uid(), confirmed_by uuid, confirmed_at timestamptz
 );
+create table public.treasury_expenses (
+  church_id uuid, entry_date date not null, category text not null, amount numeric not null,
+  currency text not null, status text not null
+);
 alter table public.treasury_income enable row level security;
+alter table public.treasury_expenses enable row level security;
 grant select, insert on public.treasury_income to authenticated;
+grant select on public.treasury_expenses to authenticated;
 create function public.treasury_has_role(p_church uuid, p_roles public.treasury_role[])
 returns boolean language sql as $$ select false $$;
 create function public.treasury_has_role_text(p_church text, p_roles public.treasury_role[])

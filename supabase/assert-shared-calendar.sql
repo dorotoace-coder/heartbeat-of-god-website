@@ -88,3 +88,20 @@ begin
     raise exception 'Usher could read Treasury data';
   end if;
 end $$;
+do $$
+begin
+  if exists (select from public.treasury_monthly_reconciliation) then
+    raise exception 'Usher could read Treasury reconciliation';
+  end if;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000002';
+do $$
+begin
+  if not exists (
+    select from public.treasury_monthly_reconciliation
+    where kind = 'income' and confirmed_entries = 2 and confirmed_total = 200
+      and pending_entries = 1 and pending_total = 100
+  ) then
+    raise exception 'Reconciliation must keep confirmed and pending income apart';
+  end if;
+end $$;
