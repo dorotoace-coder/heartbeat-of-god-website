@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/site/PageHero";
 import FollowHBG from "@/components/site/FollowHBG";
+import DailyWordPush from "@/components/site/DailyWordPush";
 import { Section } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
 import { ARCHIVE_PAGE_SIZE, getDailyWordArchive } from "@/lib/dailyWordData";
@@ -67,6 +68,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
             </div>
           ) : (
             <>
+              <DailyWordPush tone="light" className="mb-6 flex justify-center text-center" />
               <form action="/daily-word" method="get" role="search" className="mx-auto mb-12 flex max-w-2xl items-center gap-2 rounded-full border border-line bg-white p-1.5 pl-5 focus-within:border-plum/50">
                 <Search size={18} className="shrink-0 text-muted" aria-hidden />
                 <label htmlFor="dw-search" className="sr-only">Search the Daily Word by text or scripture</label>
