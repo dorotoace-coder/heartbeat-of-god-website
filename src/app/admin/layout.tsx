@@ -12,6 +12,7 @@ import {
   CalendarDays,
   Inbox,
   BookOpen,
+  HandHeart,
   Menu,
   ChevronRight
 } from "lucide-react";
@@ -23,6 +24,7 @@ const ALL_NAV_ITEMS = [
   { id: "media", label: "Media Vault", icon: Video, href: "/admin?view=media" },
   { id: "inquiries", label: "Intake Inbox", icon: Inbox, href: "/admin?view=inquiries" },
   { id: "dailyword", label: "Daily Word", icon: BookOpen, href: "/admin?view=dailyword" },
+  { id: "prayerwall", label: "Prayer Wall", icon: HandHeart, href: "/admin?view=prayerwall" },
 ];
 
 function SidebarContent() {

@@ -256,6 +256,7 @@ export default async function Home() {
             <div className="mt-12 flex flex-wrap justify-center gap-3">
               <Link href="/connect?type=First-Timer%20Card" className={buttonClass("gold")}>Plan Your First Visit</Link>
               <Link href="/connect?type=Prayer%20Request" className={buttonClass("ghost-light")}>Send a Prayer Request</Link>
+              <Link href="/prayer-wall" className={buttonClass("ghost-light")}>Visit the Prayer Wall</Link>
             </div>
           </Reveal>
         </section>

@@ -13,7 +13,9 @@ const columns = [
       { href: "/programs", label: "Programs & Calendar" },
       { href: "/departments", label: "Join a Department" },
       { href: "/media", label: "Media Archive" },
+      { href: "/resources", label: "Books & Music" },
       { href: "/daily-word", label: "Daily Word" },
+      { href: "/ilpc", label: "ILPC" },
     ],
   },
   {
@@ -22,6 +24,7 @@ const columns = [
       { href: "/watch", label: "Watch Live" },
       { href: "/give", label: "Give" },
       { href: "/feed-the-future", label: "Feed the Future" },
+      { href: "/prayer-wall", label: "Prayer Wall" },
       { href: "/connect", label: "Contact & Prayer" },
     ],
   },

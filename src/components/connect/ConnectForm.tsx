@@ -20,6 +20,7 @@ export const INQUIRY_TYPES = [
   "Partnership Inquiry",
   `${currentEvent.name} Registration`,
   "Event Registration",
+  "ILPC 2027 Interest",
   "Media/Sound Inquiry",
 ];
 

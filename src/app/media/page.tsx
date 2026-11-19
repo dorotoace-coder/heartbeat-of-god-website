@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import PageHero from "@/components/site/PageHero";
 import MediaLibrary from "@/components/media/MediaLibrary";
 import LatestVideos from "@/components/site/LatestVideos";
+import SermonSeries from "@/components/media/SermonSeries";
 import Reveal from "@/components/ui/Reveal";
 import { Section, SectionHeader } from "@/components/ui/Section";
 
@@ -16,7 +17,7 @@ const STREAMS = [
   { Icon: Flame, title: "Salvation Challenge", label: "Evangelism fire", desc: "Evangelism-centered media that mobilizes believers to win souls and sustain outreach momentum." },
 ];
 
-// The HBG TV feed is cached for an hour.
+// The HBG TV feed and sermon-series playlists are cached for an hour.
 export const revalidate = 3600;
 
 export default function MediaPage() {
@@ -34,6 +35,8 @@ export default function MediaPage() {
           <SectionHeader id="library-title" align="center" eyebrow="Messages" title="Listen & Watch" />
           <MediaLibrary />
         </Section>
+
+        <SermonSeries tone="parchment" />
 
         <LatestVideos tone="white" />
 

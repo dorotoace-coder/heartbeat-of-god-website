@@ -17,6 +17,9 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: "/give", priority: 0.8, changeFrequency: "monthly" },
   { path: "/connect", priority: 0.8, changeFrequency: "monthly" },
   { path: "/feed-the-future", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/resources", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/ilpc", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/prayer-wall", priority: 0.7, changeFrequency: "weekly" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

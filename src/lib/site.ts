@@ -42,6 +42,14 @@ export const SOCIALS = {
  */
 export const YOUTUBE_CHANNEL_ID = "UC2EFyzk--fBYxUUBtPVpyYA";
 export const YOUTUBE_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
+export const YOUTUBE_PLAYLISTS_URL = `https://www.youtube.com/channel/${YOUTUBE_CHANNEL_ID}/playlists`;
+/**
+ * Public playlists on HBG TV, shown as sermon series on /media. The channel's
+ * /playlists page is read hourly and any new playlist appears on its own;
+ * this list is only a fallback. Verified Nov 18, 2026: one public playlist,
+ * "THE MIGHTY TURN AROUND (MTA)".
+ */
+export const KNOWN_SERIES_PLAYLIST_IDS = ["PLXtb5x9WzkpWWXAF5BapQHXEIpEAfZbp9"] as const;
 export const YOUTUBE_LIVE_EMBED = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
 
 /** Public Zoom registration link for online services. */
@@ -58,6 +66,7 @@ export const NAV_LINKS = [
   { href: "/about", label: "About" },
   { href: "/programs", label: "Programs" },
   { href: "/media", label: "Media" },
+  { href: "/resources", label: "Resources" },
   { href: "/departments", label: "Departments" },
   { href: "/feed-the-future", label: "Feed the Future" },
   { href: "/connect", label: "Connect" },
