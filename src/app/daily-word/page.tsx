@@ -17,16 +17,17 @@ export const metadata = pageMetadata({
   path: "/daily-word",
 });
 
-type SP = Promise<{ q?: string | string[]; page?: string | string[] }>;
+type SP = Promise<{ q?: string | string[]; page?: string | string[]; month?: string | string[] }>;
 
 function first(v?: string | string[]) {
   return (Array.isArray(v) ? v[0] : v) ?? "";
 }
 
-function pageHref(q: string, page: number) {
+function pageHref(q: string, page: number, month: string) {
   const p = new URLSearchParams();
   if (q) p.set("q", q);
   if (page > 1) p.set("page", String(page));
+  if (month) p.set("month", month);
   const s = p.toString();
   return s ? `/daily-word?${s}` : "/daily-word";
 }
@@ -35,7 +36,8 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
   const sp = await searchParams;
   const q = first(sp.q).trim().slice(0, 80);
   const page = Math.max(1, Math.min(500, parseInt(first(sp.page), 10) || 1));
-  const { items, total, error } = await getDailyWordArchive({ query: q, page });
+  const month = /^\d{4}-\d{2}$/.test(first(sp.month)) ? first(sp.month) : "";
+  const { items, total, error } = await getDailyWordArchive({ query: q, page, month });
   const pages = Math.max(1, Math.ceil(total / ARCHIVE_PAGE_SIZE));
   const libraryEmpty = !q && total === 0 && page === 1;
 
@@ -76,6 +78,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
                   placeholder="Search by text or scripture, e.g. Psalm 23"
                   className="min-w-0 flex-1 bg-transparent py-2 text-text placeholder:text-muted/70 focus:outline-none"
                 />
+                {month && <input type="hidden" name="month" value={month} />}
                 {q && (
                   <Link href="/daily-word" className="rounded-full p-2 text-muted hover:bg-parchment hover:text-text" aria-label="Clear search">
                     <X size={16} aria-hidden />
@@ -121,7 +124,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
               {pages > 1 && (
                 <nav aria-label="Daily Word pages" className="mt-14 flex items-center justify-center gap-3">
                   {page > 1 ? (
-                    <Link href={pageHref(q, page - 1)} className={buttonClass("ghost-dark", "md")} rel="prev">
+                    <Link href={pageHref(q, page - 1, month)} className={buttonClass("ghost-dark", "md")} rel="prev">
                       <ArrowLeft size={16} aria-hidden /> Newer
                     </Link>
                   ) : (
@@ -131,7 +134,7 @@ export default async function DailyWordArchive({ searchParams }: { searchParams:
                   )}
                   <span className="px-3 text-sm text-muted">Page {page} of {pages}</span>
                   {page < pages ? (
-                    <Link href={pageHref(q, page + 1)} className={buttonClass("ghost-dark", "md")} rel="next">
+                    <Link href={pageHref(q, page + 1, month)} className={buttonClass("ghost-dark", "md")} rel="next">
                       Older <ArrowRight size={16} aria-hidden />
                     </Link>
                   ) : (

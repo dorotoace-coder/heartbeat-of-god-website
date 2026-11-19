@@ -17,9 +17,11 @@ function cleanQuery(q: string): string {
 export async function getDailyWordArchive({
   query = "",
   page = 1,
+  month,
 }: {
   query?: string;
   page?: number;
+  month?: string;
 }): Promise<{ items: DailyWordSummary[]; total: number; error: boolean }> {
   if (!isSupabaseConfigured) return { items: [], total: 0, error: false };
   try {
@@ -32,6 +34,11 @@ export async function getDailyWordArchive({
       .order("publish_date", { ascending: false })
       .order("created_at", { ascending: false })
       .range(from, from + ARCHIVE_PAGE_SIZE - 1);
+    if (month && /^\d{4}-\d{2}$/.test(month)) {
+      const [year, mon] = month.split("-").map(Number);
+      const next = new Date(Date.UTC(year, mon, 1)).toISOString().slice(0, 10);
+      q = q.gte("publish_date", `${month}-01`).lt("publish_date", next);
+    }
     const term = cleanQuery(query);
     if (term) {
       const like = `"%${term}%"`;

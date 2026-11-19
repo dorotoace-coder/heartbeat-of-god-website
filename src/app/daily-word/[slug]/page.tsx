@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Download, Instagram, Youtube } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, CheckSquare, CircleHelp, Download, Feather, HandHeart, Instagram, KeyRound, ShieldCheck, Users, Youtube, type LucideIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/site/ShareButtons";
@@ -56,6 +56,23 @@ const TikTokIcon = () => (
 const YouTubeIcon = () => <Youtube size={16} aria-hidden />;
 const InstagramIcon = () => <Instagram size={16} aria-hidden />;
 
+const SECTION_ICONS: Record<string, LucideIcon> = {
+  "Key Word": KeyRound,
+  "Word Focus": Feather,
+  "Bible Insight": Users,
+  Prayer: HandHeart,
+  Confession: ShieldCheck,
+  "Action Point": CheckSquare,
+  "CLT Questions": CircleHelp,
+};
+
+function cltSections(source: string) {
+  return source.split(/^##\s+/m).slice(1).map((chunk) => {
+    const [heading = "", ...body] = chunk.split("\n");
+    return { heading: heading.trim(), body: body.join("\n").trim() };
+  });
+}
+
 export default async function DailyWordPost({ params }: { params: Params }) {
   const { slug } = await params;
   const word = await getDailyWordBySlug(slug);
@@ -63,6 +80,8 @@ export default async function DailyWordPost({ params }: { params: Params }) {
   const { prev, next } = await getDailyWordNeighbours(word);
   const url = `${SITE_URL}/daily-word/${word.slug}`;
   const image = safeHttpsUrl(word.image_url);
+  const month = word.publish_date.slice(0, 7);
+  const sections = cltSections(word.devotional);
   const translation = translationOf(word.scripture_ref);
   const downloadable = Boolean(image && process.env.NEXT_PUBLIC_SUPABASE_URL && image.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/clt-devotionals/`));
   const clips = [
@@ -95,33 +114,37 @@ export default async function DailyWordPost({ params }: { params: Params }) {
         }}
       />
       <Navbar />
-      <main id="main-content">
-        <header className="hero-aura relative overflow-hidden px-5 pb-20 pt-36 text-white sm:px-8 md:pb-24 md:pt-44">
-          <div aria-hidden className="grain pointer-events-none absolute inset-0 opacity-60" />
-          <div className="relative mx-auto max-w-3xl animate-fade-up">
-            <Link href="/daily-word" className="mb-8 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white">
-              <ArrowLeft size={15} aria-hidden /> All Daily Words
-            </Link>
-            <Eyebrow tone="dark">
-              Daily Word · <time dateTime={word.publish_date}>{formatPublishDate(word.publish_date)}</time>
-            </Eyebrow>
-            <h1 className="font-headline text-balance text-5xl font-light leading-[1.05] tracking-tight md:text-6xl">{word.title}</h1>
-            <figure className="mt-10 border-l-2 border-gold/70 pl-6">
-              <blockquote className="font-headline text-pretty text-2xl font-light italic leading-snug text-white/90 md:text-3xl">
-                “{word.scripture_text}”
-              </blockquote>
-              <figcaption className="mt-4 text-sm font-bold uppercase tracking-[0.2em] text-gold">
-                {translation.ref} <span className="font-medium normal-case tracking-normal text-white/50">· {translation.long}</span>
-              </figcaption>
-            </figure>
+      <main id="main-content" className="bg-white pt-[68px]">
+        <header className="relative overflow-hidden bg-plum px-5 py-12 text-white sm:px-8">
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_76%_45%,rgba(255,200,61,0.38),transparent_22%),radial-gradient(circle_at_83%_100%,rgba(130,20,40,0.8),transparent_35%),linear-gradient(115deg,#21052f,#510a3c)]" />
+          <div className="relative mx-auto max-w-4xl">
+            <p className="font-headline text-4xl text-gold-soft sm:text-5xl">HBG-CLT <span className="block text-2xl text-white">Daily Word</span></p>
+            <p className="mt-3 font-headline text-lg italic text-gold-soft">Come, Listen, Take Heed</p>
           </div>
         </header>
 
-        <Section tone="ivory" containerClassName="max-w-3xl" aria-labelledby="devotional-title">
-          <h2 id="devotional-title" className="sr-only">Devotional</h2>
+        <Section tone="ivory" containerClassName="max-w-4xl" aria-labelledby="devotional-title">
+          <div className="rounded-[2rem] bg-white p-5 shadow-[0_20px_55px_-35px_rgba(28,10,45,0.45)] sm:p-10">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <span className="rounded-md bg-plum px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white">HBG-CLT</span>
+            <ShareButtons url={url} title={`${word.title} — ${word.scripture_ref}`} text="Today’s Daily Word from Heartbeat of God" />
+          </div>
+          <p className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted"><time dateTime={word.publish_date}>{formatPublishDate(word.publish_date, "short")}</time><span>Pastor Amos Unogwu</span></p>
+          <h1 id="devotional-title" className="mt-4 font-headline text-4xl font-semibold leading-tight text-text sm:text-5xl">{word.title}</h1>
+          <p className="mt-2 font-headline text-xl italic text-plum">Divine Preservation</p>
+          <section className="mt-8 border-l-[6px] border-gold bg-[#fff8e8] px-5 py-6" aria-labelledby="scripture-title">
+            <div className="flex gap-4"><BookOpen className="mt-1 shrink-0 text-gold-deep" aria-hidden /><div><h2 id="scripture-title" className="font-bold text-plum">Opening Scripture</h2><p className="mt-1 font-headline text-lg italic leading-relaxed text-text">“{word.scripture_text}” — {translation.ref} ({translation.short})</p></div></div>
+          </section>
+          <div className="mt-8 space-y-7">
+            {sections.map(({ heading, body }) => {
+              const Icon = SECTION_ICONS[heading] ?? BookOpen;
+              const [main, takeaway] = body.split(/\n>\s*/);
+              return <section key={heading} className="flex gap-4" aria-labelledby={`section-${heading.replace(/\s+/g, "-").toLowerCase()}`}><span className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#efe4f7] text-plum"><Icon size={20} aria-hidden /></span><div className="min-w-0 flex-1"><h2 id={`section-${heading.replace(/\s+/g, "-").toLowerCase()}`} className="font-bold text-lg text-plum">{heading}</h2><Markdown source={main.trim()} className="mt-1 leading-relaxed text-text [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-2" />{takeaway && <blockquote className="mt-5 border-l-4 border-gold pl-4 font-headline text-lg font-semibold italic text-[#70410c]">{takeaway.trim()}</blockquote>}</div></section>;
+            })}
+          </div>
           {image && (
-            <figure className="mb-12">
-              <div className="overflow-hidden rounded-3xl bg-parchment">
+            <figure className="mt-10">
+              <div className="overflow-hidden rounded-2xl bg-parchment">
                 <Image
                   src={image}
                   alt={`Complete HBG-CLT devotional artwork: ${word.title}, ${formatPublishDate(word.publish_date)}`}
@@ -133,22 +156,10 @@ export default async function DailyWordPost({ params }: { params: Params }) {
                 />
               </div>
               <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <span className="text-sm text-muted">Complete devotional image · original aspect ratio preserved</span>
-                {downloadable && <a
-                  href={`/api/daily-word-image?slug=${encodeURIComponent(word.slug)}`}
-                  download={`hbg-clt-${word.publish_date}.jpg`}
-                  className="inline-flex items-center gap-2 rounded-full bg-plum px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
-                >
-                  <Download size={17} aria-hidden /> Download full CLT
-                </a>}
+                <span className="text-sm text-muted">Shareable HBG-CLT devotional · original portrait preserved</span>
               </figcaption>
             </figure>
           )}
-          <Markdown
-            source={word.devotional}
-            className="text-lg leading-relaxed text-text [&_a]:font-semibold [&_a]:text-plum [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:my-8 [&_blockquote]:border-l-2 [&_blockquote]:border-gold [&_blockquote]:pl-5 [&_blockquote]:font-headline [&_blockquote]:text-2xl [&_blockquote]:italic [&_h2]:mb-4 [&_h2]:mt-12 [&_h2]:font-headline [&_h2]:text-3xl [&_h3]:mb-3 [&_h3]:mt-10 [&_h3]:font-headline [&_h3]:text-2xl [&_li]:mt-2 [&_ol]:my-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-6 [&_p:first-child]:mt-0 [&_ul]:my-6 [&_ul]:list-disc [&_ul]:pl-6"
-          />
-
           {clips.length > 0 && (
             <div className="mt-12 flex flex-wrap gap-3">
               {clips.map(({ href, label, Icon }) => (
@@ -159,9 +170,9 @@ export default async function DailyWordPost({ params }: { params: Params }) {
             </div>
           )}
 
-          <div className="mt-14 border-t border-line pt-8">
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">Share this Word</p>
-            <ShareButtons url={url} title={`${word.title} — ${word.scripture_ref}`} text="Today’s Daily Word from Heartbeat of God" />
+          <div className="mt-10 grid gap-3 border-t border-line pt-8 sm:grid-cols-2">
+            {downloadable && <a href={`/api/daily-word-image?slug=${encodeURIComponent(word.slug)}`} download={`hbg-clt-${word.publish_date}.png`} className="inline-flex items-center justify-center gap-2 rounded-lg bg-plum px-5 py-3 font-semibold text-white hover:bg-plum-soft"><Download size={18} aria-hidden /> Download CLT Image</a>}
+            <Link href={`/daily-word?month=${month}`} className="inline-flex items-center justify-center gap-2 rounded-lg border border-plum px-5 py-3 font-semibold text-plum hover:bg-[#f7f1fb]"><CalendarDays size={18} aria-hidden /> View {formatPublishDate(word.publish_date, "long").split(" ")[1]} CLT Archive</Link>
           </div>
 
           {(prev || next) && (
@@ -186,6 +197,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
               )}
             </nav>
           )}
+          </div>
         </Section>
 
         <Section tone="parchment" aria-labelledby="follow-title">
