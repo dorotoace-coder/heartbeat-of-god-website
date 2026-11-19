@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import ServiceSelector, { type PulseService } from "./ServiceSelector";
 
 type Summary = {
   church_id: string;
@@ -19,12 +20,13 @@ const field = "block min-h-11 w-full rounded-lg border border-slate-400 bg-white
 
 function RecordCollection({ churchId }: { churchId: string }) {
   const [method, setMethod] = useState("cash");
+  const [service, setService] = useState<PulseService | null>(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (saving) return;
+    if (saving || !service) return;
     const form = event.currentTarget;
     const data = new FormData(form);
     const first = String(data.get("counter1") ?? "").trim();
@@ -38,8 +40,7 @@ function RecordCollection({ churchId }: { churchId: string }) {
     try {
       const result = await supabase.from("treasury_income").insert({
         church_id: churchId,
-        entry_date: data.get("date"),
-        service: data.get("service"),
+        pulse_service_id: service.id,
         category: data.get("category"),
         amount: data.get("amount"),
         currency: data.get("currency"),
@@ -65,8 +66,7 @@ function RecordCollection({ churchId }: { churchId: string }) {
     <form onSubmit={submit} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
       <fieldset disabled={saving} className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-4 text-lg font-bold">Record a collection</legend>
-        <label>Service date<input className={field} name="date" type="date" required /></label>
-        <label>Service<input className={field} name="service" maxLength={100} required /></label>
+        <ServiceSelector value={service} onChange={setService} />
         <label>Giving category<select className={field} name="category">{categories.map((category) =>
           <option key={category} value={category}>{category.replaceAll("_", " ")}</option>)}</select></label>
         <label>Payment method<select className={field} value={method} onChange={(event) => setMethod(event.target.value)}>{methods.map((value) =>
@@ -78,7 +78,7 @@ function RecordCollection({ churchId }: { churchId: string }) {
           <label>Second cash counter<input className={field} name="counter2" maxLength={100} required /></label>
         </>}
       </fieldset>
-      <button disabled={saving} className="min-h-11 rounded-lg bg-[#2E1252] px-5 text-white disabled:opacity-60">
+      <button disabled={saving || !service} className="min-h-11 rounded-lg bg-[#2E1252] px-5 text-white disabled:opacity-60">
         {saving ? "Saving…" : "Record collection"}
       </button>
       <p role="status">{notice}</p>
