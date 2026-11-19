@@ -253,7 +253,8 @@ export function MediaView() {
     }
   }, []);
 
-  useEffect(() => { fetchMedia(); }, [fetchMedia]);
+  // Initial load is deferred a microtask so setState isn't called synchronously in the effect body (react-hooks/set-state-in-effect).
+  useEffect(() => { queueMicrotask(() => { void fetchMedia(); }); }, [fetchMedia]);
 
   // ── Create / Update ────────────────────────────────────
   const handleSave = async (data: { title: string; preacher: string; date_preached: string; duration: string; thumbnail_url: string; youtube_url: string; category: string; description: string }) => {

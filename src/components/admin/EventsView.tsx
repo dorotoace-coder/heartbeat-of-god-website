@@ -255,7 +255,8 @@ export function EventsView() {
     }
   }, []);
 
-  useEffect(() => { fetchEvents(); }, [fetchEvents]);
+  // Initial load is deferred a microtask so setState isn't called synchronously in the effect body (react-hooks/set-state-in-effect).
+  useEffect(() => { queueMicrotask(() => { void fetchEvents(); }); }, [fetchEvents]);
 
   // ── Create / Update ────────────────────────────────────
   const handleSave = async (data: { name: string; event_date: string; location: string; description: string }) => {

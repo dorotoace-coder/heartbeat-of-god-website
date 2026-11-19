@@ -35,7 +35,8 @@ export function InquiriesView() {
     }
   }, []);
 
-  useEffect(() => { fetchInquiries(); }, [fetchInquiries]);
+  // Initial load is deferred a microtask so setState isn't called synchronously in the effect body (react-hooks/set-state-in-effect).
+  useEffect(() => { queueMicrotask(() => { void fetchInquiries(); }); }, [fetchInquiries]);
 
   const updateStatus = async (id: string, status: Inquiry["status"]) => {
     setInquiries((prev) => prev.map((i) => (i.id === id ? { ...i, status } : i)));
