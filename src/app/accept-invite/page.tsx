@@ -5,6 +5,8 @@ import Link from "next/link";
 
 export default function AcceptStaffInvite() {
   const started = useRef(false);
+  const inviteHash = useRef<string | null>(null);
+  const invitedUser = useRef<string | null>(null);
   const [status, setStatus] = useState<"checking" | "invalid" | "ready" | "saved">("checking");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -16,14 +18,23 @@ export default function AcceptStaffInvite() {
     const access_token = params.get("access_token");
     const refresh_token = params.get("refresh_token");
     window.history.replaceState(null, "", window.location.pathname);
+    const tokenHash = params.get("token_hash");
+    if (params.get("type") === "invite" && tokenHash) {
+      // Verify on form submission so opening or previewing the email link
+      // does not consume the invitation.
+      inviteHash.current = tokenHash;
+      queueMicrotask(() => setStatus("ready"));
+      return;
+    }
     if (params.get("type") !== "invite" || !access_token || !refresh_token) {
-      setStatus("invalid");
+      queueMicrotask(() => setStatus("invalid"));
       return;
     }
     async function verify() {
       try {
         const { supabase } = await import("@/lib/supabase");
         const result = await supabase.auth.setSession({ access_token: access_token!, refresh_token: refresh_token! });
+        invitedUser.current = result.data.session?.user.id ?? null;
         setStatus(!result.error && result.data.session ? "ready" : "invalid");
       } catch {
         setStatus("invalid");
@@ -45,6 +56,20 @@ export default function AcceptStaffInvite() {
     setError("");
     try {
       const { supabase } = await import("@/lib/supabase");
+      if (inviteHash.current) {
+        const verification = await supabase.auth.verifyOtp({ token_hash: inviteHash.current, type: "invite" });
+        if (verification.error || !verification.data.session) {
+          setError("The invitation could not be verified. Try again or ask for a fresh invitation.");
+          return;
+        }
+        invitedUser.current = verification.data.session.user.id;
+        inviteHash.current = null;
+      }
+      const current = await supabase.auth.getUser();
+      if (current.error || !invitedUser.current || current.data.user?.id !== invitedUser.current) {
+        setStatus("invalid");
+        return;
+      }
       const result = await supabase.auth.updateUser({ password });
       if (result.error) {
         setError("Your password could not be saved. Try a stronger password or ask your administrator for a fresh invitation.");
