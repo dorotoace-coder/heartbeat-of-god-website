@@ -9,6 +9,7 @@ import { Menu, X, Radio } from "lucide-react";
 import { NAV_LINKS } from "@/lib/site";
 import { buttonClass } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import LiveBanner from "./LiveBanner";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -49,6 +50,7 @@ export default function Navbar() {
         scrolled || open ? "bg-ink/85 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl" : "bg-gradient-to-b from-ink/70 to-transparent",
       )}
     >
+      <LiveBanner />
       <nav aria-label="Main" className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3.5 sm:px-8">
         <Link href="/" className="group flex items-center gap-3" aria-label="Heartbeat of God — home">
           <Image src="/hbg-logo.png" alt="" width={48} height={40} className="h-9 w-auto transition-transform duration-500 group-hover:scale-105" preload />

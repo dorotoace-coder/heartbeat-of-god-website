@@ -3,6 +3,7 @@ import { Newsreader, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import ServiceWorker from "@/components/site/ServiceWorker";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -42,6 +43,13 @@ export const metadata: Metadata = {
     description: "Raising a generation of Christ-conscious believers globally.",
     images: ["/pastor-amos-pro.jpg"],
   },
+  // Install as app: manifest is src/app/manifest.ts; these add the iOS home-screen behaviour.
+  applicationName: "Heartbeat of God",
+  appleWebApp: {
+    capable: true,
+    title: "HBG",
+    statusBarStyle: "black-translucent",
+  },
   // Favicon + apple-touch icon come from src/app/icon.svg and src/app/apple-icon.svg
 };
 
@@ -64,6 +72,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <ServiceWorker />
         <Analytics />
         <SpeedInsights />
       </body>

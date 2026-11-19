@@ -6,12 +6,14 @@ import { buttonClass } from "@/components/ui/Button";
 import LiteYouTube from "@/components/site/LiteYouTube";
 import { SERVICE_TIMES, SOCIALS, YOUTUBE_LIVE_EMBED, ZOOM_REGISTER_URL } from "@/lib/site";
 import { getLatestVideos } from "@/lib/youtube";
+import { getLiveStatus } from "@/lib/live";
 
-// The latest-upload feed is cached for an hour.
-export const revalidate = 3600;
+// Live status is re-checked every two minutes; the latest-upload feed is cached for an hour.
+export const revalidate = 120;
 
 export default async function WatchPage() {
-  const [latest] = await getLatestVideos(1);
+  const [[latest], live] = await Promise.all([getLatestVideos(1), getLiveStatus()]);
+  const liveSrc = live.live && live.videoId ? `https://www.youtube.com/embed/${live.videoId}` : YOUTUBE_LIVE_EMBED;
 
   return (
     <>
@@ -24,7 +26,7 @@ export default async function WatchPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
               </span>
-              HBG TV · Live Stream
+              {live.live ? "Live now on HBG TV" : "HBG TV · Live Stream"}
             </Eyebrow>
             <h1 className="font-headline text-5xl font-light leading-tight md:text-7xl">
               Atmosphere of <em className="text-gold-soft">Glory</em>
@@ -39,8 +41,8 @@ export default async function WatchPage() {
             <div className="relative aspect-video">
               <iframe
                 className="absolute inset-0 h-full w-full"
-                src={YOUTUBE_LIVE_EMBED}
-                title="HBG TV — Heartbeat of God live stream on YouTube"
+                src={liveSrc}
+                title={live.live && live.title ? `HBG TV live — ${live.title}` : "HBG TV — Heartbeat of God live stream on YouTube"}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -61,7 +63,7 @@ export default async function WatchPage() {
             </a>
           </div>
 
-          {latest && (
+          {latest && !live.live && (
             <section aria-labelledby="latest-title" className="mx-auto mt-20 max-w-4xl">
               <h2 id="latest-title" className="mb-2 flex items-center justify-center gap-2 text-center text-xs font-bold uppercase tracking-[0.24em] text-gold">
                 <Youtube size={16} aria-hidden /> Not live right now? Latest upload
