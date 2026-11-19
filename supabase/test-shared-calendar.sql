@@ -13,7 +13,8 @@ create table public.treasury_income (
   church_id uuid, entry_date date not null, service text,
   category text not null default 'sunday_offering', amount numeric not null default 100,
   currency text not null default 'NGN',
-  entered_by uuid not null default auth.uid(), confirmed_by uuid, confirmed_at timestamptz
+  entered_by uuid not null default auth.uid(), confirmed_by uuid, confirmed_at timestamptz,
+  reverses_id uuid unique references public.treasury_income(id), reversal_reason text
 );
 create table public.treasury_expenses (
   church_id uuid, entry_date date not null, category text not null, amount numeric not null,

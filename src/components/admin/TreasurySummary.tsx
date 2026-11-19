@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import ServiceSelector, { type PulseService } from "./ServiceSelector";
+import ServiceCollections from "./ServiceCollections";
+import { money } from "./treasuryFormat";
 
 type Summary = {
   church_id: string;
@@ -23,8 +25,6 @@ const categories = ["tithe", "sunday_offering", "seed_offering", "thanksgiving",
 const namedCategories = ["tithe", "pledge_redemption", "kces_dues"];
 const methods = ["cash", "bank_transfer", "pos", "online"];
 const field = "block min-h-11 w-full rounded-lg border border-slate-400 bg-white px-3 text-slate-950";
-const money = (currency: string, amount: number) =>
-  `${currency} ${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 function GiverPicker({ churchId, value, onChange }: { churchId: string; value: string; onChange: (id: string) => void }) {
   const [givers, setGivers] = useState<Giver[] | null>(null);
@@ -222,6 +222,8 @@ type PendingCollection = {
   entered_by: string | null;
   counted_by_1: string | null;
   counted_by_2: string | null;
+  reverses_id: string | null;
+  reversal_reason: string | null;
 };
 
 function PendingCollections({ refresh, onConfirmed }: { refresh: number; onConfirmed: () => void }) {
@@ -236,7 +238,7 @@ function PendingCollections({ refresh, onConfirmed }: { refresh: number; onConfi
       const [session, result] = await Promise.all([
         supabase.auth.getUser(),
         supabase.from("treasury_income")
-          .select("id,entry_date,service,category,amount,currency,method,entered_by,counted_by_1,counted_by_2")
+          .select("id,entry_date,service,category,amount,currency,method,entered_by,counted_by_1,counted_by_2,reverses_id,reversal_reason")
           .is("confirmed_at", null).order("entry_date", { ascending: true }).limit(50),
       ]);
       if (cancelled) return;
@@ -282,7 +284,8 @@ function PendingCollections({ refresh, onConfirmed }: { refresh: number; onConfi
             <div>
               <p className="font-semibold">{money(row.currency, row.amount)} · {row.category.replaceAll("_", " ")}</p>
               <p className="text-sm">{row.entry_date} · {row.service || "Service not specified"} · {row.method.replaceAll("_", " ")}</p>
-              {row.counted_by_1 && row.counted_by_2 && <p className="text-sm">Cash counters: {row.counted_by_1} and {row.counted_by_2}</p>}
+              {row.reverses_id && <p className="text-sm font-semibold">Reversal of an earlier entry · Reason: {row.reversal_reason}</p>}
+              {!row.reverses_id && row.counted_by_1 && row.counted_by_2 && <p className="text-sm">Cash counters: {row.counted_by_1} and {row.counted_by_2}</p>}
             </div>
             {actor && row.entered_by && actor !== row.entered_by ? (
               <button type="button" disabled={Boolean(busy)} onClick={() => void confirm(row.id)}
@@ -332,6 +335,7 @@ export default function TreasurySummary() {
       </header>
       {status === "ready" && churchId && <RecordCollection churchId={churchId} onRecorded={reload} />}
       {status === "ready" && <PendingCollections refresh={refresh} onConfirmed={reload} />}
+      {status === "ready" && <ServiceCollections refresh={refresh} onChanged={reload} />}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
         {status === "loading" && <p role="status">Checking Treasury access…</p>}
         {status === "denied" && <p>Treasury access is limited to the Pastor and Treasury Leader.</p>}

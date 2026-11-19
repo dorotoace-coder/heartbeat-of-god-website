@@ -105,3 +105,83 @@ begin
     raise exception 'Reconciliation must keep confirmed and pending income apart';
   end if;
 end $$;
+
+-- Reversals stay on the original service.
+reset role;
+insert into public.treasury_income(church_id, entered_by, amount, reverses_id, reversal_reason)
+values ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000003', -100,
+  '30000000-0000-0000-0000-000000000001', 'Fixture reversal');
+do $$
+begin
+  if not exists (
+    select from public.treasury_income r join public.treasury_income o on o.id = r.reverses_id
+    where r.reverses_id = '30000000-0000-0000-0000-000000000001'
+      and r.pulse_service_id = o.pulse_service_id and r.service = 'Pilot service'
+  ) then
+    raise exception 'Reversal did not inherit the original service';
+  end if;
+end $$;
+
+-- Attendance corrections: only the designated service lead, with a reason, keeping history.
+insert into auth.users(id) values ('10000000-0000-0000-0000-000000000004');
+insert into public.service_attendance_access(user_id, can_submit, can_schedule, can_correct)
+values ('10000000-0000-0000-0000-000000000004', false, true, true);
+set role authenticated;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000001';
+do $$
+begin
+  begin
+    perform public.correct_service_attendance('2026-11-22', '09:00', array[10, 12, 4, 2], 10, 12, 3, 2, 'Usher attempt');
+    raise exception 'Usher correction was accepted';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update public.service_attendance set men = 1;
+    raise exception 'Direct attendance edit was accepted';
+  exception when insufficient_privilege or raise_exception then null;
+  end;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000004';
+do $$
+begin
+  begin
+    perform public.correct_service_attendance('2026-11-22', '09:00', array[10, 12, 4, 2], 10, 12, 3, 2, 'no');
+    raise exception 'Correction without a reason was accepted';
+  exception when invalid_parameter_value then null;
+  end;
+end $$;
+select public.correct_service_attendance('2026-11-22', '09:00', array[10, 12, 4, 2], 10, 12, 3, 2, 'Paper shows 3 children');
+-- A retry after a lost response succeeds without a second log entry.
+select public.correct_service_attendance('2026-11-22', '09:00', array[10, 12, 4, 2], 10, 12, 3, 2, 'Paper shows 3 children');
+do $$
+begin
+  begin
+    perform public.correct_service_attendance('2026-11-22', '09:00', array[10, 12, 4, 2], 10, 11, 3, 2, 'Stale screen');
+    raise exception 'Correction from a stale screen was accepted';
+  exception when sqlstate 'PT409' then null;
+  end;
+  if (select count(*) from public.service_attendance_corrections) <> 1 then
+    raise exception 'Expected exactly one correction record';
+  end if;
+  if not exists (
+    select from public.service_attendance_corrections
+    where previous_children = 4 and children = 3 and corrected_by = '10000000-0000-0000-0000-000000000004'
+      and reason = 'Paper shows 3 children' and corrected_at is not null
+  ) then
+    raise exception 'Correction did not keep the original, corrected count, actor and time';
+  end if;
+  if (select children from public.service_attendance where service_date = '2026-11-22') <> 3 then
+    raise exception 'Correction was not applied';
+  end if;
+end $$;
+reset role;
+do $$
+begin
+  begin
+    update public.service_attendance_corrections set children = 9;
+    raise exception 'Correction history was editable';
+  exception when raise_exception then
+    if sqlerrm not like 'Attendance records are kept as submitted%' then raise; end if;
+  end;
+end $$;
+

@@ -3,25 +3,19 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import ServiceSelector, { type PulseService } from "./ServiceSelector";
+import AttendanceReports, { attendanceFields as fields, type Counts } from "./AttendanceReports";
 
-const fields = [
-  ["men", "Men"],
-  ["women", "Women"],
-  ["children", "Children"],
-  ["first_timers", "First-timers"],
-] as const;
 const columns = "service_date,service_time,men,women,children,first_timers";
-type Counts = Record<(typeof fields)[number][0], number>;
-type Report = Counts & { service_date: string; service_time: string };
 
 export default function ServiceAttendance() {
   const [access, setAccess] = useState<boolean | null>(null);
   const [canSubmit, setCanSubmit] = useState(false);
   const [canSchedule, setCanSchedule] = useState(false);
+  const [canCorrect, setCanCorrect] = useState(false);
   const [calendarVersion, setCalendarVersion] = useState(0);
   const [scheduleMessage, setScheduleMessage] = useState("");
   const [scheduling, setScheduling] = useState(false);
-  const [reports, setReports] = useState<Report[]>([]);
+  const [reportsVersion, setReportsVersion] = useState(0);
   const [counts, setCounts] = useState<Counts>({ men: 0, women: 0, children: 0, first_timers: 0 });
   const [saving, setSaving] = useState(false);
   const [service, setService] = useState<PulseService | null>(null);
@@ -32,7 +26,7 @@ export default function ServiceAttendance() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const permission = await supabase.from("service_attendance_access").select("can_submit,can_schedule").maybeSingle();
+      const permission = await supabase.from("service_attendance_access").select("can_submit,can_schedule,can_correct").maybeSingle();
       if (cancelled) return;
       if (permission.error) {
         setError("Attendance could not load. Refresh the page or contact your administrator.");
@@ -42,12 +36,7 @@ export default function ServiceAttendance() {
       setAccess(Boolean(permission.data));
       setCanSubmit(permission.data?.can_submit ?? false);
       setCanSchedule(permission.data?.can_schedule ?? false);
-      if (!permission.data) return;
-      const recent = await supabase.from("service_attendance").select(columns)
-        .order("service_date", { ascending: false }).order("service_time", { ascending: false }).limit(10);
-      if (cancelled) return;
-      if (recent.error) setError("Recent reports could not load. Refresh the page to retry.");
-      else setReports(recent.data);
+      setCanCorrect(permission.data?.can_correct ?? false);
     }
     void load();
     return () => { cancelled = true; };
@@ -100,14 +89,12 @@ export default function ServiceAttendance() {
           .eq("service_date", report.service_date).eq("service_time", report.service_time).single();
         if (existing.error) throw existing.error;
         if (!fields.every(([key]) => existing.data[key] === report[key])) {
-          setError("A different report already exists for this service. Ask the service lead to reconcile the counts.");
+          setError("A different report already exists for this service. Ask the service lead to check it and correct it if needed.");
           return;
         }
       }
       setMessage(`Saved · ${report.service_date} at ${report.service_time} · ${total} attendees`);
-      setReports((previous) => [report, ...previous.filter((row) =>
-        row.service_date !== report.service_date || row.service_time.slice(0, 5) !== report.service_time)]
-        .sort((a, b) => (b.service_date + b.service_time).localeCompare(a.service_date + a.service_time)).slice(0, 10));
+      setReportsVersion((version) => version + 1);
     } catch {
       setError("We could not confirm the save. Your counts are still here. Check your connection and retry.");
     } finally {
@@ -163,18 +150,7 @@ export default function ServiceAttendance() {
           <p role="status" aria-live="polite">{message}</p>
         </form>
       )}
-      {access && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-7">
-          <h2 className="text-lg font-bold">Recent reports</h2>
-          {reports.length === 0 && !error && <p className="mt-3">No reports yet.</p>}
-          <ul className="divide-y divide-slate-200">
-            {reports.map((report) => <li key={report.service_date + report.service_time} className="py-3">
-              <p className="font-semibold">{report.service_date} · {report.service_time.slice(0, 5)}</p>
-              <p className="text-sm">{report.men + report.women + report.children} attendees · {report.first_timers} first-timers</p>
-            </li>)}
-          </ul>
-        </section>
-      )}
+      {access && <AttendanceReports version={reportsVersion} canCorrect={canCorrect} />}
     </section>
   );
 }
