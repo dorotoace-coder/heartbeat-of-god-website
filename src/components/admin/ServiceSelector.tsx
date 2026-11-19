@@ -5,9 +5,11 @@ import { supabase } from "@/lib/supabase";
 
 export type PulseService = { id: string; title: string; service_date: string; service_time: string };
 
-export default function ServiceSelector({ value, onChange }: {
+export default function ServiceSelector({ value, onChange, exclude, label = "Service" }: {
   value: PulseService | null;
   onChange: (service: PulseService | null) => void;
+  exclude?: (service: PulseService) => boolean;
+  label?: string;
 }) {
   const [services, setServices] = useState<PulseService[] | null>(null);
   const [error, setError] = useState(false);
@@ -29,16 +31,17 @@ export default function ServiceSelector({ value, onChange }: {
 
   if (error) return <p role="alert">The service list could not load. Refresh to try again.</p>;
   if (services === null) return <p role="status">Loading services…</p>;
-  if (!services.length) return <p role="status">No services are scheduled yet. Contact your service lead.</p>;
+  const choices = exclude ? services.filter((service) => !exclude(service)) : services;
+  if (!choices.length) return <p role="status">No services are scheduled yet. Contact your service lead.</p>;
 
   return (
     <label className="col-span-full block text-sm font-semibold">
-      Service
+      {label}
       <select required value={value?.id ?? ""} onChange={(event) =>
-        onChange(services.find((service) => service.id === event.target.value) ?? null)}
+        onChange(choices.find((service) => service.id === event.target.value) ?? null)}
         className="mt-1 min-h-11 w-full rounded-lg border border-slate-400 bg-white px-3 text-slate-950">
         <option value="">Choose an Akute service</option>
-        {services.map((service) => <option key={service.id} value={service.id}>
+        {choices.map((service) => <option key={service.id} value={service.id}>
           {service.service_date} · {service.service_time.slice(0, 5)} WAT · {service.title}
         </option>)}
       </select>

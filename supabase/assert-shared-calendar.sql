@@ -185,3 +185,72 @@ begin
   end;
 end $$;
 
+
+-- Moving a headcount to the right service, with history; refused moves are flagged.
+set role authenticated;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000004';
+insert into public.pulse_services(title, service_date, service_time) values ('Pilot evening service', '2026-11-22', '18:00');
+do $$
+begin
+  if public.move_service_attendance('2026-11-22', '09:00', '2026-11-22', '18:00', array[10, 12, 3, 2], 'Counted at the evening service') <> 'moved' then
+    raise exception 'Move did not complete';
+  end if;
+  -- A retry after a lost response returns the first outcome.
+  if public.move_service_attendance('2026-11-22', '09:00', '2026-11-22', '18:00', array[10, 12, 3, 2], 'Counted at the evening service') <> 'moved' then
+    raise exception 'Move retry was not idempotent';
+  end if;
+  if (select count(*) from public.service_attendance_moves) <> 1 then
+    raise exception 'Expected one move record';
+  end if;
+  if not exists (select from public.service_attendance_corrections where service_time = '18:00') then
+    raise exception 'Correction history did not follow the moved report';
+  end if;
+  begin
+    perform public.move_service_attendance('2026-11-22', '18:00', '2026-11-22', '07:00', array[10, 12, 3, 2], 'Unscheduled destination');
+    raise exception 'Move to an unscheduled time was accepted';
+  exception when invalid_parameter_value then null;
+  end;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000001';
+insert into public.service_attendance(service_date, service_time, men, women, children, first_timers)
+values ('2026-11-22', '09:00', 20, 22, 5, 1);
+do $$
+begin
+  begin
+    perform public.move_service_attendance('2026-11-22', '09:00', '2026-11-22', '18:00', array[20, 22, 5, 1], 'Usher attempt');
+    raise exception 'Usher move was accepted';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+set request.jwt.claim.sub = '10000000-0000-0000-0000-000000000004';
+do $$
+declare flag uuid;
+begin
+  if public.move_service_attendance('2026-11-22', '09:00', '2026-11-22', '18:00', array[20, 22, 5, 1], 'Destination already counted') <> 'flagged' then
+    raise exception 'Move onto an occupied service was not flagged';
+  end if;
+  if public.move_service_attendance('2026-11-22', '09:00', '2026-11-22', '18:00', array[20, 22, 5, 1], 'Destination already counted') <> 'flagged'
+    or (select count(*) from public.service_attendance_moves where status = 'flagged') <> 1 then
+    raise exception 'Repeated refused move created a second flag';
+  end if;
+  if (select men from public.service_attendance where service_time = '09:00') <> 20
+    or (select men from public.service_attendance where service_time = '18:00') <> 10 then
+    raise exception 'A refused move changed a report';
+  end if;
+  select id into flag from public.service_attendance_moves where status = 'flagged';
+  perform public.resolve_attendance_flag(flag, 'Both reports match paper');
+  if not exists (select from public.service_attendance_moves where id = flag and status = 'resolved'
+    and resolved_by = '10000000-0000-0000-0000-000000000004' and resolution = 'Both reports match paper') then
+    raise exception 'Flag resolution was not recorded';
+  end if;
+end $$;
+reset role;
+do $$
+begin
+  begin
+    update public.service_attendance_moves set reason = 'edited';
+    raise exception 'Move history was editable';
+  exception when raise_exception then
+    if sqlerrm not like 'Attendance records are kept as submitted%' then raise; end if;
+  end;
+end $$;
