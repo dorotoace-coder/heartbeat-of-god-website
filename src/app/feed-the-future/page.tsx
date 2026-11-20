@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+
 import { ClipboardCheck, Utensils, Camera, HandHeart } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -6,6 +8,8 @@ import PageHero from "@/components/site/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
+import ShareButtons from "@/components/site/ShareButtons";
+import { SITE_URL } from "@/lib/site";
 import { getLatestFeedReport } from "@/lib/data";
 
 export const revalidate = 3600;
@@ -21,6 +25,7 @@ const PARTNER_HREF = `/connect?type=${encodeURIComponent("Partnership Inquiry")}
 
 export default async function FeedTheFuturePage() {
   const report = await getLatestFeedReport();
+
   const stats = report
     ? [
         { label: "Families Fed", note: "Registered & served", value: report.families_fed },
@@ -36,11 +41,63 @@ export default async function FeedTheFuturePage() {
         <PageHero
           eyebrow="A Community Project of HBG Ministry"
           title={<>Feed the <em className="text-gold-soft">Future</em></>}
-          intro="We feed vulnerable families monthly — with dignity and structure. This is not charity handed out and forgotten; it is a system of registration, distribution, documentation, and follow-up."
+          intro="We feed vulnerable families monthly — with dignity and structure. This is not charity handed out and forgotten; it is a system of registration,
+  distribution, documentation, and follow-up."
         >
           <Link href={PARTNER_HREF} className={buttonClass("gold")}><HandHeart size={18} aria-hidden /> Become a Partner</Link>
           <Link href="/give" className={buttonClass("ghost-light")}>Sponsor an Outreach</Link>
         </PageHero>
+
+        <Section tone="parchment" aria-labelledby="story-title">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-parchment">
+                <Image
+                  src="/feed-the-future-village.jpg"
+                  alt="Pastor Amos seated on the sand with five children during a village outreach, July 2017"
+                  fill
+                  sizes="(min-width: 1024px) 560px, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <p className="mt-4 text-sm italic text-muted">
+                Pastor Amos with children during a village outreach — July 2017.
+              </p>
+            </div>
+            <div>
+              <SectionHeader
+                id="story-title"
+                eyebrow="The Story Behind the Photo"
+                title="It started on the ground"
+              />
+              <p className="mt-6 text-lg leading-relaxed text-text">
+                In July 2017, Pastor Amos sat down on the sand in a village and held a little girl in a pink dress while four more children gathered close. He posted the photo with the words: “AMAZING GLORY SORROUNDS YOU MY BROTHER. A GIFT TO OUR GENERATION.”
+              </p>
+              <blockquote className="mt-8 border-l-2 border-gold pl-5 font-headline text-2xl italic leading-snug text-text">
+                “For I was hungry and you gave Me food; I was thirsty and you gave Me drink; I was a stranger and you took Me in.”
+                <span className="mt-3 block text-sm font-bold uppercase tracking-[0.2em] text-gold-deep">Matthew 25:35 · NKJV</span>
+              </blockquote>
+              <p className="mt-8 text-lg leading-relaxed text-text">
+                That moment is why Feed the Future exists. Food for the body. Dignity in how it is given. The Word for the spirit — delivered through a system, not a handout.
+              </p>
+              <div className="mt-10 border-t border-line pt-8">
+                <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">Share this story</p>
+                <ShareButtons
+                  url={`${SITE_URL}/feed-the-future`}
+                  title="Feed the Future — Heartbeat of God Ministry"
+                  text="We feed vulnerable families monthly — with dignity and structure."
+                />
+                <p className="mt-6 text-sm leading-relaxed text-muted">
+                  Want to pray with us? Visit the{" "}
+                  <Link href="/prayer-wall" className="font-semibold text-plum underline underline-offset-4">
+                    Prayer Wall
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
+          </div>
+        </Section>
 
         <Section tone="ivory" aria-labelledby="how-title">
           <SectionHeader id="how-title" eyebrow="Built as a System, Not a Handout" title="How Feed the Future Works" />
@@ -64,7 +121,8 @@ export default async function FeedTheFuturePage() {
               We are not asking for donations only — <em className="text-gold-soft">we are offering partnership.</em>
             </h2>
             <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-white/70">
-              We invite organizations and individuals who want real community impact and visibility to support or sponsor one of our monthly outreaches. Partners receive recognition, documentation, and a monthly impact report.
+              We invite organizations and individuals who want real community impact and visibility to support or sponsor one of our monthly outreaches. 
+Partners receive recognition, documentation, and a monthly impact report.
             </p>
             <Link href={PARTNER_HREF} className={buttonClass("gold", "lg", "mt-10")}>
               <HandHeart size={18} aria-hidden /> Partner With Feed the Future
@@ -80,6 +138,7 @@ export default async function FeedTheFuturePage() {
             title="Every Month, a Public Impact Report"
             intro="Each cycle we publish the numbers, the testimonies, the partners recognised, and the photo & video documentation."
           />
+
           {stats.length > 0 && report && (
             <>
               <p className="-mt-6 mb-8 text-center text-sm font-semibold uppercase tracking-[0.2em] text-gold-deep">{report.period_label}</p>
@@ -94,10 +153,13 @@ export default async function FeedTheFuturePage() {
               </ul>
             </>
           )}
+
           <p className="mt-10 text-center text-sm italic text-muted">Numbers are published at the close of each monthly outreach.</p>
         </Section>
+
       </main>
       <Footer />
     </>
   );
+
 }
