@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { ClipboardCheck, Utensils, Camera, HandHeart } from "lucide-react";
@@ -49,52 +48,36 @@ export default async function FeedTheFuturePage() {
         </PageHero>
 
         <Section tone="parchment" aria-labelledby="story-title">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-parchment">
-                <Image
-                  src="/feed-the-future-village.jpg"
-                  alt="Pastor Amos seated on the sand with five children during a village outreach, July 2017"
-                  fill
-                  sizes="(min-width: 1024px) 560px, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <p className="mt-4 text-sm italic text-muted">
-                Pastor Amos with children during a village outreach — July 2017.
-              </p>
-            </div>
-            <div>
-              <SectionHeader
-                id="story-title"
-                eyebrow="The Story Behind the Photo"
-                title="It started on the ground"
+          <div className="mx-auto max-w-3xl">
+            <SectionHeader
+              id="story-title"
+              eyebrow="How It Started"
+              title="It started on the ground"
+            />
+            <p className="mt-6 text-lg leading-relaxed text-text">
+              In July 2017, Pastor Amos sat down on the sand in a village and held a little girl in a pink dress while four more children gathered close. He shared the moment with the words: “AMAZING GLORY SORROUNDS YOU MY BROTHER. A GIFT TO OUR GENERATION.”
+            </p>
+            <blockquote className="mt-8 border-l-2 border-gold pl-5 font-headline text-2xl italic leading-snug text-text">
+              “For I was hungry and you gave Me food; I was thirsty and you gave Me drink; I was a stranger and you took Me in.”
+              <span className="mt-3 block text-sm font-bold uppercase tracking-[0.2em] text-gold-deep">Matthew 25:35 · NKJV</span>
+            </blockquote>
+            <p className="mt-8 text-lg leading-relaxed text-text">
+              That moment is why Feed the Future exists. Food for the body. Dignity in how it is given. The Word for the spirit — delivered through a system, not a handout.
+            </p>
+            <div className="mt-10 border-t border-line pt-8">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">Share this story</p>
+              <ShareButtons
+                url={`${SITE_URL}/feed-the-future`}
+                title="Feed the Future — Heartbeat of God Ministry"
+                text="We feed vulnerable families monthly — with dignity and structure."
               />
-              <p className="mt-6 text-lg leading-relaxed text-text">
-                In July 2017, Pastor Amos sat down on the sand in a village and held a little girl in a pink dress while four more children gathered close. He posted the photo with the words: “AMAZING GLORY SORROUNDS YOU MY BROTHER. A GIFT TO OUR GENERATION.”
+              <p className="mt-6 text-sm leading-relaxed text-muted">
+                Want to pray with us? Visit the{" "}
+                <Link href="/prayer-wall" className="font-semibold text-plum underline underline-offset-4">
+                  Prayer Wall
+                </Link>
+                .
               </p>
-              <blockquote className="mt-8 border-l-2 border-gold pl-5 font-headline text-2xl italic leading-snug text-text">
-                “For I was hungry and you gave Me food; I was thirsty and you gave Me drink; I was a stranger and you took Me in.”
-                <span className="mt-3 block text-sm font-bold uppercase tracking-[0.2em] text-gold-deep">Matthew 25:35 · NKJV</span>
-              </blockquote>
-              <p className="mt-8 text-lg leading-relaxed text-text">
-                That moment is why Feed the Future exists. Food for the body. Dignity in how it is given. The Word for the spirit — delivered through a system, not a handout.
-              </p>
-              <div className="mt-10 border-t border-line pt-8">
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">Share this story</p>
-                <ShareButtons
-                  url={`${SITE_URL}/feed-the-future`}
-                  title="Feed the Future — Heartbeat of God Ministry"
-                  text="We feed vulnerable families monthly — with dignity and structure."
-                />
-                <p className="mt-6 text-sm leading-relaxed text-muted">
-                  Want to pray with us? Visit the{" "}
-                  <Link href="/prayer-wall" className="font-semibold text-plum underline underline-offset-4">
-                    Prayer Wall
-                  </Link>
-                  .
-                </p>
-              </div>
             </div>
           </div>
         </Section>
