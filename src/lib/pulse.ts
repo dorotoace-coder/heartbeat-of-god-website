@@ -26,26 +26,19 @@ const SERMON_ARCHIVE = [
 export function getAutonomousPulse(): PulseState {
   const now = new Date();
   
-  // 1. Autonomous Live Status calculation (Sundays 9AM - 1PM)
+  // 1. Live status is NOT guessed from the clock any more. It starts false
+  //    here and /api/pulse fills it from the real YouTube check
+  //    (src/lib/live.ts) — see withLiveStatus() below.
   const isSundayToday = isSunday(now);
   const currentHour = getHours(now);
-  const isLive = isSundayToday && currentHour >= 9 && currentHour < 13;
+  const isLive = false;
   
-  // 2. Next Event Calculation
-  let nextEventDateObj;
-  let activeEvent = null;
-  
-  if (isLive) {
-    activeEvent = "Sunday Celebration Service";
-    nextEventDateObj = setMinutes(setHours(nextSunday(now), 9), 0);
-  } else {
-    // If it's Sunday before 9am, it's today at 9am. Otherwise, next Sunday.
-    if (isSundayToday && currentHour < 9) {
-      nextEventDateObj = setMinutes(setHours(now, 9), 0);
-    } else {
-      nextEventDateObj = setMinutes(setHours(nextSunday(now), 9), 0);
-    }
-  }
+  // 2. Next Event Calculation: if it's Sunday before 9am, today at 9am. Otherwise, next Sunday.
+  const activeEvent: string | null = null;
+  const nextEventDateObj =
+    isSundayToday && currentHour < 9
+      ? setMinutes(setHours(now, 9), 0)
+      : setMinutes(setHours(nextSunday(now), 9), 0);
 
   // 3. Autonomous Sermon of the day (rotates daily based on day of year)
   const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
@@ -66,5 +59,16 @@ export function getAutonomousPulse(): PulseState {
       totalGivingThisWeek: 45250,
       departmentSignups: 12 + (dayOfYear % 5)
     }
+  };
+}
+
+/** Pulse with isLive/activeEvent taken from whether @HBG_tv is live on YouTube now. */
+export async function withLiveStatus(pulse: PulseState): Promise<PulseState> {
+  const { getLiveStatus } = await import("./live");
+  const live = await getLiveStatus();
+  return {
+    ...pulse,
+    isLive: live.live,
+    activeEvent: live.live ? live.title || "HBG TV Live" : pulse.activeEvent,
   };
 }

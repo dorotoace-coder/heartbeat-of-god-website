@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAutonomousPulse } from '@/lib/pulse';
+import { getAutonomousPulse, withLiveStatus } from '@/lib/pulse';
 import { supabase } from '@/lib/supabase';
 
 export async function GET() {
@@ -17,7 +17,6 @@ export async function GET() {
        // Merge with Supabase data if available
        pulse = {
          ...pulse,
-         isLive: data.is_live,
          activeEvent: data.active_event?.name || pulse.activeEvent,
          nextEventName: data.active_event?.name || pulse.nextEventName,
          nextEventDate: data.active_event?.event_date || pulse.nextEventDate,
@@ -32,6 +31,9 @@ export async function GET() {
     console.error('Supabase pulse fetch failed, using fallback:', err);
   }
   
+  // Live status is the real YouTube check (cached ~2 min), never a clock guess.
+  pulse = await withLiveStatus(pulse);
+
   return NextResponse.json(pulse, {
     headers: {
       'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=59',

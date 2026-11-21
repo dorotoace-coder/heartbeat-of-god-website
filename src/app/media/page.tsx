@@ -1,4 +1,4 @@
-import { BookOpen, Film, HandHeart, Music, Mic, Flame } from "lucide-react";
+import { BookOpen, Film, HandHeart, Music, Mic, Flame, Podcast } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/site/PageHero";
@@ -33,6 +33,11 @@ export default function MediaPage() {
 
         <Section tone="ivory" aria-labelledby="library-title">
           <SectionHeader id="library-title" align="center" eyebrow="Messages" title="Listen & Watch" />
+          <p className="-mt-6 mb-10 text-center md:-mt-10">
+            <a href="/podcast.xml" className="inline-flex items-center gap-2 text-sm font-semibold text-gold-deep transition hover:text-plum">
+              <Podcast size={16} aria-hidden /> Listen as a podcast
+            </a>
+          </p>
           <MediaLibrary />
         </Section>
 

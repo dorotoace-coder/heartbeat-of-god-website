@@ -16,8 +16,28 @@ Nothing below is committed. Every payment method is hidden on `/give` until its 
 | `NEXT_PUBLIC_INTERAC_EMAIL` | Interac e-Transfer tab (Canada) | Optional |
 | `NEXT_PUBLIC_CONTACT_PHONE` | Phone line on `/connect` | Optional |
 | `NEXT_PUBLIC_WHATSAPP_CHANNEL_URL` | "Follow on WhatsApp" button in the Follow HBG block (home, Daily Word). Must be an `https://` WhatsApp Channel link; hidden when unset | Optional |
+| `YOUTUBE_API_KEY` | Optional. Confirms the live check with the YouTube Data API (and is the fallback if the public `/live` page check is blocked). Without it the keyless page check is used | Optional |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only. Daily Word push subscriptions, newsletter subscribers, Monday digest. Never prefix with `NEXT_PUBLIC_` | For push + newsletter |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Daily Word push notifications (generate once: `npx web-push generate-vapid-keys`). The bell button stays hidden until both are set **and** the service-role key is set | For push |
+| `VAPID_SUBJECT` | Contact for push services (`mailto:` or `https://`). Defaults to the public ministry inbox | Optional |
+| `CRON_SECRET` | Protects `/api/cron/*`. Vercel Cron sends it automatically; without it both cron routes refuse every call | For push + digest |
+| `RESEND_API_KEY`, `NEWSLETTER_FROM` | Newsletter welcome email, Monday digest and the Monthly Partner thank-you. `NEWSLETTER_FROM` is a sender on a domain verified in Resend, e.g. `Heartbeat of God <noreply@heartbeatofgod.ca>` | For any email |
+| `STRIPE_WEBHOOK_SECRET` | `/api/stripe/webhook` (Monthly Partner thank-you). Returns 503 and does nothing until set | For partner email |
 
 Naira bank transfer is always available (details in `src/lib/giving.ts`).
+
+## Reach features (live banner, app install, push, newsletter, podcast)
+
+Every feature below stays hidden or inert until its variables (table above) are set.
+
+- **Live now banner** — `/api/live` checks whether YouTube channel `@HBG_tv` is live right now (public `/live` page, cached 2 minutes; `YOUTUBE_API_KEY` optional). When it is, a slim "LIVE NOW on HBG TV — Join" bar shows under the nav on every page and `/watch` embeds that live video. Admin pulse (`/api/pulse`) uses the same check instead of a clock guess. No variables required.
+- **Install as app** — `src/app/manifest.ts` + `public/sw.js` (offline page only, nothing else cached) + Apple web-app meta. Icons in `public/icons/` are the existing `/hbg-logo.png` centred on the ink background. No variables required.
+- **Daily Word push** — bell button in the footer and on `/daily-word`. Subscriptions go to `push_subscriptions`; `/api/cron/daily-word-push` sends today's Daily Word at 12:00 UTC = 7:00 AM Winnipeg (`vercel.json`). Needs `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET` and the SQL in `supabase/migrations-pending/push.sql`. On iPhone, push works only after "Add to Home Screen" (iOS 16.4+).
+- **Newsletter** — the footer form posts to `/api/newsletter/subscribe`. With `SUPABASE_SERVICE_ROLE_KEY` + `supabase/migrations-pending/newsletter.sql` it stores the subscriber in `newsletter_subscribers` (otherwise it keeps writing to `inquiries` as before). With `RESEND_API_KEY` + `NEWSLETTER_FROM` it sends a welcome email, and `/api/cron/weekly-digest` (Mondays 12:00 UTC) emails the last 7 Daily Words. Every email has an unsubscribe link (`/api/newsletter/unsubscribe`, one-click supported).
+- **Sermon podcast** — `/podcast.xml` (RSS 2.0 + iTunes) lists every `sermons` row with an `https://` `audio_url`. Cover art: `public/podcast-cover.jpg`. Submit the feed URL to Apple Podcasts / Spotify for Podcasters. "Listen as a podcast" link on `/media`.
+- **Partner thank-you** — Stripe webhook `/api/stripe/webhook` (event `checkout.session.completed`) emails a thank-you to new Monthly Partners. Needs `STRIPE_WEBHOOK_SECRET`, plus `RESEND_API_KEY` + `NEWSLETTER_FROM` for the email. Amounts and bank details are unchanged.
+
+SQL in `supabase/migrations-pending/` has **not** been run. Review it, then run it in the Supabase SQL editor.
 
 ## Analytics
 

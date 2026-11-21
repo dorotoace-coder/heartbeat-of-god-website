@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { Send, Check } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { MINISTRY_EMAIL } from "@/lib/site";
 
-/** Stores a real sign-up in Supabase `inquiries`; falls back to email if that fails. */
+/**
+ * Posts to /api/newsletter/subscribe, which stores the subscriber (and sends a
+ * welcome email when Resend is configured). Falls back to email if that fails.
+ */
 export default function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -13,14 +15,16 @@ export default function NewsletterForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setState("sending");
-    if (!isSupabaseConfigured) {
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      setState(res.ok ? "done" : "error");
+    } catch {
       setState("error");
-      return;
     }
-    const { error } = await supabase.from("inquiries").insert([
-      { full_name: "Newsletter subscriber", email, type: "Newsletter Signup", message: "Please add me to ministry updates." },
-    ]);
-    setState(error ? "error" : "done");
   };
 
   if (state === "done") {

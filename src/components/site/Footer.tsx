@@ -3,6 +3,7 @@ import Link from "next/link";
 import { currentEvent } from "@/config/currentEvent";
 import { DESCRIPTION, MINISTRY_EMAIL, SERVICE_TIMES } from "@/lib/site";
 import NewsletterForm from "./NewsletterForm";
+import DailyWordPush from "./DailyWordPush";
 import SocialIcons from "./SocialIcons";
 
 const columns = [
@@ -76,6 +77,7 @@ export default function Footer() {
           </ul>
           <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-gold">Stay Inspired</h2>
           <NewsletterForm />
+          <DailyWordPush className="mt-4" />
         </div>
       </div>
       <div className="border-t border-white/10">
