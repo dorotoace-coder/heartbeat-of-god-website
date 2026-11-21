@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import ServiceSelector, { type PulseService } from "./ServiceSelector";
 import ServiceCollections from "./ServiceCollections";
+import CashDeposits from "./CashDeposits";
 import { money } from "./treasuryFormat";
 
 type Summary = {
@@ -331,11 +332,12 @@ export default function TreasurySummary() {
     <section className="mx-auto max-w-4xl space-y-6">
       <header className="rounded-2xl bg-[#2E1252] p-6 text-white sm:p-8">
         <h1 className="text-3xl font-bold">Treasury</h1>
-        <p className="mt-2 text-white/90">Monthly income and expense summaries</p>
+        <p className="mt-2 text-white/90">Collections, confirmation, bank deposits and monthly totals</p>
       </header>
       {status === "ready" && churchId && <RecordCollection churchId={churchId} onRecorded={reload} />}
       {status === "ready" && <PendingCollections refresh={refresh} onConfirmed={reload} />}
       {status === "ready" && <ServiceCollections refresh={refresh} onChanged={reload} />}
+      {status === "ready" && churchId && <CashDeposits churchId={churchId} revision={refresh} onChanged={reload} />}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-950 sm:p-7">
         {status === "loading" && <p role="status">Checking Treasury access…</p>}
         {status === "denied" && <p>Treasury access is limited to the Pastor and Treasury Leader.</p>}
