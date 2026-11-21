@@ -1,0 +1,156 @@
+"use client";
+
+import { useEffect, useState, type FormEvent } from "react";
+import { supabase } from "@/lib/supabase";
+import ServiceSelector, { type PulseService } from "./ServiceSelector";
+import AttendanceReports, { attendanceFields as fields, type Counts } from "./AttendanceReports";
+
+const columns = "service_date,service_time,men,women,children,first_timers";
+
+export default function ServiceAttendance() {
+  const [access, setAccess] = useState<boolean | null>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
+  const [canSchedule, setCanSchedule] = useState(false);
+  const [canCorrect, setCanCorrect] = useState(false);
+  const [calendarVersion, setCalendarVersion] = useState(0);
+  const [scheduleMessage, setScheduleMessage] = useState("");
+  const [scheduling, setScheduling] = useState(false);
+  const [reportsVersion, setReportsVersion] = useState(0);
+  const [counts, setCounts] = useState<Counts>({ men: 0, women: 0, children: 0, first_timers: 0 });
+  const [saving, setSaving] = useState(false);
+  const [service, setService] = useState<PulseService | null>(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const total = counts.men + counts.women + counts.children;
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const permission = await supabase.from("service_attendance_access").select("can_submit,can_schedule,can_correct").maybeSingle();
+      if (cancelled) return;
+      if (permission.error) {
+        setError("Attendance could not load. Refresh the page or contact your administrator.");
+        setAccess(false);
+        return;
+      }
+      setAccess(Boolean(permission.data));
+      setCanSubmit(permission.data?.can_submit ?? false);
+      setCanSchedule(permission.data?.can_schedule ?? false);
+      setCanCorrect(permission.data?.can_correct ?? false);
+    }
+    void load();
+    return () => { cancelled = true; };
+  }, []);
+
+  async function schedule(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (scheduling) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setScheduling(true);
+    setScheduleMessage("");
+    try {
+      const { error } = await supabase.from("pulse_services").insert({
+        title: String(data.get("title")).trim(),
+        service_date: data.get("date"),
+        service_time: data.get("time"),
+      });
+      if (error) {
+        setScheduleMessage(error.code === "23505"
+          ? "A service already exists at that date and time."
+          : "The service could not be saved. Check your connection and try again.");
+        return;
+      }
+      setService(null);
+      setCalendarVersion((version) => version + 1);
+      form.reset();
+      setScheduleMessage("Service saved. It will appear in both forms on its scheduled date.");
+    } finally {
+      setScheduling(false);
+    }
+  }
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (saving || !service) return;
+    setMessage("");
+    setError("");
+    if (counts.first_timers > total) {
+      setError("First-timers must already be included in the total attendance.");
+      return;
+    }
+    const report = { ...counts, service_date: service.service_date, service_time: service.service_time.slice(0, 5) };
+    setSaving(true);
+    try {
+      const result = await supabase.from("service_attendance").insert(report);
+      if (result.error) {
+        if (result.error.code !== "23505") throw result.error;
+        const existing = await supabase.from("service_attendance").select(columns)
+          .eq("service_date", report.service_date).eq("service_time", report.service_time).single();
+        if (existing.error) throw existing.error;
+        if (!fields.every(([key]) => existing.data[key] === report[key])) {
+          setError("A different report already exists for this service. Ask the service lead to check it and correct it if needed.");
+          return;
+        }
+      }
+      setMessage(`Saved · ${report.service_date} at ${report.service_time} · ${total} attendees`);
+      setReportsVersion((version) => version + 1);
+    } catch {
+      setError("We could not confirm the save. Your counts are still here. Check your connection and retry.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const input = "w-full rounded-lg border border-slate-400 bg-white px-3 py-2.5 text-slate-950";
+
+  return (
+    <section className="mx-auto max-w-3xl space-y-6 text-slate-950">
+      <header className="rounded-2xl bg-[#2E1252] p-6 text-white sm:p-8">
+        <p className="text-sm font-semibold text-[#FFC83D]">Akute · West Africa Time</p>
+        <h1 className="mt-2 text-3xl font-bold">Service attendance</h1>
+        <p className="mt-2 text-white/90">Record one headcount per service.</p>
+      </header>
+      {error && <p role="alert" className="rounded-lg bg-red-50 p-4 text-red-900">{error}</p>}
+      {access === null && <p role="status">Checking attendance access…</p>}
+      {access === false && !error && <p className="rounded-lg bg-white p-4">Ask your administrator for attendance access.</p>}
+      {canSchedule && (
+        <details className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-7">
+          <summary className="cursor-pointer font-bold">Add a service to the calendar</summary>
+          <form onSubmit={schedule} className="mt-4 space-y-4">
+            <fieldset disabled={scheduling} className="grid gap-4 sm:grid-cols-2">
+              <label className="sm:col-span-2">Service name<input className={input} name="title" maxLength={100} required /></label>
+              <label>Date<input className={input} name="date" type="date" required /></label>
+              <label>Start time (WAT)<input className={input} name="time" type="time" required /></label>
+            </fieldset>
+            <button disabled={scheduling} className="min-h-11 rounded-lg bg-[#2E1252] px-5 text-white disabled:opacity-60">
+              {scheduling ? "Saving…" : "Save service"}
+            </button>
+            <p role="status">{scheduleMessage}</p>
+          </form>
+        </details>
+      )}
+      {canSubmit && (
+        <form onSubmit={save} className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 sm:p-7">
+          <fieldset disabled={saving} className="grid grid-cols-2 gap-4">
+            <legend className="mb-4 text-lg font-bold">Service details and headcount</legend>
+            <ServiceSelector key={calendarVersion} value={service} onChange={setService} />
+            {fields.map(([key, label]) => (
+              <label key={key} className="text-sm font-semibold">{label}
+                <input className={input} type="number" inputMode="numeric" min="0" max="100000" required
+                  value={counts[key]} onChange={(event) => setCounts({ ...counts, [key]: Number(event.target.value) })} />
+              </label>
+            ))}
+          </fieldset>
+          <p className="text-sm">Include first-timers in the men, women, or children counts above.</p>
+          <p className="font-bold">Total attendance: {total}</p>
+          <button disabled={saving || !service} className="min-h-11 rounded-lg bg-[#2E1252] px-5 py-2 font-semibold text-white disabled:opacity-60">
+            {saving ? "Saving…" : "Submit attendance"}
+          </button>
+          <p role="status" aria-live="polite">{message}</p>
+        </form>
+      )}
+      {access && <AttendanceReports version={reportsVersion} canCorrect={canCorrect} />}
+    </section>
+  );
+}
