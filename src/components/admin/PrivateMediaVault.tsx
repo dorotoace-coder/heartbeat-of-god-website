@@ -1,12 +1,44 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import * as tus from "tus-js-client";
 import { supabase } from "@/lib/supabase";
 
 const bucket = supabase.storage.from("staff-media-vault");
 const pageSize = 40;
+const directUploadLimit = 6_000_000;
+const planFileLimit = 50_000_000;
 const displayName = (name: string) => name.replace(/^[0-9a-f-]{36}_/, "");
 type Caption = { asset_path: string; caption: string; approved_at: string | null };
+
+function resumableEndpoint() {
+  const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co");
+  if (url.hostname.endsWith(".supabase.co")) url.hostname = url.hostname.replace(/\.supabase\.co$/, ".storage.supabase.co");
+  return `${url.origin}/storage/v1/upload/resumable`;
+}
+
+async function uploadResumable(file: File, path: string, onProgress: (percent: number) => void) {
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session?.access_token) throw new Error("Sign in required");
+  return new Promise<void>((resolve, reject) => {
+    const upload = new tus.Upload(file, {
+      endpoint: resumableEndpoint(),
+      headers: { authorization: `Bearer ${data.session.access_token}` },
+      metadata: { bucketName: "staff-media-vault", objectName: path, contentType: file.type, cacheControl: "3600" },
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      chunkSize: 6 * 1024 * 1024,
+      retryDelays: [0, 3000, 5000, 10000, 20000],
+      onProgress: (uploaded, total) => onProgress(Math.round(uploaded / total * 100)),
+      onError: reject,
+      onSuccess: () => resolve(),
+    });
+    void upload.findPreviousUploads().then(previous => {
+      if (previous.length) upload.resumeFromPreviousUpload(previous[0]);
+      upload.start();
+    }).catch(() => upload.start());
+  });
+}
 
 export default function PrivateMediaVault() {
   const [allowed, setAllowed] = useState<boolean | null>(null);
@@ -15,11 +47,13 @@ export default function PrivateMediaVault() {
   const [more, setMore] = useState(false);
   const [revision, setRevision] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [status, setStatus] = useState("");
   const [role, setRole] = useState("");
   const [captions, setCaptions] = useState<Record<string, Caption>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [open, setOpen] = useState<string | null>(null);
+  const pendingUpload = useRef<{ signature: string; path: string } | null>(null);
 
   useEffect(() => {
     let current = true;
@@ -62,20 +96,33 @@ export default function PrivateMediaVault() {
       setStatus("Choose an image, audio recording or video.");
       return;
     }
+    if (file.size > planFileLimit) {
+      setStatus("This storage plan accepts files up to 50 MB. Keep the original footage and ask the Pastor for a large-file handoff.");
+      return;
+    }
     setBusy(true);
     setStatus("Uploading…");
+    setUploadProgress(0);
     try {
       const name = file.name.normalize("NFKC").replace(/[^a-zA-Z0-9._ -]/g, "_").slice(-160);
-      const { error } = await bucket.upload(crypto.randomUUID() + "_" + name, file);
-      if (error) throw error;
+      const signature = `${file.name}:${file.size}:${file.lastModified}`;
+      if (pendingUpload.current?.signature !== signature) pendingUpload.current = { signature, path: crypto.randomUUID() + "_" + name };
+      if (file.size > directUploadLimit && tus.isSupported) {
+        await uploadResumable(file, pendingUpload.current.path, setUploadProgress);
+      } else {
+        const { error } = await bucket.upload(pendingUpload.current.path, file);
+        if (error) throw error;
+      }
+      pendingUpload.current = null;
       form.reset();
       setStatus(file.name + " was saved.");
       setPage(0);
       setRevision(value => value + 1);
     } catch {
-      setStatus("Upload failed. Check the file size and your connection, then try again.");
+      setStatus("Upload paused or failed. Select the same file to retry, and check your connection.");
     } finally {
       setBusy(false);
+      setUploadProgress(null);
     }
   }
 
@@ -131,12 +178,14 @@ export default function PrivateMediaVault() {
   if (!allowed) return <p>Media Vault access is restricted to assigned staff.</p>;
   return <section className="space-y-5 rounded-2xl bg-white p-6 text-slate-900">
     <h2 className="text-2xl font-semibold">Private Media Vault</h2>
+    <p className="text-sm text-slate-600">Private images, audio and video up to 50 MB per file. Larger files need a separate handoff. Uploads above 6 MB can resume after a connection interruption.</p>
     <form onSubmit={upload} className="flex flex-wrap items-end gap-3">
       <label className="grid min-w-0 gap-2">Image, video or audio
         <input className="max-w-full" name="asset" type="file" accept="image/*,video/*,audio/*" required />
       </label>
       <button disabled={busy} className="rounded-lg bg-purple-900 px-4 py-2 text-white">Upload file</button>
     </form>
+    {uploadProgress !== null && <progress className="w-full accent-purple-900" max={100} value={uploadProgress} aria-label="Media upload progress">{uploadProgress}%</progress>}
     <p role="status">{status}</p>
     <ul className="divide-y">{names.map(name => <li key={name} className="space-y-3 py-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
