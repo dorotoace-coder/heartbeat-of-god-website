@@ -1,36 +1,37 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import OutreachFollowupCard, { type OutreachFollowup } from "./OutreachFollowupCard";
 
 type Worker = { user_id: string; full_name: string };
 type Contact = { invited:boolean; name: string; phone: string; address: string; permission:boolean; due:string; worker:string };
-type Followup = { id:string; full_name:string; phone:string|null; address:string|null; followup_date:string; assigned_to:string };
 const empty = (): Contact => ({invited:false,name:"",phone:"",address:"",permission:false,due:"",worker:""});
 const field = "block w-full rounded-lg border p-2";
 export default function Evangelism() {
   const [rows,setRows] = useState<Contact[]>([]);
   const [workers,setWorkers] = useState<Worker[]>([]);
-  const [queue,setQueue] = useState<Followup[]>([]);
+  const [queue,setQueue] = useState<OutreachFollowup[]>([]);
+  const [closed,setClosed] = useState<OutreachFollowup[]>([]);
   const [visits,setVisits] = useState<{id:string;location:string;visit_date:string;people_reached:number}[]>([]);
   const [status,setStatus] = useState("");
   const [busy,setBusy] = useState(false);
   const [pastor,setPastor] = useState(false);
-  const [handoff,setHandoff] = useState<Record<string,string>>({});
   const [revision,refresh] = useState(0);
   const visitId = useRef<string|null>(null);
   useEffect(() => {
     let active=true;
     async function load() {
-      const [team, tasks, history, access] = await Promise.all([
+      const [team, tasks, done, history, access] = await Promise.all([
         supabase.from("outreach_workers").select("user_id,full_name").order("full_name"),
-        supabase.from("outreach_contacts").select("id,full_name,phone,address,followup_date,assigned_to").not("followup_date","is",null).is("completed_at",null).order("followup_date"),
+        supabase.from("outreach_contacts").select("id,full_name,phone,address,followup_date,assigned_to,completed_at,closure_outcome").not("followup_date","is",null).is("completed_at",null).order("followup_date"),
+        supabase.from("outreach_contacts").select("id,full_name,phone,address,followup_date,assigned_to,completed_at,closure_outcome").not("completed_at","is",null).order("completed_at",{ascending:false}).limit(20),
         supabase.from("outreach_visits").select("id,location,visit_date,people_reached").order("visit_date",{ascending:false}).limit(30),
         supabase.rpc("staff_workspace")
       ]);
       if(!active) return;
-      if(team.error || tasks.error || history.error || access.error) {setStatus("Outreach records could not load. Refresh to retry."); return;}
+      if(team.error || tasks.error || done.error || history.error || access.error) {setStatus("Outreach records could not load. Refresh to retry."); return;}
       setPastor(access.data==="pastor");
-      setWorkers(team.data); setQueue(tasks.data); setVisits(history.data);
+      setWorkers(team.data); setQueue(tasks.data); setClosed(done.data); setVisits(history.data);
     }
     void load(); return ()=>{active=false;};
   },[revision]);
@@ -57,15 +58,6 @@ export default function Evangelism() {
     if(items.some(c=>c.length!==3 || !c[0].trim())) {setStatus("Each row needs three columns and a name.");return;}
     setRows(list=>[...list,...items.map(([name,phone,address])=>({...empty(),name,phone,address}))]);
     setStatus("Review the imported rows and confirm contact permission before saving.");
-  }
-  async function transfer(id:string) {
-    const worker=handoff[id];
-    if(!worker) {setStatus("Choose a worker for the follow-up.");return;}
-    setBusy(true);
-    const result=await supabase.rpc("assign_outreach_followup",{p_contact:id,p_worker:worker});
-    setBusy(false);
-    setStatus(result.error?"The follow-up could not be handed over. Refresh and try again.":"Follow-up handed over.");
-    if(!result.error) refresh(n=>n+1);
   }
   async function addWorker(event:FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -113,11 +105,10 @@ export default function Evangelism() {
     </fieldset></form><p role="status">{status}</p>
     <h3 className="text-lg font-semibold">Follow-up list</h3>
     {!queue.length && <p>No open follow-ups visible.</p>}
-    {queue.map(t=><div key={t.id} className="rounded-xl border border-purple-100 bg-white p-4"><p className="font-semibold">{t.full_name} · {t.followup_date}</p><p>Assigned to {workers.find(w=>w.user_id===t.assigned_to)?.full_name ?? "a worker"}</p>
-      {t.phone && <p>{t.phone}</p>}{t.address && <p>{t.address}</p>}
-      <div className="mt-3 flex flex-wrap gap-2"><button disabled={busy} className="rounded-lg bg-[#2e1252] px-3 py-2 text-white disabled:opacity-50" onClick={async()=>{const r=await supabase.rpc("complete_outreach_followup",{p_contact:t.id});setStatus(r.error?"Only the assigned worker or Pastor can complete this follow-up.":"Follow-up completed.");if(!r.error) refresh(n=>n+1);}}>Mark complete</button>
-      <select aria-label={`Hand ${t.full_name}'s follow-up to`} className="rounded-lg border px-2" value={handoff[t.id]??""} onChange={e=>setHandoff(current=>({...current,[t.id]:e.target.value}))}><option value="">Hand over to…</option>{workers.filter(w=>w.user_id!==t.assigned_to).map(w=><option key={w.user_id} value={w.user_id}>{w.full_name}</option>)}</select>
-      <button disabled={busy || !handoff[t.id]} className="rounded-lg border border-purple-800 px-3 py-2 text-purple-900 disabled:opacity-50" onClick={()=>void transfer(t.id)}>Hand over</button></div></div>)}
+    {queue.map(t=><OutreachFollowupCard key={t.id} contact={t} workers={workers} onSaved={()=>refresh(n=>n+1)} />)}
+    <h3 className="text-lg font-semibold">Recently closed follow-ups</h3>
+    {!closed.length && <p>No closed follow-ups visible.</p>}
+    {closed.map(t=><OutreachFollowupCard key={t.id} contact={t} workers={workers} onSaved={()=>refresh(n=>n+1)} />)}
     <h3 className="text-lg font-semibold">Recent visits</h3>{visits.map(v=><p className="rounded-xl bg-white p-3" key={v.id}>{v.visit_date} · {v.location} · {v.people_reached} reached</p>)}
   </section>;
 }
