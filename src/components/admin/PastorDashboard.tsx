@@ -19,8 +19,10 @@ import { InquiriesView } from "./InquiriesView";
 import { DailyWordView } from "./DailyWordView";
 import { PrayerWallView } from "./PrayerWallView";
 
+import LiveMeetings from "./LiveMeetings";
+
 const navigation = [
-  ["overview", "Overview"], ["attendance", "Attendance"], ["members", "People"],
+  ["overview", "Overview"], ["live", "Live Church"], ["attendance", "Attendance"], ["members", "People"],
   ["treasury", "Treasury"], ["media", "Media"], ["school", "Foundation School"],
   ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
   ["dailyword", "Daily Word"], ["prayerwall", "Prayer Wall"],
@@ -49,6 +51,7 @@ export default function PastorDashboard() {
 
   function content() {
     switch (view) {
+      case "live": return <LiveMeetings />;
       case "attendance": return <ServiceAttendance />;
       case "members": return <PeopleDirectory />;
       case "treasury": return <TreasurySummary />;
