@@ -10,6 +10,13 @@ const directUploadLimit = 6_000_000;
 const planFileLimit = 50_000_000;
 const displayName = (name: string) => name.replace(/^[0-9a-f-]{36}_/, "");
 type Caption = { asset_path: string; caption: string; approved_at: string | null };
+type Review = { asset_path: string; title: string; purpose: "website" | "youtube" | "archive"; note: string | null; status: "in_review" | "approved" | "archived" };
+type ReviewDraft = { title: string; purpose: Review["purpose"]; note: string };
+const reviewDraft = (name: string): ReviewDraft => ({
+  title: displayName(name).replace(/\.[^.]+$/, ""),
+  purpose: /\.(mp4|mov|m4v|webm|mp3|m4a|wav)$/i.test(name) ? "youtube" : "website",
+  note: "",
+});
 
 function resumableEndpoint() {
   const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co");
@@ -52,6 +59,8 @@ export default function PrivateMediaVault() {
   const [role, setRole] = useState("");
   const [captions, setCaptions] = useState<Record<string, Caption>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [reviews, setReviews] = useState<Record<string, Review>>({});
+  const [reviewDrafts, setReviewDrafts] = useState<Record<string, ReviewDraft>>({});
   const [open, setOpen] = useState<string | null>(null);
   const pendingUpload = useRef<{ signature: string; path: string } | null>(null);
 
@@ -74,12 +83,20 @@ export default function PrivateMediaVault() {
       setNames(pageNames);
       setMore((result.data?.length ?? 0) > pageSize);
       if (pageNames.length) {
-        const saved = await supabase.from("media_captions").select("asset_path,caption,approved_at").in("asset_path", pageNames);
+        const [saved, reviewRows] = await Promise.all([
+          supabase.from("media_captions").select("asset_path,caption,approved_at").in("asset_path", pageNames),
+          supabase.from("media_asset_reviews").select("asset_path,title,purpose,note,status").in("asset_path", pageNames),
+        ]);
         if (!current) return;
-        if (saved.error) setStatus("Captions could not load. Refresh to retry.");
+        if (saved.error || reviewRows.error) setStatus("Media review records could not load. Refresh to retry.");
         else {
           setCaptions(Object.fromEntries(saved.data.map(row => [row.asset_path, row])));
           setDrafts(Object.fromEntries(saved.data.map(row => [row.asset_path, row.caption])));
+          setReviews(Object.fromEntries(reviewRows.data.map(row => [row.asset_path, row])));
+          setReviewDrafts(Object.fromEntries(pageNames.map(name => {
+            const saved = reviewRows.data.find(row => row.asset_path === name);
+            return [name, saved ? { title: saved.title, purpose: saved.purpose, note: saved.note ?? "" } : reviewDraft(name)];
+          })));
         }
       }
     }
@@ -174,6 +191,34 @@ export default function PrivateMediaVault() {
     if (!result.error) setRevision(value => value + 1);
   }
 
+  function editReview(name: string, change: Partial<ReviewDraft>) {
+    setReviewDrafts(current => ({ ...current, [name]: { ...(current[name] ?? reviewDraft(name)), ...change } }));
+  }
+
+  async function submitReview(name: string) {
+    const draft = reviewDrafts[name] ?? reviewDraft(name);
+    if (!draft.title.trim() || draft.title.length > 160 || draft.note.length > 1000) {
+      setStatus("Check the review title and note length."); return;
+    }
+    setBusy(true);
+    const result = await supabase.rpc("submit_media_asset", {
+      p_path: name, p_title: draft.title.trim(), p_purpose: draft.purpose, p_note: draft.note.trim(),
+    });
+    setBusy(false);
+    setStatus(result.error ? "The item could not be submitted. Refresh and try again." : "Saved in the Pastor review queue.");
+    if (!result.error) setRevision(value => value + 1);
+  }
+
+  async function reviewAsset(name: string, action: "approve" | "archive" | "reopen") {
+    setBusy(true);
+    const result = await supabase.rpc("review_media_asset", { p_path: name, p_action: action });
+    setBusy(false);
+    setStatus(result.error ? "The review could not be completed. Check the saved caption and retry." :
+      action === "approve" ? "Approved for the chosen destination. No file was published automatically." :
+      action === "archive" ? "Moved to the private archive." : "Returned to the review queue.");
+    if (!result.error) setRevision(value => value + 1);
+  }
+
   if (allowed === null) return <p role="status">Opening Media Vault…</p>;
   if (!allowed) return <p>Media Vault access is restricted to assigned staff.</p>;
   return <section className="space-y-5 rounded-2xl bg-white p-6 text-slate-900">
@@ -190,7 +235,7 @@ export default function PrivateMediaVault() {
     <ul className="divide-y">{names.map(name => <li key={name} className="space-y-3 py-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button className="break-all text-left text-purple-900 underline" onClick={() => download(name)}>Download {displayName(name)}</button>
-        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs text-purple-900">{captions[name]?.approved_at ? "Caption approved" : captions[name] ? "Caption awaiting review" : "Uncaptioned"}</span>
+        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs text-purple-900">{reviews[name]?.status === "approved" ? `Approved for ${reviews[name].purpose}` : reviews[name]?.status === "archived" ? "Private archive" : reviews[name] ? "Pastor review queue" : "Not submitted"}</span>
       </div>
       <button className="text-sm font-semibold text-purple-900 underline" onClick={() => setOpen(open === name ? null : name)}>{open === name ? "Close caption" : "Caption and review"}</button>
       {open === name && <div className="grid gap-2 rounded-xl bg-purple-50 p-3">
@@ -203,6 +248,21 @@ export default function PrivateMediaVault() {
           {role === "pastor" && captions[name] && !captions[name].approved_at && <button disabled={busy || drafts[name]?.trim() !== captions[name].caption} className="rounded-lg border border-purple-900 px-3 py-2 text-purple-900 disabled:opacity-50" onClick={() => void approveCaption(name)}>Approve saved caption</button>}
         </div>
         <p className="text-xs">AI suggestions are unpublished drafts. Check names, dates, consent and Scripture before approval.</p>
+        <div className="mt-3 grid gap-2 border-t border-purple-200 pt-3">
+          <h3 className="font-semibold">Review and destination</h3>
+          <label>Title<input className="w-full rounded-lg border bg-white p-2" maxLength={160} value={(reviewDrafts[name] ?? reviewDraft(name)).title} onChange={event => editReview(name, { title: event.target.value })} disabled={busy || !!reviews[name] && reviews[name].status !== "in_review"} /></label>
+          <label>Intended use<select className="w-full rounded-lg border bg-white p-2" value={(reviewDrafts[name] ?? reviewDraft(name)).purpose} onChange={event => editReview(name, { purpose: event.target.value as Review["purpose"] })} disabled={busy || !!reviews[name] && reviews[name].status !== "in_review"}>
+            <option value="website">Website candidate</option><option value="youtube">YouTube candidate</option><option value="archive">Private archive only</option>
+          </select></label>
+          <label>Context for the Pastor<textarea className="min-h-20 w-full rounded-lg border bg-white p-2" maxLength={1000} value={(reviewDrafts[name] ?? reviewDraft(name)).note} onChange={event => editReview(name, { note: event.target.value })} disabled={busy || !!reviews[name] && reviews[name].status !== "in_review"} /></label>
+          {(!reviews[name] || reviews[name].status === "in_review") && <button disabled={busy} className="rounded-lg border border-purple-900 px-3 py-2 text-purple-900 disabled:opacity-50" onClick={() => void submitReview(name)}>Submit for Pastor review</button>}
+          {role === "pastor" && reviews[name]?.status === "in_review" && <div className="flex flex-wrap gap-2">
+            {reviews[name].purpose !== "archive" && <button disabled={busy || !captions[name]?.approved_at} className="rounded-lg bg-purple-900 px-3 py-2 text-white disabled:opacity-50" onClick={() => void reviewAsset(name, "approve")}>Approve for {reviews[name].purpose}</button>}
+            <button disabled={busy} className="rounded-lg border px-3 py-2 disabled:opacity-50" onClick={() => void reviewAsset(name, "archive")}>Move to private archive</button>
+          </div>}
+          {role === "pastor" && reviews[name] && reviews[name].status !== "in_review" && <button disabled={busy} className="rounded-lg border px-3 py-2 disabled:opacity-50" onClick={() => void reviewAsset(name, "reopen")}>Reopen review</button>}
+          <p className="text-xs text-slate-600">Approval prepares a file for the chosen destination. Publication and YouTube upload are separate Pastor actions.</p>
+        </div>
       </div>}
     </li>)}</ul>
     {!names.length && !status && <p>No files in this vault yet.</p>}
