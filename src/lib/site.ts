@@ -52,9 +52,6 @@ export const YOUTUBE_PLAYLISTS_URL = `https://www.youtube.com/channel/${YOUTUBE_
 export const KNOWN_SERIES_PLAYLIST_IDS = ["PLXtb5x9WzkpWWXAF5BapQHXEIpEAfZbp9"] as const;
 export const YOUTUBE_LIVE_EMBED = `https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}`;
 
-/** Public Zoom registration link for online services. */
-export const ZOOM_REGISTER_URL = "https://us06web.zoom.us/meeting/register/ISNaNBhoTWWu4PmQiEsyDg";
-
 export const SERVICE_TIMES = [
   { name: "Sunday Celebration Service", day: "Sundays", time: "9:00 AM", note: "Praise, worship, and the Word" },
   { name: "Wednesday Live", day: "Wednesdays", time: "6:00 PM", note: "Join us live online" },

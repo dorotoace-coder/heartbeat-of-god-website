@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import { Eyebrow } from "@/components/ui/Section";
 import { buttonClass } from "@/components/ui/Button";
 import LiteYouTube from "@/components/site/LiteYouTube";
-import { SERVICE_TIMES, SOCIALS, YOUTUBE_LIVE_EMBED, ZOOM_REGISTER_URL } from "@/lib/site";
+import { SERVICE_TIMES, SOCIALS, YOUTUBE_LIVE_EMBED } from "@/lib/site";
 import { getLatestVideos } from "@/lib/youtube";
 
 // The latest-upload feed is cached for an hour.
@@ -53,8 +53,8 @@ export default async function WatchPage() {
             <a href={SOCIALS.youtubeLive} target="_blank" rel="noopener noreferrer" className={buttonClass("gold")}>
               <Youtube size={18} aria-hidden /> Watch on YouTube<span className="sr-only"> (opens in a new tab)</span>
             </a>
-            <a href={ZOOM_REGISTER_URL} target="_blank" rel="noopener noreferrer" className={buttonClass("ghost-light")}>
-              <Video size={18} aria-hidden /> Join on Zoom<span className="sr-only"> (opens in a new tab)</span>
+            <a href="/live" className={buttonClass("ghost-light")}>
+              <Video size={18} aria-hidden /> Join Live Church
             </a>
             <a href={SOCIALS.youtube} target="_blank" rel="noopener noreferrer" className={buttonClass("ghost-light")}>
               <Radio size={18} aria-hidden /> Subscribe to @HBG_tv<span className="sr-only"> (opens in a new tab)</span>
