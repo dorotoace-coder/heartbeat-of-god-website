@@ -104,6 +104,11 @@ export default function TrainingReader({
           <p className="text-sm font-semibold text-purple-700">
             Heartbeat of God · Workers Training
           </p>
+          <p className="hidden text-sm font-semibold print:block">
+            {course.status === "published"
+              ? `Published · Revision ${course.revision}`
+              : `DRAFT · For pastoral review · Revision ${course.revision}`}
+          </p>
           <h2 className="mt-2 text-3xl font-semibold">{course.title}</h2>
           <p className="mt-3 text-lg text-slate-600">{course.summary}</p>
         </header>
@@ -129,7 +134,7 @@ export default function TrainingReader({
             </button>
           ))}
         </nav>
-        {learner && (
+        {learner && course.status === "published" && (
           <p className="mb-5 rounded-xl bg-purple-50 p-3 text-sm leading-6 print:hidden">
             {progress?.read_lesson_ids.length ?? 0} / {course.lessons.length}{" "}
             lessons read ·{" "}
@@ -194,9 +199,15 @@ export default function TrainingReader({
                 <strong>Reflect and practise: </strong>
                 {l.reflection}
               </p>
+              {course.status !== "published" && l.sourceNote && (
+                <p className="rounded-xl border border-amber-200 p-4 text-sm leading-7 text-amber-950">
+                  <strong>Leader’s review note: </strong>
+                  {l.sourceNote}
+                </p>
+              )}
             </section>
           ))}
-          {learner && (
+          {learner && course.status === "published" && (
             <button
               disabled={busy}
               onClick={() => save(false)}
@@ -310,7 +321,7 @@ export default function TrainingReader({
               )}
             </fieldset>
           ))}
-          {learner && (
+          {learner && course.status === "published" && (
             <button
               disabled={
                 busy || course.quiz.some((q) => answers[q.id] === undefined)
@@ -356,6 +367,7 @@ export default function TrainingReader({
       #training-print .print\\:hidden {display:none!important}
       #training-print .print\\:block {display:block!important}
       #training-print h2,#training-print h3,#training-print h4 {break-after:avoid}
+      #training-print p,#training-print li,#training-print blockquote {font-size:11pt!important;line-height:1.6!important;orphans:3;widows:3}
       #training-print footer {break-before:avoid}
       @page {size:A4;margin:16mm}
     }`}</style>

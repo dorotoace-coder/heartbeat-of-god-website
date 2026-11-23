@@ -20,6 +20,8 @@ Private HTML downloads contain reading material only. They do not contain person
 
 Run `node scripts/test-training.mjs`, `npx tsc --noEmit`, targeted ESLint and `bash scripts/check-public-safe.sh`. The content test accepts an optional path to an approved private directory of thirteen module JSON files. Run `npm run build`; `npm run build -- --webpack` is the supported alternative when a sandbox prevents Turbopack from binding its build-worker port.
 
+For the database suite, create a disposable local database named `training_*` with the standard `anon` and `authenticated` roles. Run `tests/training-fixture.sql`, the workers-training migration, `tests/training-curriculum-fixture.sql` and `tests/training-security.sql` in that order with `psql -v ON_ERROR_STOP=1`. The fixture contains no private teaching or real people.
+
 Database and browser verification must additionally cover attempted privilege escalation, forged progress, self-approval, Foundation prerequisites, stale drafts, revision isolation, assigned in-person registers, persisted quiz retries, and mobile navigation. Inspect every exported PDF for missing sections, clipping and trailing pages.
 
 ## Rollback
