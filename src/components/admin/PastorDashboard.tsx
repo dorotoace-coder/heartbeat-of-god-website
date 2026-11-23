@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { AdminContext } from "@/lib/permissions";
 import type { UserRole } from "@/lib/types";
 import PastorOverview from "./PastorOverview";
+import TrainingHub from "./TrainingHub";
 import PrivateMediaVault from "./PrivateMediaVault";
 import PeopleDirectory from "./PeopleDirectory";
 import SchoolAdministration from "./SchoolAdministration";
@@ -22,7 +23,7 @@ import { PrayerWallView } from "./PrayerWallView";
 import LiveMeetings from "./LiveMeetings";
 
 const navigation = [
-  ["overview", "Overview"], ["live", "Live Church"], ["attendance", "Attendance"], ["members", "People"],
+  ["overview", "Overview"], ["live", "Live Church"], ["training", "Training"], ["attendance", "Attendance"], ["members", "People"],
   ["treasury", "Treasury"], ["media", "Media"], ["school", "Foundation School"],
   ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
   ["dailyword", "Daily Word"], ["prayerwall", "Prayer Wall"],
@@ -52,6 +53,7 @@ export default function PastorDashboard() {
   function content() {
     switch (view) {
       case "live": return <LiveMeetings />;
+      case "training": return <TrainingHub />;
       case "attendance": return <ServiceAttendance />;
       case "members": return <PeopleDirectory />;
       case "treasury": return <TreasurySummary />;
