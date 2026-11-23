@@ -1,0 +1,95 @@
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { runInNewContext } from 'node:vm';
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+const require = createRequire(import.meta.url);
+const exports = {};
+runInNewContext(ts.transpileModule(readFileSync('src/lib/followup/board.ts','utf8'), {
+  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022},
+}).outputText, { exports, require, Intl, Date });
+const {ministryToday,followupLane,filterFollowups}=exports;
+assert.equal(ministryToday(new Date('2026-11-23T23:30:00Z')),'2026-11-24');
+const base={id:'example',full_name:'Example Visitor',followup_date:'2026-11-23',assigned_to:'worker-a',completed_at:null,closure_outcome:null};
+assert.equal(followupLane(base,'2026-11-23'),'today');
+assert.equal(followupLane(base,'2026-11-24'),'overdue');
+assert.equal(followupLane(base,'2026-11-22'),'upcoming');
+assert.equal(followupLane({...base,completed_at:'2026-11-23T10:00:00Z',closure_outcome:'declined'},'2026-11-24'),'closed');
+const rows=[base,{...base,id:'second',source:'visitor',assigned_to:null}];
+const filters={search:'',source:'all',assignment:'all',userId:'worker-a'};
+assert.equal(filterFollowups(rows,{...filters,assignment:'mine'}).length,1);
+assert.equal(filterFollowups(rows,{...filters,assignment:'mine',userId:null}).length,0);
+assert.equal(filterFollowups(rows,{...filters,assignment:'unassigned'})[0].id,'second');
+assert.equal(filterFollowups(rows,{...filters,source:'outreach'})[0].id,'example');
+assert.equal(filterFollowups(rows,{...filters,search:'missing'}).length,0);
+assert.equal(filterFollowups(rows,{...filters,search:'  EXAMPLE  '}).length,2);
+console.log('PASS: calendar boundaries, closed precedence, source/search/assignment filters');
+
+if (!process.env.PGLITE_MODULE) {
+  console.log('Set PGLITE_MODULE to an installed @electric-sql/pglite entrypoint to run database tests.');
+  process.exit(0);
+}
+const {PGlite}=await import(process.env.PGLITE_MODULE);
+const db=new PGlite();
+await db.exec(`
+create role anon; create role authenticated; create schema auth;
+create table auth.users(id uuid primary key);
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.uid',true),'')::uuid$$;
+create function public.staff_workspace() returns text language sql stable as $$select nullif(current_setting('request.workspace',true),'')$$;
+create table public.outreach_workers(user_id uuid primary key references auth.users(id),full_name text);
+grant usage on schema auth to authenticated,anon;
+grant execute on function auth.uid(),public.staff_workspace() to authenticated,anon;
+`);
+await db.exec(readFileSync('supabase/migrations/20261123210000_ministry_followup_board.sql','utf8'));
+const pastor='00000000-0000-4000-8000-000000000001';
+const alice='00000000-0000-4000-8000-000000000002';
+const bob='00000000-0000-4000-8000-000000000003';
+const request='00000000-0000-4000-8000-000000000010';
+const event='00000000-0000-4000-8000-000000000020';
+for(const id of [pastor,alice,bob]) await db.query('insert into auth.users values($1)',[id]);
+for(const [id,name] of [[alice,'Example A'],[bob,'Example B']]) await db.query('insert into outreach_workers values($1,$2)',[id,name]);
+async function as(id,workspace,role='authenticated') {
+  await db.exec('reset role');
+  await db.query("select set_config('request.uid',$1,false),set_config('request.workspace',$2,false)",[id??'',workspace??'']);
+  await db.exec(`set role ${role}`);
+}
+const due=(await db.query("select (now() at time zone 'Africa/Lagos')::date::text as date")).rows[0].date;
+const create=(id=request,worker=alice,permission=true,name='Example Visitor')=>db.query('select create_ministry_followup($1,$2,null,\'visitor\',$3,$4,$5)',[id,name,due,worker,permission]);
+const record=(id,outcome,note,next,worker)=>db.query('select record_ministry_followup($1,$2,$3,$4,$5,$6)',[id,request,outcome,note,next,worker]);
+await as(pastor,'pastor');
+await assert.rejects(create(request,alice,false));
+await create(); await create();
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,1);
+await assert.rejects(create(request,alice,true,'Different name'));
+await as(bob,'evangelism');
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,0);
+await assert.rejects(record(event,'conversation','Example note',due,null));
+await assert.rejects(create('00000000-0000-4000-8000-000000000011',alice));
+await assert.rejects(db.query('insert into ministry_followup_requests(id) values($1)',[request]));
+await as(alice,'evangelism');
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,1);
+await record(event,'conversation','Example note',due,null);
+await record(event,'conversation','Example note',due,null);
+assert.equal((await db.query('select * from ministry_followup_events')).rows.length,1);
+await assert.rejects(record(event,'conversation','Changed note',due,null));
+await record('00000000-0000-4000-8000-000000000021','handoff','Example handoff',due,bob);
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,0);
+assert.equal((await db.query('select * from ministry_followup_events')).rows.length,0);
+await as(bob,'evangelism');
+assert.equal((await db.query('select * from ministry_followup_events')).rows.length,2);
+await record('00000000-0000-4000-8000-000000000022','declined','Example closure',null,null);
+await record('00000000-0000-4000-8000-000000000022','declined','Example closure',null,null);
+await assert.rejects(record('00000000-0000-4000-8000-000000000023','conversation','Do not reopen',due,null));
+await as(pastor,'pastor');
+assert.equal((await db.query('select closure_outcome from ministry_followup_requests')).rows[0].closure_outcome,'declined');
+await create('00000000-0000-4000-8000-000000000012',null);
+await as(alice,'evangelism');
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,0);
+await as(null,null);
+await assert.rejects(create('00000000-0000-4000-8000-000000000013'));
+assert.equal((await db.query('select * from ministry_followup_requests')).rows.length,0);
+await as(null,null,'anon');
+await assert.rejects(db.query('select * from ministry_followup_requests'));
+await assert.rejects(create());
+await db.close();
+console.log('PASS: migration, consent, exact retries, duplicate collision, row privacy, mutation denial, handoff privacy, closure, unassigned visibility and anonymous denial');
