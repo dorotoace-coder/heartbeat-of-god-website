@@ -4,6 +4,9 @@ Do NOT keep your own copy of business facts in this repo. If a fact is missing o
 
 Repo-specific build/test instructions go below this line only.
 
+## Authorised development workflow
+For development work Doroto requests in `dorotoace-coder/heartbeat-of-god-website`, Doroto authorises creating feature branches, committing relevant changes, pushing those branches and creating draft pull requests after checks pass. Keep private materials and secrets out of the public repository. Obtain separate approval before merging, deploying, changing production data or spending money.
+
 ## This repository is PUBLIC
 - Never commit phone or device numbers, private emails, hosting or database IDs, keys or tokens, counseling or safeguarding procedures, team rosters, legal filings, finance records or internal admin URLs.
 - Run `bash scripts/check-public-safe.sh` before committing. Enable the hook once per clone: `git config core.hooksPath .githooks`.
