@@ -29,7 +29,7 @@ export default function TrainingEditor({
       .select("id,name")
       .order("name")
       .then((r) => {
-        if (active) setDepartments(r.data ?? []);
+        if (active) setDepartments((r.data ?? []).filter((department) => typeof department.name === "string" && department.name.trim()));
       });
     return () => {
       active = false;
