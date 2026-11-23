@@ -10,7 +10,8 @@ export type OutreachFollowup = {
   phone: string | null;
   address: string | null;
   followup_date: string;
-  assigned_to: string;
+  assigned_to: string | null;
+  source?: "outreach" | "visitor" | "ministry";
   completed_at: string | null;
   closure_outcome: "completed" | "declined" | null;
 };
@@ -26,10 +27,11 @@ const outcomeLabels: Record<Outcome, string> = {
 };
 const field = "block min-h-11 w-full rounded-lg border border-slate-300 bg-white p-2";
 
-export default function OutreachFollowupCard({ contact, workers, onSaved }: {
+export default function OutreachFollowupCard({ contact, workers, onSaved, compact = false }: {
   contact: OutreachFollowup;
   workers: OutreachWorker[];
   onSaved: () => void;
+  compact?: boolean;
 }) {
   const [outcome, setOutcome] = useState<Outcome>("conversation");
   const [note, setNote] = useState("");
@@ -49,7 +51,7 @@ export default function OutreachFollowupCard({ contact, workers, onSaved }: {
     setHistoryOpen(true);
     setHistoryError(false);
     if (history) return;
-    const result = await supabase.from("outreach_followup_events")
+    const result = await supabase.from(contact.source && contact.source !== "outreach" ? "ministry_followup_events" : "outreach_followup_events")
       .select("id,outcome,note,occurred_at,next_due,actor_id,assigned_to")
       .eq("contact_id", contact.id).order("occurred_at", { ascending: false }).limit(100);
     setHistoryError(!!result.error);
@@ -72,7 +74,7 @@ export default function OutreachFollowupCard({ contact, workers, onSaved }: {
     setBusy(true);
     setMessage("");
     try {
-      const result = await supabase.rpc("record_outreach_followup", {
+      const result = await supabase.rpc(contact.source && contact.source !== "outreach" ? "record_ministry_followup" : "record_outreach_followup", {
         p_id: attempt.current.id, p_contact: contact.id, p_outcome: outcome,
         p_note: cleanNote, p_next_due: due, p_worker: assignee,
       });
@@ -92,18 +94,8 @@ export default function OutreachFollowupCard({ contact, workers, onSaved }: {
     } finally { setBusy(false); }
   }
 
-  const assigneeName = workers.find(person => person.user_id === contact.assigned_to)?.full_name ?? "a worker";
-  return <article className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
-    <div className="flex flex-wrap items-start justify-between gap-2">
-      <div><h4 className="font-semibold text-[#2e1252]">{contact.full_name}</h4>
-        <p className="text-sm text-slate-600">{closed ? contact.closure_outcome === "declined" ? "Asked for no further contact" : "Follow-up completed" : `Next contact ${contact.followup_date}`} · Assigned to {assigneeName}</p></div>
-      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${contact.closure_outcome === "declined" ? "bg-red-50 text-red-900" : closed ? "bg-green-50 text-green-900" : "bg-amber-50 text-amber-900"}`}>
-        {contact.closure_outcome === "declined" ? "Do not contact" : closed ? "Closed" : "Open"}
-      </span>
-    </div>
-    {contact.phone && <p className="mt-2 break-all text-sm">{contact.phone}</p>}
-    {contact.address && <p className="mt-1 text-sm">{contact.address}</p>}
-    {!closed && <form onSubmit={save} className="mt-4 grid gap-3 border-t border-purple-100 pt-4">
+  const assigneeName = workers.find(person => person.user_id === contact.assigned_to)?.full_name ?? (contact.assigned_to ? "a worker" : "Unassigned");
+  const followupForm = <form onSubmit={save} className="mt-4 grid gap-3 border-t border-purple-100 pt-4">
       <label>What happened?
         <select className={field} value={outcome} onChange={event => setOutcome(event.target.value as Outcome)} disabled={busy}>
           {Object.entries(outcomeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
@@ -121,7 +113,18 @@ export default function OutreachFollowupCard({ contact, workers, onSaved }: {
       </label>}
       <button disabled={busy} className="min-h-11 rounded-lg bg-[#2e1252] px-4 py-2 font-semibold text-white disabled:opacity-50">{busy ? "Saving…" : "Save follow-up"}</button>
       <p role="status" className="text-sm">{message}</p>
-    </form>}
+    </form>;
+  return <article className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
+    <div className="flex flex-wrap items-start justify-between gap-2">
+      <div><h4 className="font-semibold text-[#2e1252]">{contact.full_name}</h4>
+        <p className="text-sm text-slate-600">{closed ? contact.closure_outcome === "declined" ? "Asked for no further contact" : "Follow-up completed" : `Next contact ${contact.followup_date}`} · {contact.assigned_to ? `Assigned to ${assigneeName}` : "Unassigned"}</p></div>
+      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${contact.closure_outcome === "declined" ? "bg-red-50 text-red-900" : closed ? "bg-green-50 text-green-900" : "bg-amber-50 text-amber-900"}`}>
+        {contact.closure_outcome === "declined" ? "Do not contact" : closed ? "Closed" : "Open"}
+      </span>
+    </div>
+    {contact.phone && <p className="mt-2 break-all text-sm">{contact.phone}</p>}
+    {contact.address && <p className="mt-1 text-sm">{contact.address}</p>}
+    {compact && !closed ? <details className="mt-4"><summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-purple-900">Record a contact or handoff</summary>{followupForm}</details> : !closed ? followupForm : null}
     <button type="button" onClick={() => void toggleHistory()} className="mt-4 min-h-11 text-sm font-semibold text-purple-900 underline">
       {historyOpen ? "Hide history" : "View follow-up history"}
     </button>

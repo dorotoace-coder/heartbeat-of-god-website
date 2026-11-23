@@ -9,6 +9,7 @@ import PrivateMediaVault from "@/components/admin/PrivateMediaVault";
 import PeopleIntake from "@/components/admin/PeopleIntake";
 import FoundationSchool from "@/components/admin/FoundationSchool";
 import Evangelism from "@/components/admin/Evangelism";
+import FollowupBoard from "@/components/admin/FollowupBoard";
 import ServiceAttendance from "@/components/admin/ServiceAttendance";
 import TreasurySummary from "@/components/admin/TreasurySummary";
 
@@ -45,9 +46,9 @@ function StaffWorkspace() {
       <div><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a></div>
       <button onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
     </header>
-    {!workspace ? <p role="status">{message}</p> : requested && requested !== workspace ?
+    {!workspace ? <p role="status">{message}</p> : workspace === "evangelism" && requested === "followup" ? <FollowupBoard /> : requested && requested !== workspace ?
       <p>This section is restricted. <a className="underline" href="/admin">Open my workspace</a></p> :
-      workspace === "evangelism" ? <Evangelism /> :
+      workspace === "evangelism" ? <><a href="/admin?view=followup" className="inline-block min-h-11 text-purple-900 underline">Open follow-up board</a><Evangelism /></> :
       workspace === "school" ? <FoundationSchool /> :
       workspace === "media" ? <PrivateMediaVault /> :
       workspace === "attendance" ? <><ServiceAttendance /><PeopleIntake /></> : <TreasurySummary />}

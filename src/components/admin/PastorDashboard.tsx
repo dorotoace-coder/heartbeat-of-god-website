@@ -12,6 +12,7 @@ import PrivateMediaVault from "./PrivateMediaVault";
 import PeopleDirectory from "./PeopleDirectory";
 import SchoolAdministration from "./SchoolAdministration";
 import Evangelism from "./Evangelism";
+import FollowupBoard from "./FollowupBoard";
 import ServiceAttendance from "./ServiceAttendance";
 import TreasurySummary from "./TreasurySummary";
 import { MediaView } from "./MediaView";
@@ -25,7 +26,7 @@ import LiveMeetings from "./LiveMeetings";
 const navigation = [
   ["overview", "Overview"], ["live", "Live Church"], ["training", "Training"], ["attendance", "Attendance"], ["members", "People"],
   ["treasury", "Treasury"], ["media", "Media"], ["school", "Foundation School"],
-  ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
+  ["followup", "Follow-up"], ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
   ["dailyword", "Daily Word"], ["prayerwall", "Prayer Wall"],
 ] as const;
 
@@ -59,6 +60,7 @@ export default function PastorDashboard() {
       case "treasury": return <TreasurySummary />;
       case "media": return <div className="space-y-8"><PrivateMediaVault /><MediaView /></div>;
       case "school": return <SchoolAdministration />;
+      case "followup": return <FollowupBoard />;
       case "evangelism": return <Evangelism />;
       case "events": return <EventsView />;
       case "inquiries": return <InquiriesView />;
