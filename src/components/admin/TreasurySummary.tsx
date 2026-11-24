@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import PartnershipAdministration from "@/components/partnership/PartnershipAdministration";
 import { supabase } from "@/lib/supabase";
 import ServiceSelector, { type PulseService } from "./ServiceSelector";
 import ServiceCollections from "./ServiceCollections";
@@ -334,6 +335,7 @@ export default function TreasurySummary() {
         <h1 className="text-3xl font-bold">Treasury</h1>
         <p className="mt-2 text-white/90">Collections, confirmation, bank deposits and monthly totals</p>
       </header>
+      {status === "ready" && <PartnershipAdministration />}
       {status === "ready" && churchId && <RecordCollection churchId={churchId} onRecorded={reload} />}
       {status === "ready" && <PendingCollections refresh={refresh} onConfirmed={reload} />}
       {status === "ready" && <ServiceCollections refresh={refresh} onChanged={reload} />}

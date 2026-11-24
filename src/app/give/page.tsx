@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -49,7 +50,7 @@ export default function GivePage() {
               )}
             </div>
             <div className="order-1 lg:order-2">
-              <GiveClient config={config} bank={NGN_BANK_DETAILS} />
+              <div className="mb-5 rounded-2xl border border-purple-200 bg-white p-6"><h2 className="font-headline text-2xl text-text">Choose a partnership area</h2><p className="mt-3 text-sm leading-7 text-muted">CLT, Salvation Challenge, Church Building Project, HBG TV or Feed the Future. Make a weekly, monthly or one-time commitment and track your giving.</p><Link href="/partnership" className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-plum px-5 font-semibold text-white">Explore partnership</Link></div><GiveClient config={config} bank={NGN_BANK_DETAILS} />
             </div>
           </div>
         </section>
