@@ -24,7 +24,7 @@ import { PrayerWallView } from "./PrayerWallView";
 import LiveMeetings from "./LiveMeetings";
 
 const navigation = [
-  ["overview", "Overview"], ["live", "Live Church"], ["training", "Training"], ["attendance", "Attendance"], ["members", "People"],
+  ["overview", "Overview"], ["help", "Pulse OS Help"], ["live", "Live Church"], ["training", "Training"], ["attendance", "Attendance"], ["members", "People"],
   ["treasury", "Treasury"], ["media", "Media"], ["school", "Foundation School"],
   ["followup", "Follow-up"], ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
   ["dailyword", "Daily Word"], ["prayerwall", "Prayer Wall"],

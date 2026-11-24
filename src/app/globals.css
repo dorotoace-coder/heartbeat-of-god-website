@@ -266,3 +266,12 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  body:has(.pulse-help) header:not(.pulse-help header),
+  body:has(.pulse-help) nav,
+  body:has(.pulse-help) > aside { display: none !important; }
+  .pulse-help article { break-inside: avoid; border: 0; }
+  .pulse-help { color: #111 !important; }
+  .pulse-help button, .pulse-help input { display: none !important; }
+}

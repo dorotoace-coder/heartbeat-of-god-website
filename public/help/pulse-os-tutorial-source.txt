@@ -1,0 +1,403 @@
+HBG PULSE OS — APP TUTORIAL SOURCE PACK
+
+Guide edition 01 · 23 November 2026
+
+Purpose: teach current app navigation, one task per short clip. This is product help, not ministry curriculum.
+
+Production brief: calm minimal design; white and deep purple, clear captions, slow pointer movements. Use fictional demonstration records only. Do not show credentials, real names, contact details, private requests or financial records.
+
+Create a separate 35–75 second clip for each scripted role below. Keep actual button labels. Do not invent menus or imply broader permissions. Use the sign-in overview as the common introduction. End every clip by checking the save confirmation.
+
+Reading a guide does not grant access. Real work stays inside each person’s assigned role.
+
+Do not present scripts as finished videos. No videos have been exported in this pack.
+
+START HERE
+
+1. Sign in with your own assigned account. On the current sign-in screen, Identity (Email) means your email and Access Code (Password) means your password.
+
+2. Choose Initialize Subsystem to sign in. Your assigned workspace opens. A new account does not automatically receive department access.
+
+3. Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.
+
+4. Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.
+
+
+
+## Treasury
+
+Audience: Pastor and Treasury Leader
+
+Start: Treasury → Record a collection
+
+Record a collection, obtain independent confirmation and track a bank deposit.
+
+1. Choose the correct service before entering the collection.
+
+2. Choose Giving category, Payment method and Currency, then enter Amount. Select a giver when that category requires one.
+
+3. For cash, enter two distinct cash counters. For other payment methods, complete Verified by.
+
+4. Choose Record collection. The other authorized reviewer uses Awaiting independent confirmation → Confirm collection after checking it.
+
+5. For a bank deposit, open Cash sent to the bank. Choose the service, currency, cash deposited and bank reference, then Record bank deposit. The other reviewer verifies it against the bank record.
+
+6. Read Recent monthly totals carefully: pending amounts and confirmed amounts are separate.
+
+Check: A saved collection can still be pending. Look for the saved entry and its independent confirmation; do not treat pending money as reconciled.
+
+If something goes wrong: If the save is unverified, keep the page open and retry the same collection. Check the saved list before creating another entry. Ask the authorized reviewer about corrections.
+
+Target length: 75 seconds
+
+Narration:
+
+Open Treasury and choose the correct service. Select the category, payment method and currency, then enter the amount. Choose a giver when required. Cash needs two distinct counters. Select Record collection and wait for confirmation. The other authorized reviewer checks the entry and confirms it. Pending and confirmed totals are different. Record a bank deposit separately and have the other reviewer verify it against the bank record. If a save is unverified, retry the same details instead of creating another collection.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Media
+
+Audience: Media team; Pastor reviews
+
+Start: Media → Private Media Vault
+
+Save media, prepare a caption and submit it for review.
+
+1. Open Private Media Vault and choose an image, audio recording or video.
+
+2. Select Upload file and wait until the file is saved. Files over 50 MB use the shared Google Drive folder and the Large videos link form instead.
+
+3. Open Caption and review for the saved file. Enter Caption draft and choose Save draft.
+
+4. Enter Title, Intended use and Context for the Pastor, then choose Submit for Pastor review.
+
+5. The Pastor reviews the saved caption and intended use. Approval and public publication are separate actions.
+
+Check: The file appears in the vault or Large videos list. Caption and review details show the saved state. Uploading alone does not mean it is approved or published.
+
+If something goes wrong: If an upload pauses, select the same file to retry. Check the file list first. Ask your leader if the file or shared folder cannot be accessed.
+
+Target length: 60 seconds
+
+Narration:
+
+Open Private Media Vault. Choose your file and select Upload file. Wait until it appears in the saved list. For a video over fifty megabytes, use the shared Google Drive folder and add its link under Large videos. Open Caption and review. Save the caption draft, add a title and intended use, and submit for Pastor review. A saved upload is private; approval does not automatically publish it. If an upload pauses, retry the same file and check the list before starting again.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Foundation School
+
+Audience: Assigned teachers; Pastor manages classes
+
+Start: Foundation School → Class → Sunday
+
+Open the assigned class and record each student’s attendance.
+
+1. Choose the assigned Class. Check its title and start date.
+
+2. Choose the correct Sunday using the Week selector shown in the register.
+
+3. For each student, choose Present or Absent. Each choice saves that student’s mark.
+
+4. Check the saved message and visible mark before moving to the next student or week.
+
+5. Class creation, teacher assignment, enrolment and graduation are managed in the Pastor’s School administration section.
+
+Check: Look for Saved attendance for the student and the correct Present or Absent mark. Unmarked is different from Absent.
+
+If something goes wrong: No classes or missing students usually needs an assignment or enrolment check. Ask the Pastor to check the register; do not create a replacement student record.
+
+Target length: 40 seconds
+
+Narration:
+
+Open Foundation School. Choose your assigned class and check the start date. Select the correct Sunday or week. For each student, select Present or Absent. The mark saves when you press the button, so check the saved message before continuing. Unmarked is not the same as absent. If your class or a student is missing, ask the Pastor to check the class assignment or enrolment.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Evangelism
+
+Audience: Outreach workers and Pastor
+
+Start: Evangelism → Record an outreach visit
+
+Record the visit and arrange any agreed follow-up.
+
+1. Enter Date, Where you went and People you spoke with, including unnamed visitors.
+
+2. Choose Add a person only for people whose details you need to record. Confirm their agreement before storing contact details for follow-up.
+
+3. If another conversation is agreed, choose the follow-up date and worker.
+
+4. Choose Save visit and wait for Visit saved.
+
+5. Open the follow-up board or Follow-up list to record what happened and the next step.
+
+Check: The visit appears under Recent visits, and the assigned follow-up appears to the authorized worker and Pastor.
+
+If something goes wrong: If no worker is available, ask the Pastor to register the intended worker. Check existing visits before retrying an unverified save.
+
+Target length: 55 seconds
+
+Narration:
+
+Open Evangelism and record the date, location and number of people reached. Use Add a person when details need to be recorded. Confirm their agreement before keeping contact details for follow-up. Choose a worker and next contact date when another conversation is agreed. Select Save visit and wait for Visit saved. Continue from the follow-up list or board. If no worker is listed, ask the Pastor to check the worker assignment.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Visitor & ministry follow-up
+
+Audience: Assigned outreach workers and Pastor
+
+Start: Follow-up → Add a follow-up
+
+Keep the next conversation, responsible worker and outcome clear.
+
+1. For a new request, enter Full name, choose the Reason and Next contact date, and confirm contact permission.
+
+2. The Pastor can choose a worker or leave the request Unassigned. Workers create requests assigned to themselves.
+
+3. Choose Add follow-up. Find it under Overdue, Due today or Upcoming; use Find a person, Source or Assignment to narrow the list.
+
+4. Open Record a contact or handoff. Choose What happened?, write a short factual note and set the next date when needed.
+
+5. For a handoff, choose another registered worker. For completion or no further contact, choose the matching outcome. Select Save follow-up.
+
+6. Use View follow-up history to read the saved outcome. Closed requests remain closed.
+
+Check: Check the updated lane, next date or closed label, then read the saved history. After handoff, the previous worker loses access.
+
+If something goes wrong: If saving is unverified, retry the same details or refresh to inspect the record. Do not create a second request just because a response was slow.
+
+Target length: 65 seconds
+
+Narration:
+
+Open Follow-up. Add the name, reason and next contact date, then confirm permission. The Pastor may assign a worker or leave the request unassigned. Save it and find it in the board. Open Record a contact or handoff, choose the outcome and add a brief factual note. Set the next date for an open request. For a handoff, select the next registered worker. Save and check the history. Completed requests and requests for no further contact stay closed.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## People intake
+
+Audience: Attendance and people-intake team; Pastor
+
+Start: Member or first-time visitor form
+
+Record a person accurately without confusing intake with follow-up.
+
+1. Open Member or first-time visitor in the assigned attendance/intake workspace, or People in the Pastor workspace.
+
+2. Enter Full name. Add available phone, address, social contact and first-visit date only when appropriate to record.
+
+3. Tick Interested in Foundation School if the person requested it.
+
+4. Choose Save person and wait for Person recorded.
+
+5. A saved person is not automatically a school enrolment or a follow-up request. Ask the appropriate leader to arrange those next steps.
+
+Check: Person recorded confirms this form saved. The Pastor can check the Member directory and search by name.
+
+If something goes wrong: For an uncertain save, check whether the person already exists before adding another record. Report corrections to the responsible leader.
+
+Target length: 45 seconds
+
+Narration:
+
+Open Member or first-time visitor. Enter the person’s full name and the available contact details that are appropriate to record. Add the first-visit date if known. Tick Interested in Foundation School only if requested. Choose Save person and wait for Person recorded. This records the person; it does not automatically enrol them in a class or create a follow-up. Ask the appropriate leader to arrange those next steps.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Service attendance
+
+Audience: Attendance team; authorized service leads
+
+Start: Attendance → Service attendance
+
+Save one headcount for the correct service.
+
+1. Select the correct service and check its date and start time.
+
+2. Enter the counts for men, women and children. These make the total attendance.
+
+3. Enter first-timers as a count already included within that total; do not add them again.
+
+4. Save and check the Saved message with the service date, time and number of attendees.
+
+Check: The saved report matches the chosen service. A different report already saved for that service needs an authorized correction.
+
+If something goes wrong: If the service is missing, ask someone with scheduling access to check the calendar. If saving is unverified, keep the counts and retry the same report.
+
+Target length: 35 seconds
+
+Narration:
+
+Open Service attendance and select the right service. Check the date and start time. Enter men, women and children. First-timers are already included in those numbers, so do not add them again. Save once, then check the date, time and attendee total in the confirmation. If a different report already exists, ask the service lead to review it.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Training library
+
+Audience: Enrolled learners, assigned reviewers and editors
+
+Start: Training → Choose your training
+
+Read assigned teaching, practise and check learning progress.
+
+1. Open Training and choose the module or department.
+
+2. Read the published lessons and use Previous lesson or Next lesson to navigate.
+
+3. Use Mark this lesson read where available. Complete the practice, checklist and quiz provided in the module.
+
+4. Review your progress and any assigned reviewer’s feedback. Editors and the Pastor have separate review and publishing controls.
+
+Check: Check the saved learning progress. Reading a lesson is not a replacement for attendance or an approved completion decision.
+
+If something goes wrong: No published curriculum or an enrolment message needs a leader’s review. Pulse OS Help remains available for app instructions without course enrolment.
+
+Target length: 45 seconds
+
+Narration:
+
+Open Training and choose your assigned module. Read the published lesson, then use Mark this lesson read where it is available. Move between lessons and complete the practice, checklist and quiz. Check your saved progress and reviewer feedback. If your enrolment or published teaching is missing, ask your leader. For help using the app itself, return to Pulse OS Help.
+
+Storyboard: 0–5s title and task; 5–15s open workspace; middle show the listed steps; final 10s show the saved result and one recovery tip.
+
+
+
+## Overview
+
+Audience: Pastor
+
+Start: Overview → Needs attention
+
+See visible work needing attention and open the responsible workspace.
+
+1. Read the Needs attention queue.
+
+2. Open the relevant card to inspect the actual collection, deposit, media item, outreach follow-up or school request.
+
+3. Use Refresh counts after completing work. Staff access shows recorded sign-ins, not who is currently online.
+
+Check: Verify the underlying record, not just the dashboard count.
+
+If something goes wrong: If a count or list cannot load, refresh and check the relevant department. A blank or unavailable count is not proof that no work exists.
+
+
+
+## Live Church
+
+Audience: Pastor / authorized administrators
+
+Start: Live Church → Live Church meetings
+
+Manage meeting availability and the official joining invitation.
+
+1. Choose the correct meeting program.
+
+2. Check its official invitation and Meeting status.
+
+3. Save the meeting and verify the intended joining experience. Active means joining is open; it does not detect whether Zoom is running.
+
+Check: Meeting saved confirms the change. Only Sunday service is connected to the public Live Church page.
+
+If something goes wrong: If saving fails, check access and the complete official invitation. Keep restricted meetings restricted and never include meeting credentials in help materials.
+
+
+
+## Events
+
+Audience: Pastor / authorized event editors
+
+Start: Events
+
+Review service and program listings.
+
+1. Review the existing calendar before adding another event.
+
+2. Open the event controls available to your account. Check the title, date, time, location and recurrence where provided.
+
+3. Save the intended change, then check the calendar or public program listing as appropriate.
+
+Check: The intended listing appears with the correct date and time.
+
+If something goes wrong: If a recurring or duplicate event looks wrong, report the specific listing to the administrator before creating a replacement.
+
+
+
+## Intake Inbox
+
+Audience: Pastor / authorized inbox reviewers
+
+Start: Intake Inbox
+
+Review submitted forms and update their review status.
+
+1. Choose the relevant category, such as First-Timer Card or General Inquiry.
+
+2. Read the submission within your authorized access.
+
+3. Choose pending, reviewed or contacted only when it accurately reflects the action taken.
+
+4. Refresh to check that the status persisted. The current inbox can update the display before the server confirms the save.
+
+Check: Check the saved status after refresh. A status change alone does not send a reply, create a member or assign a follow-up.
+
+If something goes wrong: If the status reverts or the submission is missing, check the connection and report it. Do not assume the person received a reply.
+
+
+
+## Daily Word
+
+Audience: Pastor / authorized content editors
+
+Start: Daily Word
+
+Prepare dated devotional content for review and publication.
+
+1. Review existing entries and their publish dates.
+
+2. Use the editing controls your role permits to prepare the title, scripture, devotional and media references.
+
+3. Check the date and content before saving or publishing. Public publication needs the appropriate approval.
+
+4. Verify the dated entry on the public page after it is intended to appear.
+
+Check: A saved draft is separate from a public entry. Verify the publication state and intended date.
+
+If something goes wrong: If the entry is absent, check its saved state, publication date and access. Ask the editor before creating a duplicate.
+
+
+
+## Prayer Wall
+
+Audience: Pastor / authorized reviewers
+
+Start: Prayer Wall
+
+Review prayer submissions within the access and controls provided.
+
+1. Open the review list and check the submission’s current status.
+
+2. Use only the review actions available to your account and approved for your role.
+
+3. Confirm the saved status before treating a submission as reviewed or public.
+
+Check: Check the status after saving and reloading. Availability depends on the configured feature and your permissions.
+
+If something goes wrong: If the section is unavailable, ask the administrator. Do not move private submission text into a general tutorial or demonstration.
