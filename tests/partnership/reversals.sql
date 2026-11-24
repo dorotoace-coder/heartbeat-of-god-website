@@ -4,6 +4,8 @@ select public.sync_partnership_reversal('evt_refund',51,'pi_demo',10,null);
 select public.sync_partnership_reversal('evt_refund',51,'pi_demo',10,null);
 select public.sync_partnership_reversal('evt_dispute',52,'pi_demo',null,true);
 select public.test_assert((select refunded_amount=10 and disputed from public.partnership_gifts where payment_intent_id='pi_demo'),'Refund/dispute not recorded');
+-- A refund timestamp must not suppress an independently ordered dispute outcome.
+select public.sync_partnership_reversal('evt_later_refund',100,'pi_demo',10,null);
 select public.sync_partnership_reversal('evt_won',60,'pi_demo',null,false);
 select public.sync_partnership_reversal('evt_old_dispute',53,'pi_demo',null,true);
 select public.test_assert((select refunded_amount=10 and not disputed from public.partnership_gifts where payment_intent_id='pi_demo'),'Old dispute overwrote outcome');

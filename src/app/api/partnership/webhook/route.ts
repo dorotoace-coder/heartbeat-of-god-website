@@ -88,7 +88,18 @@ export async function POST(req: Request) {
       const charge = payment.latest_charge;
       if (charge && typeof charge !== "string") {
         command.p_refunded = charge.amount_refunded / 100;
-        command.p_disputed = charge.disputed;
+        command.p_disputed = false;
+        if (charge.disputed) {
+          const disputes = await stripe.disputes.list({
+            payment_intent: command.p_payment,
+            limit: 100,
+          });
+          if (disputes.has_more || !disputes.data.length)
+            throw new Error("Dispute outcome unavailable");
+          command.p_disputed = disputes.data.some(
+            (dispute) => !["won", "warning_closed"].includes(dispute.status),
+          );
+        }
       }
     }
     const result = await db.rpc("apply_partnership_payment", command);

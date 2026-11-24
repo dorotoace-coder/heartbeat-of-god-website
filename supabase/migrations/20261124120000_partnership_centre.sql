@@ -116,7 +116,7 @@ begin
  if p_refunded is not null and (p_refunded<0 or p_refunded>g.amount) then raise exception 'Invalid refunded amount';end if;
  update public.partnership_gifts set refunded_amount=greatest(refunded_amount,coalesce(p_refunded,0)),
  disputed=case when p_event_at>=reversal_event_at then coalesce(p_disputed,disputed) else disputed end,
- reversal_event_at=greatest(reversal_event_at,p_event_at) where id=g.id;
+ reversal_event_at=case when p_disputed is null then reversal_event_at else greatest(reversal_event_at,p_event_at) end where id=g.id;
  insert into public.partnership_events(event_id) values(p_event) on conflict do nothing;
 end $$;
 revoke all on function public.sync_partnership_reversal(text,bigint,text,numeric,boolean) from public,anon,authenticated;

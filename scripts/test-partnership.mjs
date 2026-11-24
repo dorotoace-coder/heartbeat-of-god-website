@@ -220,14 +220,188 @@ console.log(
   "PASS: new-intake shutdown retains existing payment processing/portal, and missing webhook configuration prevents automatic giving.",
 );
 // Exercise active HTTP handlers with an isolated provider double; no hosted account calls.
-const calls=[];const database={from:()=>({update:()=>({eq(){return this;},is(){return this;},select(){return this;},single:async()=>({data:{id:base.id},error:null})})})};
-const checkoutServer={automaticGivingEnabled:()=>true,authenticatedCommitment:async()=>({commitment:{...base,frequency:'weekly',state:'active'},user:{email:'partner@example.invalid'}}),siteOrigin:()=> 'https://example.invalid',adminClient:()=>database,stripeClient:()=>({checkout:{sessions:{create:async(parameters,options)=>{calls.push({parameters,options});return {id:'cs_fixture',url:'https://checkout.stripe.com/fixture'};},expire:async()=>{}}}})};
-const checkoutRoute=load('src/app/api/partnership/checkout/route.ts',{'@/lib/partnership/server':checkoutServer});
-for(let i=0;i<2;i++)assert.equal((await checkoutRoute.POST(new Request('http://localhost/api/partnership/checkout',{method:'POST',body:'{}'}))).status,200);
-assert.equal(JSON.stringify(calls[0]),JSON.stringify(calls[1]),'Retry changed Stripe parameters under the same idempotency key');
-const sequence=[];const cancelDb={from:()=>({update:()=>({eq(){return this;},is(){return this;},select(){return this;},single:async()=>{sequence.push('end-local');return {data:{id:base.id},error:null};}})})};
-const cancelRoute=load('src/app/api/partnership/cancel/route.ts',{'@/lib/partnership/server':{partnershipPaymentsConfigured:()=>true,authenticatedCommitment:async()=>({commitment:{...base,stripe_checkout_id:'cs_fixture'}}),adminClient:()=>cancelDb,stripeClient:()=>({checkout:{sessions:{retrieve:async()=>({id:'cs_fixture',status:'open'}),expire:async()=>{sequence.push('expire-provider');}}}})}});
-assert.equal((await cancelRoute.POST(new Request('http://localhost/api/partnership/cancel',{method:'POST',body:'{}'}))).status,200);assert.equal(sequence.join(','),'expire-provider,end-local');
-const webhookRoute=load('src/app/api/partnership/webhook/route.ts',{'@/lib/partnership/server':{partnershipPaymentsConfigured:()=>true,stripeClient:()=>stripe,adminClient:()=>{throw new Error('An invalid signature must not reach the database');}}});
-assert.equal((await webhookRoute.POST(new Request('http://localhost/api/partnership/webhook',{method:'POST',body:payload,headers:{'stripe-signature':'forged'}}))).status,400);
-console.log('PASS: active checkout retry stability, provider-before-local cancellation ordering and HTTP rejection of forged webhook signatures.');
+const calls = [];
+const database = {
+  from: () => ({
+    update: () => ({
+      eq() {
+        return this;
+      },
+      is() {
+        return this;
+      },
+      select() {
+        return this;
+      },
+      single: async () => ({ data: { id: base.id }, error: null }),
+    }),
+  }),
+};
+const checkoutServer = {
+  automaticGivingEnabled: () => true,
+  authenticatedCommitment: async () => ({
+    commitment: { ...base, frequency: "weekly", state: "active" },
+    user: { email: "partner@example.invalid" },
+  }),
+  siteOrigin: () => "https://example.invalid",
+  adminClient: () => database,
+  stripeClient: () => ({
+    checkout: {
+      sessions: {
+        create: async (parameters, options) => {
+          calls.push({ parameters, options });
+          return {
+            id: "cs_fixture",
+            url: "https://checkout.stripe.com/fixture",
+          };
+        },
+        expire: async () => {},
+      },
+    },
+  }),
+};
+const checkoutRoute = load("src/app/api/partnership/checkout/route.ts", {
+  "@/lib/partnership/server": checkoutServer,
+});
+for (let i = 0; i < 2; i++)
+  assert.equal(
+    (
+      await checkoutRoute.POST(
+        new Request("http://localhost/api/partnership/checkout", {
+          method: "POST",
+          body: "{}",
+        }),
+      )
+    ).status,
+    200,
+  );
+assert.equal(
+  JSON.stringify(calls[0]),
+  JSON.stringify(calls[1]),
+  "Retry changed Stripe parameters under the same idempotency key",
+);
+const sequence = [];
+const cancelDb = {
+  from: () => ({
+    update: () => ({
+      eq() {
+        return this;
+      },
+      is() {
+        return this;
+      },
+      select() {
+        return this;
+      },
+      single: async () => {
+        sequence.push("end-local");
+        return { data: { id: base.id }, error: null };
+      },
+    }),
+  }),
+};
+const cancelRoute = load("src/app/api/partnership/cancel/route.ts", {
+  "@/lib/partnership/server": {
+    partnershipPaymentsConfigured: () => true,
+    authenticatedCommitment: async () => ({
+      commitment: { ...base, stripe_checkout_id: "cs_fixture" },
+    }),
+    adminClient: () => cancelDb,
+    stripeClient: () => ({
+      checkout: {
+        sessions: {
+          retrieve: async () => ({ id: "cs_fixture", status: "open" }),
+          expire: async () => {
+            sequence.push("expire-provider");
+          },
+        },
+      },
+    }),
+  },
+});
+assert.equal(
+  (
+    await cancelRoute.POST(
+      new Request("http://localhost/api/partnership/cancel", {
+        method: "POST",
+        body: "{}",
+      }),
+    )
+  ).status,
+  200,
+);
+assert.equal(sequence.join(","), "expire-provider,end-local");
+const webhookRoute = load("src/app/api/partnership/webhook/route.ts", {
+  "@/lib/partnership/server": {
+    partnershipPaymentsConfigured: () => true,
+    stripeClient: () => stripe,
+    adminClient: () => {
+      throw new Error("An invalid signature must not reach the database");
+    },
+  },
+});
+assert.equal(
+  (
+    await webhookRoute.POST(
+      new Request("http://localhost/api/partnership/webhook", {
+        method: "POST",
+        body: payload,
+        headers: { "stripe-signature": "forged" },
+      }),
+    )
+  ).status,
+  400,
+);
+console.log(
+  "PASS: active checkout retry stability, provider-before-local cancellation ordering and HTTP rejection of forged webhook signatures.",
+);
+// A charge keeps its historical disputed flag even after a won dispute; read the outcome.
+const originalSecret = process.env.PARTNERSHIP_STRIPE_WEBHOOK_SECRET;
+try {
+  process.env.PARTNERSHIP_STRIPE_WEBHOOK_SECRET = secret;
+  for (const [status, expected] of [
+    ["won", false],
+    ["lost", true],
+    ["warning_closed", false],
+  ]) {
+    let recorded;
+    const verifiedRoute = load("src/app/api/partnership/webhook/route.ts", {
+      "@/lib/partnership/server": {
+        partnershipPaymentsConfigured: () => true,
+        stripeClient: () => ({
+          webhooks: stripe.webhooks,
+          paymentIntents: {
+            retrieve: async () => ({
+              latest_charge: { amount_refunded: 0, disputed: true },
+            }),
+          },
+          disputes: {
+            list: async () => ({ data: [{ status }], has_more: false }),
+          },
+        }),
+        adminClient: () => ({
+          rpc: async (_name, command) => {
+            recorded = command;
+            return { error: null };
+          },
+        }),
+      },
+    });
+    const response = await verifiedRoute.POST(
+      new Request("http://localhost/api/partnership/webhook", {
+        method: "POST",
+        body: payload,
+        headers: { "stripe-signature": header },
+      }),
+    );
+    assert.equal(response.status, 200);
+    assert.equal(recorded.p_disputed, expected);
+  }
+} finally {
+  if (originalSecret === undefined)
+    delete process.env.PARTNERSHIP_STRIPE_WEBHOOK_SECRET;
+  else process.env.PARTNERSHIP_STRIPE_WEBHOOK_SECRET = originalSecret;
+}
+console.log(
+  "PASS: historical charge-disputed flags resolve against won, lost and closed-warning outcomes.",
+);
