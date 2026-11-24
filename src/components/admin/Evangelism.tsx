@@ -71,7 +71,7 @@ export default function Evangelism() {
   return <section className="grid gap-5 rounded-3xl bg-[#f7f4f8] p-4 text-slate-950 sm:p-7">
     <header className="rounded-2xl bg-[#2e1252] p-6 text-white">
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">Win · Build · Send</p>
-      <h2 className="mt-2 font-serif text-3xl">Evangelism</h2>
+      <h2 className="mt-2 font-serif text-3xl">Evangelism</h2><a href="/partnership?area=salvation-challenge" className="mt-3 inline-flex min-h-11 items-center text-sm text-white underline">Salvation Challenge partnership</a>
       <p className="mt-2 max-w-xl text-sm text-purple-100">Prepare, record a visit, and make sure each promised follow-up reaches a person.</p>
     </header>
     <details className="rounded-2xl border border-purple-100 bg-white p-5"><summary className="cursor-pointer font-semibold">A simple guide to sharing Christ</summary>

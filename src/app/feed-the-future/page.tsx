@@ -39,7 +39,7 @@ export default async function FeedTheFuturePage() {
           intro="We feed vulnerable families monthly — with dignity and structure. This is not charity handed out and forgotten; it is a system of registration, distribution, documentation, and follow-up."
         >
           <Link href={PARTNER_HREF} className={buttonClass("gold")}><HandHeart size={18} aria-hidden /> Become a Partner</Link>
-          <Link href="/give" className={buttonClass("ghost-light")}>Sponsor an Outreach</Link>
+          <Link href="/partnership?area=feed-the-future" className={buttonClass("ghost-light")}>Sponsor an Outreach</Link>
         </PageHero>
 
         <Section tone="ivory" aria-labelledby="how-title">

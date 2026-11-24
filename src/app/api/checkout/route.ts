@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please enter a valid email for your receipt." }, { status: 400 });
   }
 
-  const stripe = new Stripe(key, { apiVersion: "2026-04-22.dahlia" });
+  const stripe = new Stripe(key, { apiVersion: "2026-11-18.endive" });
   const origin = req.headers.get("origin") || req.nextUrl.origin || "https://heartbeatofgod.ca";
   const unit_amount = Math.round(amount * 100);
   const isRecurring = frequency === "Monthly Partner";
