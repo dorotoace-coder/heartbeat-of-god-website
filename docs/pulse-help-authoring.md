@@ -22,3 +22,22 @@ The PDF exporter requires `reportlab` and `pypdf`; it is an authoring tool, not 
 ## Access
 
 Help is rendered only after the normal signed-in identity check. A team member awaiting department assignment can still read the guides. Operational views retain their existing workspace checks and database policies. Downloadable generic instruction assets contain no records or credentials and can be shared independently of the signed-in help page.
+
+## Finished short videos (24 November 2026)
+
+The eight MP4 clips under `public/help/videos/` are 1280×720, 24 fps, H.264/AAC.
+They use synthetic narration (macOS Samantha), visible captions, optional English WebVTT
+tracks and matching transcripts. Posters and `preload="none"` avoid loading all videos
+when Help opens. Native controls support pausing, replaying, full screen and download.
+
+The demonstrations render the existing React workspace components against entirely
+local fictional fixtures; no Supabase client is created and fixture writes throw.
+Highlights and camera framing point to controls; these are guided overviews rather
+than recordings of transactions in the live database. Fictional teaching in the
+Training example does not claim that any curriculum is published in production.
+No member, donor, worker, sign-in or production-service records were captured.
+
+The reproducible Remotion source is retained in Doroto's local tutorial output pack,
+separate from the production application and its dependencies. Updating the app does
+not silently update these exported videos: review button names and procedures when
+workspace behavior changes. Export replacement MP4, poster, VTT and metadata together.

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
@@ -19,6 +19,39 @@ const pack=library.videoSourcePack();
 assert.equal(pack,readFileSync('public/help/pulse-os-tutorial-source.txt','utf8'),'Download pack drifted; rerun exporter');
 assert.ok(!pack.includes('service_role'));
 assert.ok(library.pulseGuides.filter(guide=>guide.narration).every(guide=>guide.seconds<=90));
+// Every advertised clip must have real local media, a poster, captions and a transcript.
+const videos={};runInNewContext(output('src/lib/help/videos.ts'),{exports:videos,require});
+assert.equal(videos.pulseVideos.length,8);
+assert.equal(new Set(videos.pulseVideos.map(video=>video.id)).size,8);
+for(const video of videos.pulseVideos){
+ assert.ok(library.pulseGuides.find(guide=>guide.id===video.id)?.narration);
+ assert.ok(video.seconds>0 && video.seconds<=90);
+ for(const asset of [video.src,video.poster,video.captions]){
+  assert.ok(existsSync(`public${asset}`),`Missing clip asset ${asset}`);
+  assert.ok(statSync(`public${asset}`).size>100);
+ }
+ assert.ok(readFileSync(`public${video.captions}`,'utf8').startsWith('WEBVTT'));
+}
+const helpSource=readFileSync('src/components/admin/PulseHelp.tsx','utf8');
+assert.ok(helpSource.includes('controls playsInline preload="none"'));
+assert.ok(helpSource.includes('kind="captions"'));
+assert.ok(!helpSource.includes('autoPlay'));
+// Render the video tab to verify the shipped player markup, transcripts and lazy loading.
+const helpModule={};let helpHook=0;
+const helpReact={...React,useState:()=>[["","treasury","video"][helpHook++],()=>{}]};
+runInNewContext(output('src/components/admin/PulseHelp.tsx'),{exports:helpModule,require:(name)=>{
+ if(name==='react')return helpReact;
+ if(name==='@/lib/help/guides')return library;
+ if(name==='@/lib/help/videos')return videos;
+ if(name==='next/image')return {__esModule:true,default:(props)=>React.createElement('img',props)};
+ if(name==='next/link')return {__esModule:true,default:(props)=>React.createElement('a',props)};
+ return require(name);
+}});
+const videoMarkup=renderToStaticMarkup(React.createElement(helpModule.default));
+assert.equal((videoMarkup.match(/<video /g)||[]).length,8);
+assert.equal((videoMarkup.match(/<track /g)||[]).length,8);
+assert.equal((videoMarkup.match(/Read the transcript/g)||[]).length,8);
+assert.ok(!videoMarkup.includes('not playable videos'));
 // Exercise rendered route states without connecting to any account or database.
 function render(workspace,ready,view){
  let call=0;const state=[workspace,ready,'Assignment pending'];
