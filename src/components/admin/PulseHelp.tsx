@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Download, Printer, Search, CheckCircle2, ChevronRight } from "lucide-react";
+import { pulseVideos } from "@/lib/help/videos";
 import { guideEdition, pulseGuides, startSteps } from "@/lib/help/guides";
 
 export default function PulseHelp() {
@@ -44,7 +45,7 @@ export default function PulseHelp() {
     </section>
     <div className="flex flex-wrap gap-2 border-b border-purple-100 pb-3 print:hidden" role="group" aria-label="Help content">
       <button type="button" aria-pressed={tab === "guides"} onClick={() => setTab("guides")} className="min-h-11 rounded-full border border-purple-100 bg-white px-5 text-sm font-semibold aria-pressed:bg-purple-900 aria-pressed:text-white">Step-by-step guides</button>
-      <button type="button" aria-pressed={tab === "video"} onClick={() => setTab("video")} className="min-h-11 rounded-full border border-purple-100 bg-white px-5 text-sm font-semibold aria-pressed:bg-purple-900 aria-pressed:text-white">Short-video scripts</button>
+      <button type="button" aria-pressed={tab === "video"} onClick={() => setTab("video")} className="min-h-11 rounded-full border border-purple-100 bg-white px-5 text-sm font-semibold aria-pressed:bg-purple-900 aria-pressed:text-white">Short videos</button>
     </div>
     {tab === "guides" ? <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
       <label className="rounded-2xl border border-purple-100 bg-white p-4 text-sm font-semibold lg:hidden print:hidden">Choose your guide<select value={selected} onChange={event => setSelected(event.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-purple-200 bg-white p-3 text-base">{pulseGuides.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
@@ -63,8 +64,19 @@ export default function PulseHelp() {
         <div className="mt-4 rounded-2xl border border-purple-100 p-5"><h3 className="font-semibold">If something goes wrong</h3><p className="mt-2 text-sm leading-6 text-slate-600">{guide.recovery}</p></div>
       </article>
     </div> : <section aria-labelledby="help-video" className="space-y-5 print:hidden">
-      <div className="rounded-2xl bg-white p-6"><h2 id="help-video" className="font-serif text-3xl">One task. One short clip.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">These are ready-to-produce scripts, not playable videos. Each explains one role in under 90 seconds. Finished captioned clips can be added here after review.</p><a href="/help/pulse-os-tutorial-source.txt" download="HBG-Pulse-OS-tutorial-source.txt" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-900 px-4 text-sm font-semibold text-white"><Download size={17} aria-hidden="true" />Download tutorial source pack</a><p className="mt-3 text-xs text-slate-500">Plain text for a video producer or NotebookLM. No real account or member data is included.</p></div>
-      <div className="grid gap-4 md:grid-cols-2">{clips.map((clip, index) => <details key={clip.id} className="rounded-2xl border border-purple-100 bg-white p-5"><summary className="min-h-11 cursor-pointer leading-7"><span className="mr-2 text-sm text-purple-600">{String(index + 1).padStart(2, "0")}</span><strong>{clip.title}</strong><span className="ml-2 text-sm text-slate-500">{clip.seconds}s · Script ready</span></summary><p className="mt-4 text-sm leading-7 text-slate-700">{clip.narration}</p><p className="mt-3 text-xs leading-5 text-slate-500">Show the task title, the workspace, the listed actions and the saved result. Use demonstration data only.</p></details>)}</div>
+      <div className="rounded-2xl bg-white p-6"><h2 id="help-video" className="font-serif text-3xl">One task. One short clip.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Eight short, narrated walkthroughs with on-screen captions. Each uses the actual app interface with fictional examples in an offline demonstration. Watch, pause and repeat as often as you need.</p><a href="/help/pulse-os-tutorial-source.txt" download="HBG-Pulse-OS-tutorial-source.txt" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-900 px-4 text-sm font-semibold text-white"><Download size={17} aria-hidden="true" />Download tutorial source pack</a><p className="mt-3 text-xs text-slate-500">Synthetic narration · Fictional records · No live changes. The source pack is also ready for NotebookLM or a video producer.</p></div>
+      <div className="grid gap-5 xl:grid-cols-2">{clips.map((clip, index) => {
+        const video = pulseVideos.find(item => item.id === clip.id)!;
+        return <article key={clip.id} className="min-w-0 overflow-hidden rounded-2xl border border-purple-100 bg-white">
+          <div className="p-5"><p className="text-xs font-semibold uppercase tracking-[.15em] text-purple-700">Clip {String(index + 1).padStart(2, "0")} · {video.seconds} seconds</p><h3 id={`video-${clip.id}`} className="mt-2 font-serif text-2xl">{clip.title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{clip.summary}</p></div>
+          <video aria-labelledby={`video-${clip.id}`} controls playsInline preload="none" poster={video.poster} width={1280} height={720} className="aspect-video h-auto w-full bg-purple-950">
+            <source src={video.src} type="video/mp4" />
+            <track kind="captions" src={video.captions} srcLang="en" label="English" />
+            <a href={video.src}>Download the {clip.title} video</a>
+          </video>
+          <div className="p-5"><a href={video.src} download className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline"><Download size={16} aria-hidden="true" />Download clip</a><details className="mt-2"><summary className="min-h-11 cursor-pointer text-sm font-semibold leading-[2.75rem]">Read the transcript</summary><p className="mt-2 text-sm leading-7 text-slate-700">{clip.narration}</p></details></div>
+        </article>;
+      })}</div>
     </section>}
     <footer className="rounded-2xl border border-purple-100 bg-white p-5 text-sm leading-6 text-slate-600"><strong className="text-purple-950">Learn together. Work within your assigned access.</strong><p>Menus vary by role. A missing assignment needs your leader’s help. Do not share account details or put real records into tutorial screenshots.</p></footer>
   </section>;
