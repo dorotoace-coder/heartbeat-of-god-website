@@ -39,11 +39,16 @@ export default function ForgotPassword({ tone = "light" }: { tone?: "light" | "d
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-      if (error?.status === 429) {
+      // Supabase answers an unknown email exactly like a known one, so success
+      // here never reveals whether the person has an account.
+      if (!error) {
+        setMessage(SENT);
+      } else if (error.status === 429) {
         setMessage("Too many reset requests. Please wait an hour, then try again.");
       } else {
-        // Any other outcome, including an unknown email, gets the same reply.
-        setMessage(SENT);
+        setMessage(
+          "We couldn't send the reset email just now. Please try again later, or contact the office if it keeps happening.",
+        );
       }
     } catch {
       setMessage("The connection dropped. Please try again.");
