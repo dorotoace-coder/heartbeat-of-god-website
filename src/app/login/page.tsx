@@ -10,6 +10,7 @@ import ForgotPassword from "@/components/auth/ForgotPassword";
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,11 +22,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     setSuccess("");
-    console.log("Initiating auth in mode:", mode, "for:", email);
-
     try {
-      console.log("Submitting auth request...");
-      
       // Add a safety timeout
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error("Uplink timeout: Server not responding.")), 15000)
@@ -33,7 +30,7 @@ export default function LoginPage() {
 
       if (mode === "signin") {
         const authPromise = supabase.auth.signInWithPassword({ email, password });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
+        const { error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
         
         if (authError) {
           console.error("SignIn Error:", authError);
@@ -45,15 +42,18 @@ export default function LoginPage() {
           return;
         }
 
-        console.log("SignIn Successful, routing to admin panel...");
         router.push("/admin");
       } else {
+        if (!fullName.trim()) {
+          setError("Please enter your full name.");
+          return;
+        }
         const authPromise = supabase.auth.signUp({ 
           email, 
           password,
-          options: { data: { full_name: "Admin User" } }
+          options: { data: { full_name: fullName.trim() } }
         });
-        const { data, error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
+        const { error: authError } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
         
         if (authError) {
           console.error("SignUp Error:", authError);
@@ -61,7 +61,6 @@ export default function LoginPage() {
           return;
         }
 
-        console.log("SignUp Successful:", data);
         setSuccess("Success: Identity record created. IMPORTANT: Check your email to CONFIRM your account before signing in.");
         setMode("signin");
       }
@@ -109,6 +108,24 @@ export default function LoginPage() {
 
         <form onSubmit={handleAuth} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
           <div className="space-y-6 mb-8">
+            {mode === "signup" && (
+              <div>
+                <label className="block text-xs font-bold text-blue-200/50 uppercase tracking-widest mb-3" htmlFor="full-name">
+                  Full name
+                </label>
+                <input
+                  id="full-name"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  autoComplete="name"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-bold text-blue-200/50 uppercase tracking-widest mb-3" htmlFor="email">
                 Identity (Email)
