@@ -510,8 +510,9 @@ export default function PartnershipCentre({
                     name="updates"
                     className="mt-1 h-5 w-5 shrink-0"
                   />
-                  I would like updates about this partnership area. This is
-                  optional.
+                  Send me updates about this partnership area and a gentle
+                  reminder each period. This is optional, and you can stop
+                  anytime.
                 </label>
                 <button disabled={busy} className={button}>
                   {busy ? "Saving…" : "Save my commitment"}
