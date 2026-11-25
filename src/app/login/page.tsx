@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Lock, Fingerprint, Loader2, Mail, UserPlus, LogIn } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import ForgotPassword from "@/components/auth/ForgotPassword";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -177,7 +178,13 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-        
+
+        {mode === "signin" && (
+          <div className="mt-6 text-center">
+            <ForgotPassword tone="dark" />
+          </div>
+        )}
+
         <div className="text-center mt-8 space-y-6">
           <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold">
             <span className="text-white/20">Beacon Status:</span>

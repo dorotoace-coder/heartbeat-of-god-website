@@ -7,6 +7,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import ForgotPassword from "@/components/auth/ForgotPassword";
 import { MINISTRY_EMAIL } from "@/lib/site";
 import { supabase } from "@/lib/supabase";
 import {
@@ -370,6 +371,11 @@ export default function PartnershipCentre({
                   : "Create account"}
             </button>
           </form>
+          {authMode === "signin" && (
+            <div className="mt-4 max-w-xl">
+              <ForgotPassword />
+            </div>
+          )}
         </section>
       ) : (
         <>
