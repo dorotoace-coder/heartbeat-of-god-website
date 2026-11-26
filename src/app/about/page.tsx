@@ -50,7 +50,7 @@ export default function AboutPage() {
               <figure className="relative overflow-hidden rounded-[2rem] bg-ink shadow-[0_40px_90px_-40px_rgba(14,7,22,0.8)]">
                 <div className="relative aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5]">
                   <Image
-                    src="/pastor-amos-pro.jpg"
+                    src="/pastor-amos-2026.jpg"
                     alt="Pastor Amos Unogwu, Founder and Lead Pastor of Heartbeat of God Ministry"
                     fill
                     sizes="(min-width: 1024px) 45vw, 100vw"

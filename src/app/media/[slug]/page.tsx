@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const thumb = thumbFor(s);
   const images = thumb
     ? [{ url: absolute(thumb), alt: s.title }]
-    : [{ url: "/pastor-amos-pro.jpg", width: 1412, height: 946, alt: `${s.preacher}, Heartbeat of God Ministry` }];
+    : [{ url: "/pastor-amos-2026.jpg", width: 1412, height: 946, alt: `${s.preacher}, Heartbeat of God Ministry` }];
   return {
     title: s.title,
     description,

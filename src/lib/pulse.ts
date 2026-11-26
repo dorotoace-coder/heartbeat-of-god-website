@@ -18,9 +18,9 @@ export type PulseState = {
 };
 
 const SERMON_ARCHIVE = [
-  { title: "The Dimension of Eternal Rest", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-pro.jpg" },
-  { title: "Walking in Divine Authority", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-pro.jpg" },
-  { title: "Fresh Oil for a New Season", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-pro.jpg" }
+  { title: "The Dimension of Eternal Rest", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-2026.jpg" },
+  { title: "Walking in Divine Authority", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-2026.jpg" },
+  { title: "Fresh Oil for a New Season", preacher: "Pastor Amos Unogwu", imageUrl: "/pastor-amos-2026.jpg" }
 ];
 
 export function getAutonomousPulse(): PulseState {

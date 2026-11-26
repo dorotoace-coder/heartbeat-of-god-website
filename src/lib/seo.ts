@@ -11,7 +11,7 @@ type PageMeta = {
 };
 
 const DEFAULT_IMAGE = {
-  url: "/pastor-amos-pro.jpg",
+  url: "/pastor-amos-2026.jpg",
   width: 1412,
   height: 946,
   alt: "Pastor Amos Unogwu, founder of Heartbeat of God Ministry",

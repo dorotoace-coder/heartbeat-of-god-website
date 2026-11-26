@@ -34,13 +34,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: "Raising a generation of Christ-conscious believers globally.",
-    images: [{ url: "/pastor-amos-pro.jpg", width: 1412, height: 946, alt: "Pastor Amos Unogwu, founder of Heartbeat of God Ministry" }],
+    images: [{ url: "/pastor-amos-2026.jpg", width: 1412, height: 946, alt: "Pastor Amos Unogwu, founder of Heartbeat of God Ministry" }],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
     description: "Raising a generation of Christ-conscious believers globally.",
-    images: ["/pastor-amos-pro.jpg"],
+    images: ["/pastor-amos-2026.jpg"],
   },
   // Favicon + apple-touch icon come from src/app/icon.svg and src/app/apple-icon.svg
 };

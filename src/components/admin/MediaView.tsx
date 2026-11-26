@@ -353,7 +353,7 @@ export function MediaView() {
             <div key={item.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden group hover:shadow-xl transition-all h-full flex flex-col">
               <div className="aspect-video bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
                  <img
-                   src={item.thumbnail_url || "/pastor-amos-pro.jpg"}
+                   src={item.thumbnail_url || "/pastor-amos-2026.jpg"}
                    alt={item.title}
                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 dark:opacity-40"
                  />
@@ -432,7 +432,7 @@ export function MediaView() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setPlayingItem(null)}>
           <div className="bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="aspect-video bg-slate-800 relative flex items-center justify-center">
-              <img src={playingItem.thumbnail_url || "/pastor-amos-pro.jpg"} alt={playingItem.title} className="w-full h-full object-cover opacity-40" />
+              <img src={playingItem.thumbnail_url || "/pastor-amos-2026.jpg"} alt={playingItem.title} className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                 <Play size={48} className="mb-4 opacity-60" />
                 <p className="font-bold text-lg">{playingItem.title}</p>
