@@ -56,8 +56,8 @@ export const ILPC_2026_SPEAKERS: IlpcSpeaker[] = [
     name: "Pastor Amos Unogwu",
     role: "Host Pastor",
     from: "Akute, Nigeria",
-    photo: "/pastor-amos.png",
-    photoSize: [1545, 2000],
+    photo: "/pastor-amos-portrait-2026.jpg",
+    photoSize: [1170, 1280],
     sessions: ["Sun 9:30 AM — Session 3: Apostolic Commissioning", "Sun 11:00 AM — Praise & Worship and Closing"],
   },
 ];

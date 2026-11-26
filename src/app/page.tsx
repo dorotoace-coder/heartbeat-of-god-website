@@ -58,7 +58,7 @@ export default async function Home() {
           alternateName: ["Heartbeat of God", "HBG"],
           url: SITE_URL,
           logo: `${SITE_URL}/hbg-logo.png`,
-          image: `${SITE_URL}/pastor-amos-pro.jpg`,
+          image: `${SITE_URL}/pastor-amos-2026.jpg`,
           description: DESCRIPTION,
           email: MINISTRY_EMAIL,
           founder: { "@type": "Person", name: FOUNDER },
