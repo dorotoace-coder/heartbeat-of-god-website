@@ -78,3 +78,24 @@ for(const workspace of [null,'pastor','media','school','attendance','treasury','
 assert.ok(render('school',true,'treasury').includes('This section is restricted'));
 assert.ok(!render(null,true,'treasury').includes('data-component="TreasurySummary"'));
 console.log('PASS: complete menu coverage, source-pack alignment, bounded scripts, identity gate, all-role help access and retained workspace restrictions.');
+
+// General home must never open staff tools or render before identity verification.
+for (const view of [null, 'treasury', 'media', 'departments']) {
+ const html = render(null, true, view);
+ assert.ok(html.includes('data-component="MemberHome"'));
+ for (const name of ['TreasurySummary','PrivateMediaVault','PastorDashboard']) assert.ok(!html.includes(`data-component="${name}"`));
+ assert.ok(!render(null,false,view).includes('data-component="MemberHome"'));
+}
+const home = {};
+runInNewContext(output('src/components/admin/MemberHome.tsx'), {exports:home,require:(name)=>{
+ if(name==='next/link')return {__esModule:true,default:(props)=>React.createElement('a',props)};
+ if(name==='@/lib/supabase')return {supabase:{}};
+ return require(name);
+}});
+const homeHtml=renderToStaticMarkup(React.createElement(home.default,{name:'<Test> Person',restricted:true}));
+assert.ok(homeHtml.includes('Welcome, &lt;Test&gt;'));
+for(const href of ['/admin?view=help','/admin?view=training','/partnership','/departments']) assert.ok(homeHtml.includes(`href="${href}"`));
+assert.ok(!homeHtml.includes('href="/admin?view=treasury"'));
+assert.ok(homeHtml.includes('authorised staff assignment'));
+assert.ok(homeHtml.includes('shadow-['));
+console.log('PASS: member home identity gate, restricted-route isolation, safe navigation, escaped name and raised-card rendering.');

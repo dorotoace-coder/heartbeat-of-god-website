@@ -13,6 +13,7 @@ import Evangelism from "@/components/admin/Evangelism";
 import FollowupBoard from "@/components/admin/FollowupBoard";
 import ServiceAttendance from "@/components/admin/ServiceAttendance";
 import TreasurySummary from "@/components/admin/TreasurySummary";
+import MemberHome from "@/components/admin/MemberHome";
 
 type Workspace = "pastor" | "media" | "attendance" | "treasury" | "school" | "evangelism";
 function StaffWorkspace() {
@@ -20,6 +21,8 @@ function StaffWorkspace() {
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [identityReady, setIdentityReady] = useState(false);
   const [message, setMessage] = useState("Opening your workspace…");
+  const [memberName, setMemberName] = useState("");
+  const [accessError, setAccessError] = useState(false);
   useEffect(() => {
     let current = true;
     async function load() {
@@ -29,7 +32,11 @@ function StaffWorkspace() {
         window.location.replace("/login?callbackUrl=%2Fadmin");
         return;
       }
+      const fullName = data.user.user_metadata?.full_name;
+      if (typeof fullName === "string") setMemberName(fullName);
       const result = await supabase.rpc("staff_workspace");
+      if (!current) return;
+      setAccessError(!!result.error);
       if (!current) return;
       if (result.error) setMessage("Your workspace could not load. Please refresh.");
       else if (["pastor", "media", "attendance", "treasury", "school", "evangelism"].includes(result.data)) setWorkspace(result.data);
@@ -39,10 +46,11 @@ function StaffWorkspace() {
     void load();
     return () => { current = false; };
   }, []);
-  if (["training", "help"].includes(requested ?? "") && !identityReady) return <p role="status" className="p-8">{requested === "help" ? "Opening Pulse OS Help…" : "Opening training…"}</p>;
+  if (!identityReady) return <p role="status" className="p-8">{requested === "help" ? "Opening Pulse OS Help…" : "Opening training…"}</p>;
   if (requested === "help") return <main id="main-content" className="mx-auto max-w-7xl bg-[#f5f2f7] p-4 sm:p-8"><PulseHelp /></main>;
   if (workspace === "pastor") return <PastorDashboard />;
   if (requested === "training") return <main className="mx-auto max-w-7xl p-4 sm:p-8"><a href="/admin" className="mb-5 inline-block min-h-11 text-purple-900 underline">Back to my workspace</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a><TrainingHub /></main>;
+  if (!workspace) return <MemberHome name={memberName} accessError={accessError} restricted={!!requested} />;
   return <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
     <header className="flex items-center justify-between gap-3">
       <div><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
