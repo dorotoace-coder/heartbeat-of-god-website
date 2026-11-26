@@ -4,12 +4,14 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
+import styles from "./login.module.css";
 import { supabase } from "@/lib/supabase";
 import ForgotPassword from "@/components/auth/ForgotPassword";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -35,29 +37,52 @@ export default function LoginPage() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "We could not complete that request. Please try again."); }
     finally { if (timer) clearTimeout(timer); setLoading(false); }
   }
-  const field = "mt-2 min-h-12 w-full rounded-xl border border-purple-100 bg-purple-50/50 px-4 text-slate-950 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200";
-  return <main id="main-content" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f5f2f7] px-4 py-10 text-slate-950">
-    <div aria-hidden="true" className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-purple-200/40 blur-3xl" />
-    <div className="relative w-full max-w-md">
-      <header className="mb-8 text-center">
-        <Image src="/hbg-logo.png" alt="Heartbeat of God" width={100} height={82} className="mx-auto mb-4 h-20 w-auto mix-blend-multiply" priority />
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-700">Heartbeat of God</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-purple-950">HBG PulseOS</h1>
-        <p className="mt-3 text-slate-600">Welcome to your ministry home.</p>
+  return (
+    <main id="main-content" className={styles.page}>
+      <header className={styles.header}>
+        <Link href="/" className={styles.brand} aria-label="Heartbeat of God home">
+          <Image src="/hbg-logo-print.jpg" alt="Heartbeat of God" width={132} height={75} className={styles.logo} preload />
+          <span className={styles.brandName}>HEARTBEAT<br />OF GOD</span>
+        </Link>
+        <Link href="/" className={styles.back}><ArrowLeft size={15} aria-hidden="true" /><span>Ministry website</span></Link>
       </header>
-      <form onSubmit={handleAuth} className="space-y-5 rounded-3xl border border-white bg-white p-6 shadow-[0_10px_0_-5px_#e5dfec,0_25px_55px_-25px_rgba(46,18,82,0.35)] sm:p-8">
-        <h2 className="text-xl font-semibold text-purple-950">{mode === "signin" ? "Sign in" : "Create an account"}</h2>
-        {mode === "signup" && <label className="block text-sm font-medium">Full name<input className={field} autoComplete="name" value={fullName} onChange={e=>setFullName(e.target.value)} maxLength={160} required /></label>}
-        <label className="block text-sm font-medium">Email<input className={field} type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} required /></label>
-        <label className="block text-sm font-medium">Password<input className={field} type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={e=>setPassword(e.target.value)} minLength={mode === "signup" ? 6 : undefined} required /></label>
-        {error && <p role="alert" className="text-sm text-red-800">{error}</p>}
-        {success && <p role="status" className="text-sm text-emerald-800">{success}</p>}
-        <button disabled={loading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-purple-950 px-4 font-semibold text-white shadow-[0_5px_0_#d9cce8] disabled:opacity-60">{loading ? <><Loader2 size={18} className="animate-spin" aria-hidden="true" />Please wait…</> : mode === "signin" ? "Sign in" : "Create an account"}</button>
-        <button type="button" disabled={loading} onClick={()=>{setMode(mode === "signin" ? "signup" : "signin");setError("");setSuccess("");}} className="min-h-11 w-full text-sm font-medium text-purple-800 underline underline-offset-4">{mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}</button>
-        {mode === "signin" && <div className="text-center"><ForgotPassword /></div>}
-        <p className="text-xs leading-5 text-slate-500">Your account opens your ministry home. Department tools require an authorised assignment.</p>
-      </form>
-      <div className="mt-7 text-center"><Link href="/" className="inline-flex min-h-11 items-center text-sm text-purple-900 underline underline-offset-4">Back to the ministry website</Link></div>
-    </div>
-  </main>;
+
+      <section className={styles.scene} aria-label="Heartbeat of God ministry">
+        <div className={styles.artwork} aria-hidden="true">
+          <Image src="/images/pulseos-hbg-sculpture.webp" alt="" fill sizes="(max-width: 850px) 100vw, 62vw" className={styles.sculpture} preload />
+        </div>
+        <div className={styles.sceneCopy}>
+          <p className={styles.eyebrow}><span className={styles.dot} /> A REASON TO LIVE</p>
+          <p className={styles.statement}>One heart.<br />One purpose.</p>
+          <p className={styles.sceneNote}>A place to belong. A purpose to serve.</p>
+        </div>
+      </section>
+
+      <section className={styles.signin} aria-labelledby="pulseos-title">
+        <div className={styles.panel}>
+          <p className={styles.eyebrow}>YOUR MINISTRY HOME</p>
+          <h1 id="pulseos-title" className={styles.title}>HBG PulseOS<span className={styles.titleDot}>.</span></h1>
+          <h2 className={styles.welcome}>{mode === "signin" ? "Welcome home." : "You belong here."}</h2>
+          <p className={styles.intro}>{mode === "signin" ? "Sign in to connect, learn and serve." : "Create your account to begin."}</p>
+          <form onSubmit={handleAuth} className={styles.form} aria-label={mode === "signin" ? "Sign in" : "Create an account"} aria-busy={loading}>
+            {mode === "signup" && <label className={styles.label} htmlFor="full-name">Full name<input id="full-name" className={styles.field} autoComplete="name" value={fullName} onChange={e=>setFullName(e.target.value)} maxLength={160} disabled={loading} required /></label>}
+            <label className={styles.label} htmlFor="email">Email address<input id="email" className={styles.field} type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)} disabled={loading} required /></label>
+            <label className={styles.label} htmlFor="password">Password</label>
+            <div className={styles.passwordField}>
+              <input id="password" className={styles.field} type={showPassword ? "text" : "password"} autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={e=>setPassword(e.target.value)} minLength={mode === "signup" ? 6 : undefined} disabled={loading} required />
+              <button type="button" className={styles.reveal} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} disabled={loading} onClick={()=>setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}</button>
+            </div>
+            {error && <p role="alert" className={styles.error}>{error}</p>}
+            {success && <p role="status" className={styles.success}>{success}</p>}
+            <button disabled={loading} className={styles.submit}>{loading ? <><Loader2 size={18} className="animate-spin" aria-hidden="true" />Please wait…</> : <>{mode === "signin" ? "Sign in" : "Create an account"}<ArrowRight size={18} aria-hidden="true" /></>}</button>
+          </form>
+          {mode === "signin" && <div className={styles.recovery}><ForgotPassword /></div>}
+          <div className={styles.separator} />
+          <p className={styles.switchPrompt}>{mode === "signin" ? "New to PulseOS?" : "Already part of PulseOS?"} <button type="button" disabled={loading} onClick={()=>{setMode(mode === "signin" ? "signup" : "signin");setShowPassword(false);setError("");setSuccess("");}} className={styles.switchMode}>{mode === "signin" ? "Create an account" : "Sign in"}<ArrowRight size={14} aria-hidden="true" /></button></p>
+          <p className={styles.accessNote}>Everyone is welcome. Department tools open with an authorised assignment.</p>
+        </div>
+      </section>
+      <footer className={styles.footer}><span>HEARTBEAT OF GOD</span><span>Faith. Community. Purpose.</span></footer>
+    </main>
+  );
 }
