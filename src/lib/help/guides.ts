@@ -7,11 +7,25 @@ export type PulseGuide = {
 export const guideEdition = "01 · 23 November 2026";
 export const startSteps = [
   "Sign in with your own assigned account. On the current sign-in screen, Identity (Email) means your email and Access Code (Password) means your password.",
-  "Choose Initialize Subsystem to sign in. Your assigned workspace opens. A new account does not automatically receive department access.",
+  "Choose Initialize Subsystem to sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.",
   "Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.",
   "Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.",
 ];
 export const pulseGuides: PulseGuide[] = [
+  {
+    id: "departments", title: "Ministry departments", audience: "Pastor", where: "Departments",
+    summary: "Explore department responsibilities and service opportunities, including the Sanitary Department.",
+    steps: ["Open Departments in the Pastor workspace.", "Read each department’s responsibilities and who can serve.", "Open ministry training to manage teaching through its existing access rules."],
+    confirmation: "Department descriptions appear in the directory. Viewing a department does not appoint a leader or grant staff access.",
+    recovery: "If the directory cannot load, refresh or check the public Departments page. Ask the Pastor about service assignments.",
+  },
+  {
+    id: "memberhome", title: "Your ministry home", audience: "Signed-in members and workers without a staff workspace", where: "Sign in → Home",
+    summary: "Start with guidance, available training, your own partnerships or opportunities to serve.",
+    steps: ["Choose Learn PulseOS for guides and short videos.", "Choose My training for lessons available through your enrolment and access.", "Choose My partnerships to manage only your own commitments.", "Choose Find a place to serve to explore the public department directory."],
+    confirmation: "Staff tools remain restricted until an authorised assignment. Opening the home page does not grant department permissions.",
+    recovery: "If staff access cannot be checked, refresh. Ask the Pastor about assignments or training enrolment; do not use another person’s account.",
+  },
   {
     id: "treasury", title: "Treasury", audience: "Pastor and Treasury Leader", where: "Treasury → Record a collection",
     summary: "Record a collection, obtain independent confirmation and track a bank deposit.",

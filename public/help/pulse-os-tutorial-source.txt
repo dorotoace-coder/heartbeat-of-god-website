@@ -16,11 +16,53 @@ START HERE
 
 1. Sign in with your own assigned account. On the current sign-in screen, Identity (Email) means your email and Access Code (Password) means your password.
 
-2. Choose Initialize Subsystem to sign in. Your assigned workspace opens. A new account does not automatically receive department access.
+2. Choose Initialize Subsystem to sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.
 
 3. Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.
 
 4. Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.
+
+
+
+## Ministry departments
+
+Audience: Pastor
+
+Start: Departments
+
+Explore department responsibilities and service opportunities, including the Sanitary Department.
+
+1. Open Departments in the Pastor workspace.
+
+2. Read each department’s responsibilities and who can serve.
+
+3. Open ministry training to manage teaching through its existing access rules.
+
+Check: Department descriptions appear in the directory. Viewing a department does not appoint a leader or grant staff access.
+
+If something goes wrong: If the directory cannot load, refresh or check the public Departments page. Ask the Pastor about service assignments.
+
+
+
+## Your ministry home
+
+Audience: Signed-in members and workers without a staff workspace
+
+Start: Sign in → Home
+
+Start with guidance, available training, your own partnerships or opportunities to serve.
+
+1. Choose Learn PulseOS for guides and short videos.
+
+2. Choose My training for lessons available through your enrolment and access.
+
+3. Choose My partnerships to manage only your own commitments.
+
+4. Choose Find a place to serve to explore the public department directory.
+
+Check: Staff tools remain restricted until an authorised assignment. Opening the home page does not grant department permissions.
+
+If something goes wrong: If staff access cannot be checked, refresh. Ask the Pastor about assignments or training enrolment; do not use another person’s account.
 
 
 
