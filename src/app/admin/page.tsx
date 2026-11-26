@@ -1,5 +1,7 @@
 "use client";
 
+import MinistryLogo from "@/components/ui/MinistryLogo";
+
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -55,7 +57,7 @@ function StaffWorkspace() {
   if (!workspace) return <MemberHome name={memberName} accessError={accessError} restricted={!!requested} />;
   return <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
     <header className="flex items-center justify-between gap-3">
-      <div><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/admin?view=profile" className="inline-block min-h-11 text-purple-900 underline">My profile</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
+      <div><MinistryLogo className="mb-4 h-12 w-auto" /><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/admin?view=profile" className="inline-block min-h-11 text-purple-900 underline">My profile</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
       <button onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
     </header>
     {!workspace ? <p role="status">{message}</p> : workspace === "evangelism" && requested === "followup" ? <FollowupBoard /> : requested && requested !== workspace ?

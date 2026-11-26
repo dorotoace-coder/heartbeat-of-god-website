@@ -1,5 +1,7 @@
 "use client";
 
+import MinistryLogo from "@/components/ui/MinistryLogo";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -76,8 +78,8 @@ export default function PastorDashboard() {
     <div className="min-h-screen bg-[#f5f2f7] text-slate-950">
       <header className="border-b border-purple-100 bg-white px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-          <div><p className="font-serif text-xl font-semibold text-[#2e1252]">HBG Pulse OS</p>
-            <p className="text-xs text-slate-600">Pastor&apos;s workspace · {name}</p></div>
+          <div className="flex items-center gap-4"><MinistryLogo className="h-12 w-auto shrink-0" /><div><p className="font-serif text-xl font-semibold text-[#2e1252]">HBG Pulse OS</p>
+            <p className="text-xs text-slate-600">Pastor&apos;s workspace · {name}</p></div></div>
           <button className="min-h-11 rounded-lg border border-purple-200 px-4 text-sm text-purple-950"
             onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
         </div>

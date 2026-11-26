@@ -51,7 +51,7 @@ export default function Hero() {
       {/* Layer 5 — content */}
       <div className="hero3d-layer relative mx-auto w-full max-w-7xl px-5 pb-16 pt-32 sm:px-8 md:pb-24" style={depth(0.35)}>
         <div className="max-w-2xl animate-fade-up">
-          <Image src="/hbg-logo.png" alt="Heartbeat of God logo" width={110} height={90} className="mb-8 h-16 w-auto md:h-20" />
+          <Image src="/hbg-logo-premium.png" alt="Heartbeat of God logo" width={1200} height={633} className="mb-8 h-16 w-auto md:h-20" />
           <p className="mb-6 inline-flex items-center gap-3 text-[0.72rem] font-bold uppercase tracking-[0.26em] text-gold">
             <span aria-hidden className="h-px w-8 bg-gold/60" />A Global Movement for Spiritual Awakening
           </p>

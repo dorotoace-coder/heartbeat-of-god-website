@@ -142,7 +142,7 @@ export default function MediaLibrary() {
                     {thumb ? (
                       <Image src={thumb} alt="" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" unoptimized={!thumb.startsWith("/")} className="object-cover transition duration-700 group-hover:scale-105" />
                     ) : (
-                      <div className="flex h-full items-center justify-center"><Image src="/hbg-logo.png" alt="" width={90} height={74} className="h-12 w-auto opacity-60" /></div>
+                      <div className="flex h-full items-center justify-center"><Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="h-12 w-auto object-contain" /></div>
                     )}
                     {s.duration && <span className="absolute bottom-3 right-3 rounded-md bg-ink/80 px-2 py-1 text-[0.68rem] font-bold text-white">{s.duration}</span>}
                     {(canVideo || canAudio) && (

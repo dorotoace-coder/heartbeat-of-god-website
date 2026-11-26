@@ -1,4 +1,6 @@
 "use client";
+
+import MinistryLogo from "@/components/ui/MinistryLogo";
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -41,7 +43,7 @@ export default function MemberProfile() {
   const input="mt-2 min-h-12 w-full rounded-xl border border-purple-100 bg-purple-50/50 p-3 text-slate-950 focus:outline-2 focus:outline-purple-600";
   return <main id="main-content" className="min-h-screen bg-[#f5f2f7] px-4 py-8 text-slate-950"><div className="mx-auto max-w-2xl space-y-6">
     <Link href="/admin" className="inline-flex min-h-11 items-center text-purple-900 underline">Back to my ministry home</Link>
-    <header><p className="text-xs font-bold uppercase tracking-widest text-purple-700">Heartbeat of God · HBG PulseOS</p><h1 className="mt-3 text-3xl font-semibold text-purple-950">My member profile</h1><p className="mt-3 text-sm leading-6 text-slate-600">Keep your contact details up to date. Staff review submissions before adding or updating the ministry directory. You can view only your own profile here.</p></header>
+    <header><MinistryLogo className="mb-5 h-14 w-auto" /><p className="text-xs font-bold uppercase tracking-widest text-purple-700">Heartbeat of God · HBG PulseOS</p><h1 className="mt-3 text-3xl font-semibold text-purple-950">My member profile</h1><p className="mt-3 text-sm leading-6 text-slate-600">Keep your contact details up to date. Staff review submissions before adding or updating the ministry directory. You can view only your own profile here.</p></header>
     <p role="status" className="rounded-2xl border border-purple-100 bg-white p-4 text-sm">{status}</p>
     {profile&&<form onSubmit={save} className="space-y-5 rounded-3xl border border-white bg-white p-6 shadow-[0_10px_0_-5px_#e5dfec,0_25px_55px_-30px_rgba(46,18,82,0.3)]">
       <label className="block text-sm font-medium">Full name<input name="name" defaultValue={profile.full_name} maxLength={160} autoComplete="name" className={input} required /></label>

@@ -1,5 +1,7 @@
 "use client";
 
+import MinistryLogo from "@/components/ui/MinistryLogo";
+
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { BookOpen, Compass, Heart, ArrowUpRight, Users } from "lucide-react";
@@ -17,7 +19,7 @@ export default function MemberHome({ name, restricted, accessError }: { name?: s
   return <main id="main-content" className="min-h-screen bg-[#f5f2f7] px-4 py-6 text-slate-950 sm:px-8 sm:py-10">
     <div className="mx-auto max-w-6xl space-y-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-purple-700">Heartbeat of God</p><p className="mt-1 text-lg font-semibold text-purple-950">HBG PulseOS</p></div>
+        <div className="flex items-center gap-4"><MinistryLogo className="h-12 w-auto shrink-0" /><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-purple-700">Heartbeat of God</p><p className="mt-1 text-lg font-semibold text-purple-950">HBG PulseOS</p></div></div>
         <button type="button" onClick={async () => {
           await supabase.auth.signOut(); window.location.replace("/login");
         }} className="inline-flex min-h-11 items-center rounded-xl border border-white bg-white/80 px-5 text-sm font-semibold text-purple-950 shadow-sm">Sign out</button>

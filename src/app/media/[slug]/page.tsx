@@ -116,7 +116,7 @@ export default async function MessagePage({ params }: { params: Params }) {
           publisher: {
             "@type": "Organization",
             name: SITE_NAME,
-            logo: { "@type": "ImageObject", url: `${SITE_URL}/hbg-logo.png` },
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/hbg-logo-premium.png` },
           },
         }}
       />

@@ -41,7 +41,7 @@ export default function LoginPage() {
     <main id="main-content" className={styles.page}>
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Heartbeat of God home">
-          <Image src="/hbg-logo-print.jpg" alt="Heartbeat of God" width={132} height={75} className={styles.logo} preload />
+          <Image src="/hbg-logo-premium.png" alt="Heartbeat of God" width={1200} height={633} className={styles.logo} preload />
           <span className={styles.brandName}>HEARTBEAT<br />OF GOD</span>
         </Link>
         <Link href="/" className={styles.back}><ArrowLeft size={15} aria-hidden="true" /><span>Ministry website</span></Link>

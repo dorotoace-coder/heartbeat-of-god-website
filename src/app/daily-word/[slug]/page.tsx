@@ -107,7 +107,7 @@ export default async function DailyWordPost({ params }: { params: Params }) {
           publisher: {
             "@type": "Organization",
             name: SITE_NAME,
-            logo: { "@type": "ImageObject", url: `${SITE_URL}/hbg-logo.png` },
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/hbg-logo-premium.png` },
           },
           articleSection: "Daily Word",
           citation: `${translation.ref} (${translation.short})`,

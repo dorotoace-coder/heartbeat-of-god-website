@@ -51,7 +51,7 @@ export default function Navbar() {
     >
       <nav aria-label="Main" className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3.5 sm:px-8">
         <Link href="/" className="group flex items-center gap-3" aria-label="Heartbeat of God — home">
-          <Image src="/hbg-logo.png" alt="" width={48} height={40} className="h-9 w-auto transition-transform duration-500 group-hover:scale-105" preload />
+          <Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-105" preload />
           <span className="hidden font-headline text-lg italic text-white sm:inline">Heartbeat of God</span>
         </Link>
 
