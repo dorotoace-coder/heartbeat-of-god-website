@@ -1,0 +1,11 @@
+do $$begin if not exists(select 1 from pg_roles where rolname='anon') then create role anon;end if; if not exists(select 1 from pg_roles where rolname='authenticated') then create role authenticated;end if;end$$;
+create schema auth;grant usage on schema auth to anon,authenticated;
+create table auth.users(id uuid primary key,email text);
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+create table public.departments(id uuid primary key default gen_random_uuid(),name text);
+create table public.congregation_people(id uuid primary key default gen_random_uuid(),full_name text not null,phone text,address text,social_contact text,first_visit date,requests_school boolean default false,created_by uuid references auth.users);
+create function public.staff_workspace() returns text language sql stable security definer set search_path='' as $$select case when auth.uid()=md5('pastor')::uuid then 'pastor' end$$;
+insert into auth.users values(md5('alice')::uuid,'alice@example.invalid'),(md5('bob')::uuid,'bob@example.invalid'),(md5('pastor')::uuid,'pastor@example.invalid');
+insert into public.departments values(md5('sanitary')::uuid,'Sanitary Department');
+create function public.test_assert(ok boolean,label text) returns void language plpgsql as $$begin if not coalesce(ok,false) then raise exception 'FAIL %',label;end if;raise notice 'PASS %',label;end$$;
+grant execute on function public.test_assert(boolean,text) to public;

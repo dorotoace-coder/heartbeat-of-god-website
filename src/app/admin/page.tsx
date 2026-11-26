@@ -14,6 +14,7 @@ import FollowupBoard from "@/components/admin/FollowupBoard";
 import ServiceAttendance from "@/components/admin/ServiceAttendance";
 import TreasurySummary from "@/components/admin/TreasurySummary";
 import MemberHome from "@/components/admin/MemberHome";
+import MemberProfile from "@/components/admin/MemberProfile";
 
 type Workspace = "pastor" | "media" | "attendance" | "treasury" | "school" | "evangelism";
 function StaffWorkspace() {
@@ -48,12 +49,13 @@ function StaffWorkspace() {
   }, []);
   if (!identityReady) return <p role="status" className="p-8">{requested === "help" ? "Opening Pulse OS Help…" : "Opening training…"}</p>;
   if (requested === "help") return <main id="main-content" className="mx-auto max-w-7xl bg-[#f5f2f7] p-4 sm:p-8"><PulseHelp /></main>;
+  if (requested === "profile") return <MemberProfile />;
   if (workspace === "pastor") return <PastorDashboard />;
   if (requested === "training") return <main className="mx-auto max-w-7xl p-4 sm:p-8"><a href="/admin" className="mb-5 inline-block min-h-11 text-purple-900 underline">Back to my workspace</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a><TrainingHub /></main>;
   if (!workspace) return <MemberHome name={memberName} accessError={accessError} restricted={!!requested} />;
   return <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
     <header className="flex items-center justify-between gap-3">
-      <div><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
+      <div><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/admin?view=profile" className="inline-block min-h-11 text-purple-900 underline">My profile</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
       <button onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
     </header>
     {!workspace ? <p role="status">{message}</p> : workspace === "evangelism" && requested === "followup" ? <FollowupBoard /> : requested && requested !== workspace ?
