@@ -37,7 +37,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 md:grid-cols-12">
         <div className="md:col-span-4">
           <Link href="/" className="inline-flex items-center gap-3">
-            <Image src="/hbg-logo.png" alt="" width={64} height={53} className="h-12 w-auto" />
+            <Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="h-12 w-auto" />
             <span className="font-headline text-2xl italic">Heartbeat of God</span>
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">{DESCRIPTION}</p>

@@ -19,7 +19,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   let logo: string | null = null;
   try {
-    const buf = await readFile(join(process.cwd(), "public/hbg-logo.png"));
+    const buf = await readFile(join(process.cwd(), "public/hbg-logo-premium.png"));
     logo = `data:image/png;base64,${buf.toString("base64")}`;
   } catch {
     logo = null;
@@ -47,7 +47,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-            {logo && <img src={logo} width={74} height={61} alt="" />}
+            {logo && <img src={logo} width={116} height={61} alt="" />}
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: 30, fontStyle: "italic" }}>Heartbeat of God</span>
               <span style={{ fontSize: 16, letterSpacing: 5, color: "#D9B45A", fontFamily: "sans-serif", fontWeight: 700 }}>

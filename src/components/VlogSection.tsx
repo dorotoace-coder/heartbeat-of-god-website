@@ -16,7 +16,7 @@ function Thumb({ v, sizes, className = "" }: { v: Vlog; sizes: string; className
   if (!src) {
     return (
       <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-plum to-ink ${className}`}>
-        <Image src="/hbg-logo.png" alt="" width={80} height={66} className="h-10 w-auto opacity-60" />
+        <Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="h-10 w-auto object-contain" />
       </div>
     );
   }

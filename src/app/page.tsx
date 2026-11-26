@@ -57,7 +57,7 @@ export default async function Home() {
           name: SITE_NAME,
           alternateName: ["Heartbeat of God", "HBG"],
           url: SITE_URL,
-          logo: `${SITE_URL}/hbg-logo.png`,
+          logo: `${SITE_URL}/hbg-logo-premium.png`,
           image: `${SITE_URL}/pastor-amos-2026.jpg`,
           description: DESCRIPTION,
           email: MINISTRY_EMAIL,
@@ -168,7 +168,7 @@ export default async function Home() {
                 <div aria-hidden className="absolute inset-0 grain opacity-70" />
                 <div aria-hidden className="absolute inset-6 rounded-2xl border border-white/10" />
                 <div className="relative text-center">
-                  <Image src="/hbg-logo.png" alt="" width={140} height={115} className="mx-auto h-24 w-auto" />
+                  <Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="mx-auto h-24 w-auto" />
                   <p className="mt-4 text-xs font-bold uppercase tracking-[0.3em] text-white/60">HBG TV · @HBG_tv</p>
                 </div>
               </div>

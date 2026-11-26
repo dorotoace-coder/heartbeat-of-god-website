@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     description: "Raising a generation of Christ-conscious believers globally.",
     images: ["/pastor-amos-2026.jpg"],
   },
-  // Favicon + apple-touch icon come from src/app/icon.svg and src/app/apple-icon.svg
+  // Favicon + apple-touch icon come from src/app/icon.png and src/app/apple-icon.png
 };
 
 export const viewport: Viewport = {
