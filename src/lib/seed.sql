@@ -7,7 +7,8 @@ VALUES
 ('Intimacy (Choir)', 'The choir of Heartbeat of God, leading the house in worship.', 'Leads worship at our services and gatherings, and hosts TRIBE X.', 'Singers with a heart for worship and the presence of God.', 'Join Intimacy', 2),
 ('Media & Creative', 'Amplifying the voice of the Spirit.', 'Live streaming, content creation, social media management, and technical production.', 'Creatives, tech enthusiasts, photographers, and editors.', 'Join the Crew', 3),
 ('Prayer Department', 'The engine room of the ministry.', 'Continuous intercession for the ministry, the members, and the global body of Christ.', 'Deeply committed intercessors and those with a passion for spiritual warfare.', 'Join Intercession', 4),
-('Outreach & Evangelism', 'Winning souls for the Kingdom.', 'Local outreaches, hospital visitations, and missions to unreached areas.', 'Bold believers with a passion for souls and community impact.', 'Join Outreach', 5)
+('Outreach & Evangelism', 'Winning souls for the Kingdom.', 'Local outreaches, hospital visitations, and missions to unreached areas.', 'Bold believers with a passion for souls and community impact.', 'Join Outreach', 5),
+('Sanitary Department', 'Keeping our ministry spaces clean, welcoming and ready for worship.', 'Cleans and prepares the sanctuary, restrooms and shared spaces before and after gatherings; coordinates cleaning supplies and hygiene routines.', 'Dependable people with a heart for practical service, cleanliness and care for others.', 'Join the Sanitary Department', 6)
 ON CONFLICT DO NOTHING;
 
 -- 2. Sermons
