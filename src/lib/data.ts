@@ -58,6 +58,7 @@ export const FALLBACK_DEPARTMENTS: DepartmentRow[] = [
   { name: "Media & Creative", description: "Amplifying the voice of the Spirit.", what_they_do: "Live streaming, content creation, social media management, and technical production.", who_should_join: "Creatives, tech enthusiasts, photographers, and editors.", cta_text: "Join the Crew" },
   { name: "Prayer Department", description: "The engine room of the ministry.", what_they_do: "Continuous intercession for the ministry, the members, and the global body of Christ.", who_should_join: "Deeply committed intercessors and those with a passion for spiritual warfare.", cta_text: "Join Intercession" },
   { name: "Outreach & Evangelism", description: "Winning souls for the Kingdom.", what_they_do: "Local outreaches, hospital visitations, and missions to unreached areas.", who_should_join: "Bold believers with a passion for souls and community impact.", cta_text: "Join Outreach" },
+  { name: "Sanitary Department", description: "Keeping our ministry spaces clean, welcoming and ready for worship.", what_they_do: "Cleans and prepares the sanctuary, restrooms and shared spaces before and after gatherings; coordinates cleaning supplies and hygiene routines.", who_should_join: "Dependable people with a heart for practical service, cleanliness and care for others.", cta_text: "Join the Sanitary Department" },
 ];
 
 export async function getDepartments(): Promise<DepartmentRow[]> {
