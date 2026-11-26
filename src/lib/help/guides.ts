@@ -6,12 +6,19 @@ export type PulseGuide = {
 };
 export const guideEdition = "01 · 23 November 2026";
 export const startSteps = [
-  "Sign in with your own assigned account. On the current sign-in screen, Identity (Email) means your email and Access Code (Password) means your password.",
-  "Choose Initialize Subsystem to sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.",
+  "Sign in to HBG PulseOS with your own email and password. Use Create an account if you are new.",
+  "Choose Sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.",
   "Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.",
   "Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.",
 ];
 export const pulseGuides: PulseGuide[] = [
+  {
+    id: "profile", title: "My member profile", audience: "Signed-in members and visitors", where: "My member profile",
+    summary: "Submit contact details, serving interests and optional communication preferences for staff review.",
+    steps: ["Open My member profile from your ministry home.", "Check your name and account email, then add optional phone and address details.", "Choose your connection with the ministry and optional serving interest; these are not appointments or permissions.", "Choose optional email preferences and save. Staff review the submission before creating or linking the directory record."],
+    confirmation: "Look for Profile saved. Repeated saves update the same intake record. Staff review does not grant department access.",
+    recovery: "If saving fails, retry the same profile. Ask the Pastor to reconcile an existing directory record; do not create another account.",
+  },
   {
     id: "departments", title: "Ministry departments", audience: "Pastor", where: "Departments",
     summary: "Explore department responsibilities and service opportunities, including the Sanitary Department.",

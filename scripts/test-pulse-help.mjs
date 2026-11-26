@@ -99,3 +99,9 @@ assert.ok(!homeHtml.includes('href="/admin?view=treasury"'));
 assert.ok(homeHtml.includes('authorised staff assignment'));
 assert.ok(homeHtml.includes('shadow-['));
 console.log('PASS: member home identity gate, restricted-route isolation, safe navigation, escaped name and raised-card rendering.');
+
+for (const workspace of [null,'media','pastor']) {
+ assert.ok(render(workspace,true,'profile').includes('data-component="MemberProfile"'));
+ assert.ok(!render(workspace,false,'profile').includes('data-component="MemberProfile"'));
+}
+console.log('PASS own-profile entry is available across roles only after identity readiness.');

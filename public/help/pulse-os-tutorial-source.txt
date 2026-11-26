@@ -14,13 +14,35 @@ Do not present scripts as finished videos. No videos have been exported in this 
 
 START HERE
 
-1. Sign in with your own assigned account. On the current sign-in screen, Identity (Email) means your email and Access Code (Password) means your password.
+1. Sign in to HBG PulseOS with your own email and password. Use Create an account if you are new.
 
-2. Choose Initialize Subsystem to sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.
+2. Choose Sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.
 
 3. Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.
 
 4. Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.
+
+
+
+## My member profile
+
+Audience: Signed-in members and visitors
+
+Start: My member profile
+
+Submit contact details, serving interests and optional communication preferences for staff review.
+
+1. Open My member profile from your ministry home.
+
+2. Check your name and account email, then add optional phone and address details.
+
+3. Choose your connection with the ministry and optional serving interest; these are not appointments or permissions.
+
+4. Choose optional email preferences and save. Staff review the submission before creating or linking the directory record.
+
+Check: Look for Profile saved. Repeated saves update the same intake record. Staff review does not grant department access.
+
+If something goes wrong: If saving fails, retry the same profile. Ask the Pastor to reconcile an existing directory record; do not create another account.
 
 
 
