@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
 import { marriageRpc } from "@/lib/marriages/repository";
+import CarePrivacyNotice from "./CarePrivacyNotice";
 import s from "./marriages.module.css";
 
 type Consent = {
@@ -75,20 +76,7 @@ export function ParticipantPrivacy({ caseId }: { caseId: string }) {
   return (
     <section className={s.panel}>
       <h2>Your privacy choices</h2>
-      <p className={s.muted}>
-        Notice hm-privacy-v1 · Your responses support marriage preparation and
-        counselling. Your own responses and assigned counsellor access are
-        distinct from sharing with your partner. Other departments do not
-        receive counselling records. Family contact, follow-up and publicity are
-        separate choices. Withdrawal stops future permitted sharing; it cannot
-        undo information someone has already seen.
-      </p>
-      <p className={s.muted}>
-        You can request access, a correction or deletion. Required legal records
-        or a documented hold may need to be retained; requests receive human
-        review. This workspace does not automatically delete records or
-        authorise any marriage.
-      </p>
+      <CarePrivacyNotice />
       {error && (
         <p role="alert" className={s.alert}>
           {error}

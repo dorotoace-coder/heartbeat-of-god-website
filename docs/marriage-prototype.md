@@ -11,7 +11,7 @@ Configure only the intended local Supabase URL and anon key. No privileged key i
 
 ## Data and access
 
-Five additive migrations build the local module. Existing ministry roles grant no automatic access. Private staff/assignment tables control case creation and scope; the application cannot promote its own staff roles. An authorised operator must provision the initial counsellor separately before activation.
+Six additive migrations build the local module. Existing ministry roles grant no automatic access. Private staff/assignment tables control case creation and scope; the application cannot promote its own staff roles. An authorised operator must provision the initial counsellor separately before activation.
 
 Public RPCs are invoker wrappers. Privileged implementations live in a non-exposed schema, check the authenticated actor and enforce case scope. Direct payload-table API access is revoked; RLS remains enabled as defense in depth. Reads, writes, invitations, consent and exports create metadata-only audit events. Narratives and raw invitation codes are not copied to audit records.
 
@@ -51,7 +51,7 @@ Participants receive only an explicitly released wedding update. The module does
 
 Each participant has separate versioned care, partner-sharing, family-contact, follow-up and publicity choices. Care permission is required before saving RTT; sharing requires additional permission. Withdrawal suppresses future partner reads without claiming to erase information already seen. Personal exports include only the person's own answers, consent, profile, enquiries and rights requests.
 
-Access/correction/deletion requests receive human review. A status change does not itself fulfil a request or delete data. Counsellors can record retention-review dates and legal holds. No retention period is invented, and no automatic purge is enabled. Ministry review of the notice, retention schedule, exceptional-access arrangements and named staff is required before real intake.
+Access/correction/deletion requests receive human review. A status change does not itself fulfil a request or delete data. Counsellors can record retention-review dates and legal holds. No retention period is invented, and no automatic purge is enabled. The congregation pilot uses the reviewed member notice and a 30-day manual review schedule. Enquiries/cases receive review dates, closure brings review forward, and new enquiry intake stops when the pilot reaches review. Continuing care requires a documented purpose and next review date; legal evidence and holds receive separate human review. No deletion is implied by reaching a review date.
 
 Writes use expected versions; stale saves return HTTP 409. The adapter checks results and uses independent request deadlines as well as abort signals. Questionnaire saves are per answer: a later failure may leave earlier answers saved, and the UI reports that partial outcome while preserving the draft.
 
@@ -60,9 +60,11 @@ Writes use expected versions; stale saves return HTTP 409. The adapter checks re
 - `node tests/marriages/model.cjs`: 19 prototype workflow checks.
 - `node tests/marriages/questionnaire.cjs`: catalogue and track filtering.
 - `node tests/marriages/repository.cjs`: confirmed writes, errors, stale/revoked results and stalled auth/write deadlines.
-- SQL suites: use a disposable PostgreSQL 17 database, `psql -v ON_ERROR_STOP=1`, and `tests/marriages/sql/bootstrap.sql`. Apply the first migration and run `access.sql` for the baseline. Apply the remaining module migrations and run `consent.sql`, `journey.sql`, `registry.sql` and `people.sql`. Bootstrap is synthetic auth scaffolding and must never run on a hosted project.
+- SQL suites: use a disposable PostgreSQL 17 database, `psql -v ON_ERROR_STOP=1`, and `tests/marriages/sql/bootstrap.sql`. Apply the first migration and run `access.sql` for the baseline. Apply the remaining module migrations and run `consent.sql`, `journey.sql`, `registry.sql` and `people.sql` and `pilot.sql`. Bootstrap is synthetic auth scaffolding and must never run on a hosted project.
 - `tests/marriages/auth-api.cjs`: 60 actual local Auth/REST scenarios, including parallel approvals/saves, expiry, existing-session revocation, enquiry triage, person/member links, exports, consent, sealed/shared boundaries, registry evidence and scoped projections. It is guarded to `http://127.0.0.1:55421`. Supply private fixture paths in `HM_TEST_AUTH_ENV` and `HM_TEST_USERS`; secrets are never printed. The test uses only the named disposable local Docker database for fixture provisioning.
 - Browser verification covers PulseOS entry, enquiries, triage, stable person updates/reload, invitation review, consent, RTT saves/reload, structured visits/amendments, case track/status, registry evidence review/history and mobile preview layout.
 - Production-mode gates: disabled `/marriages` and `/marriage-preview` return 404; `/admin` stays available without the care link. Existing staff routing/access checks are preserved verbatim in the extracted client component.
 
-The branch does not apply a hosted migration, restore RTT, activate workflows, assign production staff, send messages or deploy. Before production, review the ministry policies and bootstrap plan, then obtain the separate release approval required by repository AGENTS.md. Keep government submissions officer-assisted unless an approved integration is separately established.
+The branch does not apply a hosted migration, restore RTT, activate workflows, assign production staff, send messages or deploy. Production release requires the separate approval in repository AGENTS.md and a verified bootstrap/rollback plan. Keep government submissions officer-assisted unless an approved integration is separately established.
+
+The final `hm-privacy-v1` notice is shared by enquiry and participant screens; no version was previously used for real intake by this module. Existing consent history is preserved.

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { marriageRpc } from "@/lib/marriages/repository";
 import s from "./marriages.module.css";
+import CarePrivacyNotice from "./CarePrivacyNotice";
 type Enquiry = {
   id: string;
   preferred_name: string;
@@ -57,14 +58,7 @@ export default function CareEnquiries({
           assignment is not required. Please keep private counselling details
           out of this initial request.
         </p>
-        <p className={s.muted}>
-          Notice hm-privacy-v1 · We use your name, care lane and safe reply
-          preferences to route your request. On acceptance, your own
-          account/person record is linked to the assigned care team; no email
-          match or partner link is inferred. Existing contact information in
-          your person record may be reused. Nothing is published or
-          automatically emailed by this form.
-        </p>
+        <CarePrivacyNotice />
         {error && (
           <p role="alert" className={s.alert}>
             {error}
