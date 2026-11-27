@@ -49,10 +49,10 @@ export default function Navbar() {
         scrolled || open ? "bg-ink/85 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl" : "bg-gradient-to-b from-ink/70 to-transparent",
       )}
     >
-      <nav aria-label="Main" className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3.5 sm:px-8">
+      <nav aria-label="Main" className="mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-5 py-3.5 sm:px-8">
         <Link href="/" className="group flex items-center gap-3" aria-label="Heartbeat of God — home">
           <Image src="/hbg-logo-premium.png" alt="" width={1200} height={633} className="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-105" preload />
-          <span className="hidden font-headline text-lg italic text-white sm:inline">Heartbeat of God</span>
+          <span className="hidden font-headline text-lg italic text-white sm:inline xl:hidden 2xl:inline">Heartbeat of God</span>
         </Link>
 
         <ul className="hidden items-center gap-1 xl:flex">
@@ -62,7 +62,7 @@ export default function Navbar() {
                 href={l.href}
                 aria-current={isActive(l.href) ? "page" : undefined}
                 className={cn(
-                  "relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+                  "relative rounded-full px-2.5 py-2 text-sm font-medium transition-colors",
                   isActive(l.href) ? "text-gold-soft" : "text-white/75 hover:text-white",
                 )}
               >
@@ -73,6 +73,10 @@ export default function Navbar() {
           ))}
         </ul>
 
+        <div className="flex shrink-0 items-center gap-2">
+          <Link href="/login" onClick={() => setOpen(false)} className={buttonClass("light", "md", "min-h-11 px-3 text-xs sm:px-4 sm:text-sm")}>
+            PulseOS sign in
+          </Link>
         <div className="hidden items-center gap-2 xl:flex">
           <Link href="/give" className={buttonClass("ghost-light", "md")}>Give</Link>
           <Link href="/watch" className={buttonClass("gold", "md")}>
@@ -91,6 +95,7 @@ export default function Navbar() {
         >
           {open ? <X size={26} /> : <Menu size={26} />}
         </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -103,6 +108,9 @@ export default function Navbar() {
             transition={{ duration: 0.25 }}
             className="h-[calc(100dvh-64px)] overflow-y-auto border-t border-white/10 bg-ink px-5 pb-10 pt-4 xl:hidden"
           >
+            <Link href="/login" onClick={() => setOpen(false)} className={buttonClass("light", "lg", "mb-4 w-full")}>
+              PulseOS / Staff sign-in
+            </Link>
             <ul className="flex flex-col">
               {NAV_LINKS.map((l) => (
                 <li key={l.href}>
