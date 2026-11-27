@@ -74,6 +74,10 @@ vm.runInNewContext(
       ),
     /could not be saved/,
   );
+  result = { data: "synthetic-created-case", error: null };
+  assert.equal(await out.createCase("Synthetic", "premarital"), "synthetic-created-case");
+  result = { data: null, error: null };
+  await assert.rejects(() => out.createCase("Synthetic", "premarital"), /could not be confirmed/);
   stalled = true;
   await assert.rejects(() => out.saveRecord("hm_care", record, {}), /timed out/);
   supabase.auth.getUser = () => new Promise(() => {});

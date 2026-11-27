@@ -141,7 +141,7 @@ export async function saveOwnAnswer(
     );
   return result.data as StoredAnswer;
 }
-export async function createCase(name: string, lane: string): Promise<void> {
+export async function createCase(name: string, lane: string): Promise<string> {
   const result = await bounded((signal) =>
     supabase
       .rpc("hm_create_case", { case_name: name, case_lane: lane })
@@ -151,6 +151,8 @@ export async function createCase(name: string, lane: string): Promise<void> {
     throw new Error(
       "Case creation failed or is not permitted for your account.",
     );
+  if (typeof result.data !== "string") throw new Error("Case creation could not be confirmed. Refresh your journeys before retrying.");
+  return result.data;
 }
 
 export async function marriageRpc<T>(
