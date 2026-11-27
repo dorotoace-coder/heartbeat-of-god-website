@@ -17,7 +17,7 @@ import {
   type StoredRecord,
   type StoredAnswer,
 } from "@/lib/marriages/repository";
-import { questions, type Answer } from "@/lib/marriages/questions";
+import { questions, visibleQuestions, type Answer } from "@/lib/marriages/questions";
 import { marriageRpc } from "@/lib/marriages/repository";
 import s from "./marriages.module.css";
 import PeopleRecords from "./PeopleRecords";
@@ -284,7 +284,16 @@ function Answers({
   if (!participant)
     return (
       <section className={s.panel}>
-        <h2>Assigned RTT responses</h2>
+        <h2>RTT · Right Time Test</h2>
+        <details>
+          <summary>View the ten pillars and RTT questions</summary>
+          <p className={s.muted}>Question guide for the {track} track. Participants complete their own answers; this guide does not create responses.</p>
+          {[...new Set(visibleQuestions(track).map((q) => q.pillar))].map((pillar) => <section key={pillar} className={s.activity}>
+            <h3>{pillar}</h3>
+            <ul>{visibleQuestions(track).filter((q) => q.pillar === pillar).map((q) => <li key={q.key}>{q.clinical ? "Discuss health questions through an appropriate private referral. Do not enter clinical results or upload documents here." : q.prompt}</li>)}</ul>
+          </section>)}
+        </details>
+        <h3>Assigned RTT responses</h3>
         {rows.length === 0 ? (
           <p>No responses submitted.</p>
         ) : (
@@ -379,7 +388,9 @@ export default function LiveMarriageWorkspace() {
     [tab, setTab] = useState<
       RecordTable | "answers" | "journey" | "wedding_update" | "people"
     >("answers"),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [showCreate, setShowCreate] = useState(false),
+    [newLane, setNewLane] = useState("premarital");
   useEffect(() => {
     let current = true;
     loadWorkspace()
@@ -442,6 +453,65 @@ export default function LiveMarriageWorkspace() {
           <>
             {!selected ? (
               <>
+                <section className={s.panel} aria-labelledby="rtt-entry-title">
+                  <p className={s.kicker}>Preparing for marriage</p>
+                  <h2 id="rtt-entry-title">RTT · Right Time Test</h2>
+                  <p className={s.muted}>Explore readiness and prepare together through ten pillars of guided reflection. RTT opens inside an assigned premarital journey; private answers keep their existing access rules.</p>
+                  {data.cases.filter((c) => c.lane === "premarital" && data.access.some((a) => a.case_id === c.id && ["counsellor", "participant"].includes(a.scope))).map((c) => (
+                    <button key={c.id} className={s.primary} style={{ margin: 6 }} onClick={() => { setSelected(c.id); setTab("answers"); }}>Open RTT — {c.display_name}</button>
+                  ))}
+                  {data.canCreate ? <a className={s.secondary} href="#create-journey" onClick={() => { setNewLane("premarital"); setShowCreate(true); }}>Create a premarital journey for RTT</a> : <p className={s.muted}>Request care below with “Preparing for marriage”, or claim your private invitation. Your counsellor will review and link your journey before RTT opens.</p>}
+                </section>
+            {data.canCreate && (
+              <details id="create-journey" className={s.panel} open={showCreate} onToggle={(event) => setShowCreate(event.currentTarget.open)}>
+                <summary>Create a journey — authorised counsellors</summary>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (busy) return;
+                    const f = new FormData(e.currentTarget);
+                    const lane = String(f.get("lane") ?? "");
+                    setBusy(true);
+                    setError("");
+                    try {
+                      const createdId = await createCase(
+                        String(f.get("name") ?? ""),
+                        lane,
+                      );
+                      setData(await loadWorkspace());
+                      setSelected(createdId);
+                      setTab(lane === "premarital" ? "answers" : "journey");
+                      setShowCreate(false);
+                    } catch (e) {
+                      setError(
+                        e instanceof Error ? e.message : "Creation failed.",
+                      );
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  <div className={s.grid}>
+                    <label className={s.field}>
+                      Display name
+                      <input name="name" required maxLength={150} />
+                    </label>
+                    <label className={s.field}>
+                      Lane
+                      <select name="lane" value={newLane} onChange={(event) => setNewLane(event.target.value)}>
+                        <option value="premarital">Premarital · RTT</option>
+                        <option value="enrichment">Marriage enrichment</option>
+                        <option value="personal">Personal support</option>
+                        <option value="crisis">Marriage crisis</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button disabled={busy} className={s.primary}>
+                    {busy ? "Creating…" : "Create journey"}
+                  </button>
+                </form>
+              </details>
+            )}
                 <CareEnquiries
                   triage={data.canCreate}
                   onChanged={async () => setData(await loadWorkspace())}
@@ -644,52 +714,7 @@ export default function LiveMarriageWorkspace() {
                 )}
               </>
             )}
-            {data.canCreate && (
-              <details className={s.panel}>
-                <summary>Create a journey — authorised counsellors</summary>
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (busy) return;
-                    const f = new FormData(e.currentTarget);
-                    setBusy(true);
-                    setError("");
-                    try {
-                      await createCase(
-                        String(f.get("name") ?? ""),
-                        String(f.get("lane") ?? ""),
-                      );
-                      setData(await loadWorkspace());
-                    } catch (e) {
-                      setError(
-                        e instanceof Error ? e.message : "Creation failed.",
-                      );
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
-                >
-                  <div className={s.grid}>
-                    <label className={s.field}>
-                      Display name
-                      <input name="name" required maxLength={150} />
-                    </label>
-                    <label className={s.field}>
-                      Lane
-                      <select name="lane">
-                        <option value="premarital">Premarital</option>
-                        <option value="enrichment">Marriage enrichment</option>
-                        <option value="personal">Personal support</option>
-                        <option value="crisis">Marriage crisis</option>
-                      </select>
-                    </label>
-                  </div>
-                  <button disabled={busy} className={s.primary}>
-                    {busy ? "Creating…" : "Create journey"}
-                  </button>
-                </form>
-              </details>
-            )}
+
           </>
         )}
       </main>
