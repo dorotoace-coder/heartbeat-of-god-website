@@ -1,0 +1,224 @@
+export type JourneyKind =
+  | "intake"
+  | "family_visit"
+  | "prior_union"
+  | "session"
+  | "preparation"
+  | "referral"
+  | "cultural"
+  | "aftercare"
+  | "pastoral_review";
+export type JourneyEntry = {
+  id: string;
+  case_id: string;
+  kind: JourneyKind;
+  version: number;
+  body: Record<string, string | boolean | null>;
+  created_at: string;
+  updated_at: string;
+};
+export type JourneyField = {
+  key: string;
+  label: string;
+  type?: "date" | "time" | "check" | "text";
+  options?: string[];
+  required?: boolean;
+};
+export const journeyLabels: Record<JourneyKind, string> = {
+  intake: "Enquiry & background",
+  family_visit: "Introductions & family visits",
+  prior_union: "Previous unions",
+  session: "Sessions",
+  preparation: "Preparation milestones",
+  referral: "Wellbeing referrals",
+  cultural: "Cultural milestones",
+  aftercare: "Aftercare",
+  pastoral_review: "Pastoral review",
+};
+export const journeyFields: Record<JourneyKind, JourneyField[]> = {
+  intake: [
+    { key: "preferred_name", label: "Preferred name", required: true },
+    { key: "contact_method", label: "Safe reply method", required: true },
+    { key: "safe_contact", label: "Contact restrictions and preferences" },
+    { key: "language", label: "Preferred language / interpreter" },
+    { key: "accessibility", label: "Accessibility needs" },
+    {
+      key: "relationship_context",
+      label: "Relationship and family context (optional)",
+    },
+    { key: "source", label: "Enquiry source" },
+    {
+      key: "notice_version",
+      label: "Privacy notice version",
+      options: ["hm-privacy-v1"],
+    },
+    {
+      key: "acknowledged",
+      label: "Privacy notice was acknowledged by the person",
+      type: "check",
+    },
+  ],
+  family_visit: [
+    {
+      key: "visit_type",
+      label: "Visit type",
+      options: ["introduction", "family_home", "remote", "followup"],
+    },
+    { key: "venue", label: "Venue or remote channel" },
+    {
+      key: "attendees",
+      label: "Attendees and their relationship to the couple",
+    },
+    {
+      key: "permission",
+      label: "Permission for this family contact is confirmed",
+      type: "check",
+    },
+    { key: "outcome", label: "Agreed outcome" },
+  ],
+  prior_union: [
+    {
+      key: "union_type",
+      label: "Union type",
+      options: ["unknown", "customary", "religious", "statutory", "foreign"],
+    },
+    {
+      key: "union_status",
+      label: "Reported status",
+      options: [
+        "unknown",
+        "ongoing",
+        "separated",
+        "divorce_pending",
+        "divorced_reported",
+        "widowed_reported",
+        "annulled_reported",
+      ],
+    },
+    { key: "jurisdiction", label: "Country / state / jurisdiction" },
+    {
+      key: "end_date",
+      label: "Reported end date, if applicable",
+      type: "date",
+    },
+    {
+      key: "same_partner",
+      label: "This union was with the current partner",
+      type: "check",
+    },
+    {
+      key: "evidence_status",
+      label: "Evidence status",
+      options: [
+        "unknown",
+        "not_provided",
+        "received",
+        "review_pending",
+        "reviewed",
+        "not_applicable",
+      ],
+    },
+    {
+      key: "evidence_reference",
+      label: "Evidence reference — no document upload",
+    },
+  ],
+  session: [
+    {
+      key: "session_type",
+      label: "Session type",
+      options: ["individual", "joint"],
+    },
+    { key: "channel", label: "Meeting channel" },
+    { key: "attendees", label: "Attendees" },
+    { key: "attendance", label: "Attendance record" },
+    {
+      key: "arrangements_checked",
+      label: "Required session arrangements confirmed",
+      type: "check",
+    },
+    { key: "agreed_actions", label: "Agreed actions" },
+  ],
+  preparation: [
+    {
+      key: "milestone",
+      label: "Milestone",
+      options: [
+        "individual_conversation",
+        "joint_conversation",
+        "communication",
+        "finances",
+        "family_boundaries",
+        "children",
+        "spiritual_life",
+        "review",
+      ],
+    },
+    {
+      key: "evidence_reference",
+      label: "Completion evidence / session reference",
+    },
+    {
+      key: "review_reason",
+      label: "Human review, exemption or not-applicable reason",
+    },
+  ],
+  referral: [
+    { key: "purpose", label: "Referral purpose — avoid clinical details" },
+    {
+      key: "permission",
+      label: "The person agreed to this referral",
+      type: "check",
+    },
+    {
+      key: "provider_reference",
+      label: "Clinician / service reference — no clinical results",
+    },
+  ],
+  cultural: [
+    { key: "custom", label: "Couple-selected custom or expectation" },
+    {
+      key: "couple_selected",
+      label: "The couple selected this milestone",
+      type: "check",
+    },
+    { key: "outcome", label: "Agreed outcome" },
+    {
+      key: "budget_note",
+      label: "Agreed budget / gift arrangements (optional)",
+    },
+  ],
+  aftercare: [
+    { key: "channel", label: "Agreed contact channel" },
+    {
+      key: "permission",
+      label: "Permission for this follow-up is confirmed",
+      type: "check",
+    },
+    { key: "focus", label: "Agreed care focus" },
+  ],
+  pastoral_review: [
+    {
+      key: "outcome",
+      label: "Pastoral guidance",
+      options: ["continue_care", "proceed", "pause_and_build", "not_yet"],
+    },
+    { key: "review_reason", label: "Human review rationale" },
+  ],
+};
+export function releaseAllowed(kind: JourneyKind) {
+  return !["intake", "prior_union", "referral"].includes(kind);
+}
+export const journeyStatuses = [
+  "draft",
+  "planned",
+  "active",
+  "completed",
+  "cancelled",
+  "postponed",
+  "no_show",
+  "reviewed",
+  "waived",
+  "not_applicable",
+  "closed",
+];
