@@ -38,3 +38,13 @@ The privacy/consent notice and retention schedule still require ministry review 
 The third migration adds structured intake, visits, prior unions, sessions, preparation, referrals, cultural milestones, aftercare and pastoral review. Entries have revision history, optimistic versions and retry-safe creation keys. Coordinators receive only logistics projections; participants receive only explicitly released summaries, excluding confidential intake, prior-union and referral entries. History remains counsellor-only. Case progress and RTT track persist; non-counsellors never receive private next-action text. The server enforces track-specific questions.
 
 Apply all three migrations to a fresh disposable database, then run `tests/marriages/sql/journey.sql`. The Auth/REST fixture suite now covers 30 scenarios. The journey UI replaces repeated activity summaries with typed entries; the separate legacy care-note editor preserves existing text rather than silently migrating it.
+
+## Registry lifecycle increment
+
+The fourth migration adds document, authority, submission and certificate evidence with immutable revision history and retry-safe creation. Ceremony status and official-registration status are separate. The registry tracks application/authorisation/return/acknowledgement references, corrections and participant-approved updates. Deadlines require a recorded source; no statutory waiting period is hard-coded.
+
+Official verification requires a verified official certificate record, reviewed required evidence and the ceremony/submission fields. A church commemorative certificate cannot satisfy that requirement. Changing reviewed ceremony details requires reopening verification. Changing required evidence after verification reopens the record and withdraws the participant update. Evidence validity is checked at the ceremony date, avoiding a claim that subsequent licence expiry invalidates a historical marriage.
+
+Records officers and assigned counsellors can manage the register. Participants receive only the explicitly released wedding summary; they cannot read the private evidence register. Coordinators have no registry access. The system records a human review and does not contact government systems, authenticate documents, issue official certificates or authorise a ceremony.
+
+Run `tests/marriages/sql/registry.sql` after all four migrations in the disposable database. The Auth/REST suite now covers 40 scenarios. Browser checks cover evidence receipt, review, revision history and reload persistence. File uploads remain disabled; this increment stores document references only.
