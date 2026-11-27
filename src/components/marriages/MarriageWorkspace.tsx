@@ -5,6 +5,8 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { Heart, Plus, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { canAccess, initialCases, milestones, newCase, registryBlockers, sections, type MarriageCase, type Lane, type Role, type Section } from '@/lib/marriages/model';
 import s from './marriages.module.css';
+import RTTQuestionnaire from './RTTQuestionnaire';
+import type { Answer } from '@/lib/marriages/questions';
 
 function Field({ label, children, full=false }: { label: string; children: ReactNode; full?: boolean }) { return <label className={`${s.field} ${full?s.full:''}`}>{label}{children}</label>; }
 function Check({ name, label, checked=false }: { name:string; label:string; checked?:boolean }) { return <label className={s.check}><input type="checkbox" name={name} defaultChecked={checked}/><span>{label}</span></label>; }
@@ -12,6 +14,7 @@ function text(data:FormData,name:string) { return String(data.get(name)??'').tri
 
 export default function MarriageWorkspace() {
   const [cases,setCases]=useState(initialCases);
+  const [rttResponses,setRttResponses]=useState<Record<string,Record<string,Answer>>>({});
   const [selected,setSelected]=useState<string|null>(null);
   const [section,setSection]=useState<Section>('Overview');
   const [role,setRole]=useState<Role>('Counsellor');
@@ -112,12 +115,12 @@ export default function MarriageWorkspace() {
       <button className={s.primary}>Update sample referral</button>
     </form></section>; }
 
-  function renderPreparation() { if(!c)return null;return <section className={s.panel}><span className={s.kicker}>Right Time Test</span><h2>Preparation, with care</h2><p className={s.muted}>A shared view of progress. Completing a checklist does not grant permission to conduct a wedding.</p>
+  function renderPreparation() { if(!c)return null;return <><RTTQuestionnaire responses={rttResponses[c.id]??{}} onSave={responses=>setRttResponses(prev=>({...prev,[c.id]:responses}))}/><section className={s.panel}><span className={s.kicker}>Right Time Test</span><h2>Preparation, with care</h2><p className={s.muted}>A shared view of progress. Completing a checklist does not grant permission to conduct a wedding.</p>
     <div className={s.progress}><span style={{width:`${c.preparation.length/milestones.length*100}%`}}/></div>
     <p className={s.muted}>{c.preparation.length} of {milestones.length} sample milestones completed</p>
     {milestones.map(m=><label className={s.check} key={m}><input type="checkbox" checked={c.preparation.includes(m)} onChange={e=>update({preparation:e.target.checked?[...c.preparation,m]:c.preparation.filter(x=>x!==m),stage:c.stage==='Enquiry'?'Preparation':c.stage},'Preparation checklist updated')}/><span>{m}</span></label>)}
-    <div className={s.notice}><ShieldCheck size={18} style={{display:'inline',marginRight:8}}/>RTT questionnaire integration is not active. Existing answers and sealed files have not been imported.</div>
-  </section>; }
+    <div className={s.notice}><ShieldCheck size={18} style={{display:'inline',marginRight:8}}/>Existing RTT answers and sealed files have not been imported. This local questionnaire uses fictional answers only.</div>
+  </section></>; }
 
   function renderWedding() { if(!c)return null;const w=c.wedding;return <section className={s.panel}><h2>Wedding & register</h2><p className={s.muted}>Keep ceremony planning separate from verified official records.</p>
     <span className={s.badge}>{w.status}</span>
@@ -173,7 +176,7 @@ export default function MarriageWorkspace() {
           <section className={s.panel}><h2>Your story, your pace</h2><p className={s.muted}>Enquire alone or as a couple. Share your preferred language, accessibility needs and safe way to contact you. Family involvement is discussed with you.</p></section>
         </>:!c?<>
           <div className={s.stats}><div className={s.stat}><b>{activeCount}</b>Sample active journeys</div><div className={s.stat}><b>{entriesCount}</b>Planned activities</div><div className={s.stat}><b>{cases.filter(x=>x.aftercare.permission).length}</b>Agreed follow-ups</div></div>
-          {role==='Counsellor'&&<section className={s.panel}><div className={s.toolbar}><div><p className={s.kicker}>Right Time Test · RTT</p><h2>Before the vow, find the truth.</h2><p className={s.muted}>Explore the preparation workspace using a fictional couple.</p></div><button className={s.primary} onClick={()=>{const sample=cases.find(x=>x.lane==='Premarital');if(sample){open(sample.id);setSection('RTT & preparation');}}}>Open RTT preview <ArrowRight size={16}/></button></div><p className={s.muted}>Preparation checklist preview. The full RTT questionnaire and sealed answers are not connected yet.</p></section>}
+          {role==='Counsellor'&&<section className={s.panel}><div className={s.toolbar}><div><p className={s.kicker}>Right Time Test · RTT</p><h2>Before the vow, find the truth.</h2><p className={s.muted}>Explore the preparation workspace using a fictional couple.</p></div><button className={s.primary} onClick={()=>{const sample=cases.find(x=>x.lane==='Premarital');if(sample){open(sample.id);setSection('RTT & preparation');}}}>Open RTT preview <ArrowRight size={16}/></button></div><p className={s.muted}>Ten-pillar questionnaire and preparation preview. Use fictional answers only; live RTT records are not connected.</p></section>}
           <section className={s.panel}><div className={s.toolbar}><h2>Care journeys</h2>{role==='Counsellor'&&<button className={s.primary} onClick={()=>{setCreating(true);resetFeedback();}}><Plus size={16}/>Sample enquiry</button>}</div>
             <label className={s.field}>Find a sample person or couple<input className={s.search} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search names"/></label>
             <div className={s.tabs}>{['All','Premarital','Marriage enrichment','Personal support'].map(x=><button aria-pressed={filter===x} key={x} onClick={()=>setFilter(x)}>{x}</button>)}</div>
