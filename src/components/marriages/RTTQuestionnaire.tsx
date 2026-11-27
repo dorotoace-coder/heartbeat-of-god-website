@@ -4,8 +4,8 @@ import { questions, visibleQuestions, type Track, type Answer } from '@/lib/marr
 import s from './marriages.module.css';
 
 type Responses = Record<string, Answer>;
-export default function RTTQuestionnaire({ responses, onSave, live=false }: { responses:Responses; onSave:(responses:Responses)=>void|Promise<void>; live?:boolean }) {
-  const [track,setTrack]=useState<Track>('discernment');
+export default function RTTQuestionnaire({ responses, onSave, live=false, initialTrack='discernment' }: { responses:Responses; onSave:(responses:Responses)=>void|Promise<void>; live?:boolean;initialTrack?:Track }) {
+  const [track,setTrack]=useState<Track>(initialTrack);
   const [pillar,setPillar]=useState(questions[0].pillar);
   const [draft,setDraft]=useState(responses);
   const [saved,setSaved]=useState(false);
@@ -25,7 +25,7 @@ export default function RTTQuestionnaire({ responses, onSave, live=false }: { re
     <p className={s.kicker}>RTT · Right Time Test</p><h2>Before the vow, find the truth.</h2>
     <p className={s.muted}>{live?'Your responses are saved only when you choose Save answers. Sealed answers are limited to you and the assigned counsellor.':'Explore the existing ten pillars. Use invented answers only. Responses remain in this page’s memory and disappear on reload.'}</p>
     <div className={s.grid}>
-      <label className={s.field}>Your track<select value={track} onChange={e=>{setTrack(e.target.value as Track);setSaved(false);}}><option value="discernment">Discernment — Should we?</option><option value="preparation">Preparation</option></select></label>
+      <label className={s.field}>Your track<select disabled={live} value={track} onChange={e=>{setTrack(e.target.value as Track);setSaved(false);}}><option value="discernment">Discernment — Should we?</option><option value="preparation">Preparation</option></select></label>
       <label className={s.field}>Pillar<select value={pillar} onChange={e=>{setPillar(e.target.value);setSaved(false);}}>{pillars.map(p=><option key={p}>{p}</option>)}</select></label>
     </div>
     <p className={s.muted}>{answered} of {total} reflection prompts answered · {live?'Four health topics use referral guidance.':'Four health topics use referral prompts in this preview.'}</p>

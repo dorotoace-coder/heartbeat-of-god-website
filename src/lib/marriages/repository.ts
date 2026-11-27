@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import type { Answer } from './questions';
 export type RecordTable = 'hm_care'|'hm_registry'|'hm_logistics';
 export type StoredRecord = {case_id:string;payload:Record<string,unknown>;version:number};
-export type CaseSummary = {id:string;display_name:string;lane:string};
+export type CaseSummary = {id:string;display_name:string;lane:string;status:string;track:'discernment'|'preparation';next_action:string;next_due:string|null;none_reason:string;version:number};
 export type Access = {case_id:string;scope:'counsellor'|'records'|'coordinator'|'participant'};
 export type StoredAnswer = {case_id:string;author_id:string;question_key:string;answer:string;visibility:'sealed'|'shared';version:number};
 async function bounded<T>(work:(signal:AbortSignal)=>PromiseLike<T>):Promise<T> {
@@ -12,11 +12,12 @@ async function bounded<T>(work:(signal:AbortSignal)=>PromiseLike<T>):Promise<T> 
 export async function loadWorkspace() {
  const {data:{user},error}=await supabase.auth.getUser();
  if(error||!user)throw new Error('Sign in to open this workspace.');
- const [cases,access]=await Promise.all([
+ const [cases,access,capability]=await Promise.all([
  bounded(signal=>supabase.rpc('hm_list_cases').abortSignal(signal)),
- bounded(signal=>supabase.rpc('hm_my_access').abortSignal(signal))]);
- if(cases.error||access.error)throw new Error('The marriage workspace is unavailable. No records have been loaded.');
- return {userId:user.id,cases:cases.data as CaseSummary[],access:access.data as Access[]};
+ bounded(signal=>supabase.rpc('hm_my_access').abortSignal(signal)),
+ bounded(signal=>supabase.rpc('hm_can_create').abortSignal(signal))]);
+ if(cases.error||access.error||capability.error)throw new Error('The marriage workspace is unavailable. No records have been loaded.');
+ return {userId:user.id,canCreate:capability.data===true,cases:cases.data as CaseSummary[],access:access.data as Access[]};
 }
 export async function loadRecord(table:RecordTable,caseId:string):Promise<StoredRecord> {
  const result=await bounded(signal=>supabase.rpc('hm_get_record',{target:caseId,kind:table}).abortSignal(signal));

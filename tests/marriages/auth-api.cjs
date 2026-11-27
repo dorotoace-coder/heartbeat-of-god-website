@@ -9,6 +9,7 @@ function pass(name){count++;console.log(`PASS ${name}`);}
 async function call(who,name,args={},expected=200){const r=await fetch(`${env.API_URL}/rest/v1/rpc/${name}`,{method:'POST',signal:AbortSignal.timeout(15000),headers:{apikey:env.ANON_KEY,Authorization:`Bearer ${tokens[who]??env.ANON_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(args)});assert.equal(r.status,expected,`${name} HTTP status`);return r.status===204?null:await r.json();}
 (async()=>{
  for(const [name,u]of Object.entries(users)){const r=await fetch(`${env.API_URL}/auth/v1/token?grant_type=password`,{method:'POST',signal:AbortSignal.timeout(15000),headers:{apikey:env.ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:u.email,password:u.password})});assert.equal(r.status,200);tokens[name]=(await r.json()).access_token;}pass('six real local Auth sessions');
+ assert.equal(await call('counsellor','hm_can_create'),true);assert.equal(await call('partnera','hm_can_create'),false);pass('creation capability is explicit');
  const id=await call('counsellor','hm_create_case',{case_name:'Synthetic API regression',case_lane:'premarital'});
  const codeA=await call('counsellor','hm_issue_invite',{target:id});await call('partnera','hm_claim_invite',{code:codeA},204);
  assert.ok(!(await call('partnera','hm_list_cases')).some(c=>c.id===id));pass('claim grants no access');
@@ -37,6 +38,20 @@ async function call(who,name,args={},expected=200){const r=await fetch(`${env.AP
  const direct=await fetch(`${env.API_URL}/rest/v1/hm_answers?select=*`,{headers:{apikey:env.ANON_KEY,Authorization:`Bearer ${tokens.partnera}`}});assert.equal(direct.status,403);pass('direct table bypass denied');
  await call('partnera','hm_request_right',{target:id,request_kind:'deletion'});assert.equal((await call('partnerb','hm_rights_requests',{target:id})).length,0);pass('rights request isolated from partner');
  await call('counsellor','hm_retention',{target:id,review_date:'2027-01-01',hold:true,rationale:'Synthetic review'});pass('retention hold persisted');
+ const requestKey=crypto.randomUUID(),visitBody={title:'Synthetic visit',visit_type:'introduction',status:'planned',date:'2026-12-10',timezone:'Africa/Lagos',permission:true,private_note:'PRIVATE visit note'};
+ await call('counsellor','hm_journey_save',{target:id,entry_id:null,event_kind:'family_visit',expected_version:null,body:{...visitBody,permission:false}},400);pass('structured visit requires permission');
+ const visit=await call('counsellor','hm_journey_save',{target:id,entry_id:null,event_kind:'family_visit',expected_version:null,body:visitBody,request_key:requestKey});
+ const retry=await call('counsellor','hm_journey_save',{target:id,entry_id:null,event_kind:'family_visit',expected_version:null,body:visitBody,request_key:requestKey});assert.equal(visit.id,retry.id);pass('replayed visit save is idempotent');
+ await call('counsellor','hm_journey_save',{target:id,entry_id:visit.id,event_kind:'family_visit',expected_version:1,body:{...visitBody,status:'completed'}});
+ assert.equal((await call('counsellor','hm_journey_history',{target:id,entry_id:visit.id})).length,2);pass('structured amendments preserve versions');
+ await call('counsellor','hm_journey_save',{target:id,entry_id:visit.id,event_kind:'family_visit',expected_version:1,body:visitBody},409);pass('stale structured edit rejected');
+ await call('counsellor','hm_journey_save',{target:id,entry_id:null,event_kind:'session',expected_version:null,body:{title:'Private purpose',session_type:'joint',status:'planned',date:'2026-12-11',timezone:'Africa/Lagos',channel:'Online',private_note:'PRIVATE session note',public_summary:'Agreed next session',released:true}});
+ const participantView=await call('partnerb','hm_journey_list',{target:id,event_kind:'session'});assert.equal(participantView.length,1);assert.ok(!JSON.stringify(participantView).includes('PRIVATE'));assert.ok(!JSON.stringify(participantView).includes('Private purpose'));pass('participant sees only released session summary');
+ const coordinatorView=await call('coordinator','hm_journey_list',{target:id,event_kind:'session'});assert.ok(!JSON.stringify(coordinatorView).includes('PRIVATE'));assert.ok(!JSON.stringify(coordinatorView).includes('public_summary'));pass('coordinator receives logistics projection only');
+ await call('records','hm_journey_list',{target:id,event_kind:'prior_union'},403);pass('records role cannot read confidential union records');
+ await call('counsellor','hm_case_progress',{target:id,expected_version:1,new_status:'active',new_track:'preparation',action:'PRIVATE care action',due:'2026-12-15',no_action_reason:''});
+ const ownCase=(await call('partnerb','hm_list_cases')).find(c=>c.id===id);assert.equal(ownCase.track,'preparation');assert.equal(ownCase.next_action,'');pass('track persists while private next action stays hidden');
+ await call('partnera','hm_save_answer',{target:id,key:'decision_1',body:'Outside current track',share:'sealed'},400);pass('server rejects hidden-track answers');
  const ownExport=await call('partnera','hm_export_own',{target:id});assert.ok(ownExport.answers.every(a=>a.author_id===users.partnera.id));assert.equal(ownExport.answers.length,2);pass('own export excludes other participants');
  await call('counsellor','hm_revoke_participant',{target:id,person:users.partnera.id},204);await call('partnera','hm_get_answers',{target:id},403);pass('revocation effective over REST');
  const audit=await call('counsellor','hm_audit',{target:id});assert.ok(audit.some(a=>a.operation==='read'));assert.ok(audit.some(a=>a.object_name==='consent'));pass('read and consent audit events');
