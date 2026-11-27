@@ -28,13 +28,13 @@ export default function RTTQuestionnaire({ responses, onSave, live=false }: { re
       <label className={s.field}>Your track<select value={track} onChange={e=>{setTrack(e.target.value as Track);setSaved(false);}}><option value="discernment">Discernment — Should we?</option><option value="preparation">Preparation</option></select></label>
       <label className={s.field}>Pillar<select value={pillar} onChange={e=>{setPillar(e.target.value);setSaved(false);}}>{pillars.map(p=><option key={p}>{p}</option>)}</select></label>
     </div>
-    <p className={s.muted}>{answered} of {total} reflection prompts answered · Four health topics use referral prompts in this preview.</p>
+    <p className={s.muted}>{answered} of {total} reflection prompts answered · {live?'Four health topics use referral guidance.':'Four health topics use referral prompts in this preview.'}</p>
     <div className={s.progress}><span style={{width:`${answered/total*100}%`}}/></div>
     {!live&&<button className={s.secondary} onClick={()=>setPartnerView(v=>!v)}>{partnerView?'Return to own answers':'Preview what a partner could see'}</button>}
     {partnerView&&<div className={s.notice}>Interface simulation only. This displays explicitly shared answers; it is not a test of production permissions.</div>}
     <h3 style={{marginTop:24}}>{pillar}</h3>
     {current.map(q=>{
-      if(q.clinical) return partnerView?null:<div className={s.notice} key={q.key}><strong>{({health_1:'Genotype / genetic counselling',health_2:'Blood group / Rhesus questions',health_3:'Screening and sexual health',health_4:'Physical and mental wellbeing'} as Record<string,string>)[q.key]}</strong><p>Discuss this topic with a qualified clinician. Use the Wellbeing section to record agreed referral arrangements. Results and documents are not collected in this preview.</p></div>;
+      if(q.clinical) return partnerView?null:<div className={s.notice} key={q.key}><strong>{({health_1:'Genotype / genetic counselling',health_2:'Blood group / Rhesus questions',health_3:'Screening and sexual health',health_4:'Physical and mental wellbeing'} as Record<string,string>)[q.key]}</strong><p>Discuss this topic with a qualified clinician. Use the Wellbeing section to record agreed referral arrangements. Results and documents are not collected here.</p></div>;
       const a=draft[q.key]??{text:'',visibility:q.visibility};
       if(partnerView) return a.visibility==='shared'&&a.text.trim()?<div className={s.activity} key={q.key}><h3>{q.prompt}</h3><p>{a.text}</p><span className={s.badge}>Shared by participant</span></div>:null;
       return <div key={q.key} className={s.activity}>
