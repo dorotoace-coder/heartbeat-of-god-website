@@ -67,7 +67,7 @@ export default function MarriageWorkspace() {
       <p className={s.muted}>Each person has their own record. Shared progress and private conversations remain separate in the proposed service.</p>
       {role==='Counsellor'&&<div className={s.controls}>
         <button className={s.secondary} onClick={()=>update({stage:c.stage==='Closed'?'Enquiry':'Closed'},c.stage==='Closed'?'Sample case reopened':'Sample case closed')}>{c.stage==='Closed'?'Reopen sample case':'Close sample case'}</button>
-        <button className={s.primary} onClick={()=>setSection('RTT & preparation')}>Review preparation <ArrowRight size={16}/></button>
+        <button className={s.primary} onClick={()=>setSection('RTT & preparation')}>Open RTT & preparation <ArrowRight size={16}/></button>
       </div>}
     </section>
     {role==='Counsellor'&&<section className={s.panel}><h2>Activity</h2><p className={s.muted}>An in-memory demonstration of the case timeline.</p>{c.history.map((h,i)=><div className={s.activity} key={`${i}-${h}`}>{h}</div>)}</section>}
@@ -173,6 +173,7 @@ export default function MarriageWorkspace() {
           <section className={s.panel}><h2>Your story, your pace</h2><p className={s.muted}>Enquire alone or as a couple. Share your preferred language, accessibility needs and safe way to contact you. Family involvement is discussed with you.</p></section>
         </>:!c?<>
           <div className={s.stats}><div className={s.stat}><b>{activeCount}</b>Sample active journeys</div><div className={s.stat}><b>{entriesCount}</b>Planned activities</div><div className={s.stat}><b>{cases.filter(x=>x.aftercare.permission).length}</b>Agreed follow-ups</div></div>
+          {role==='Counsellor'&&<section className={s.panel}><div className={s.toolbar}><div><p className={s.kicker}>Right Time Test · RTT</p><h2>Before the vow, find the truth.</h2><p className={s.muted}>Explore the preparation workspace using a fictional couple.</p></div><button className={s.primary} onClick={()=>{const sample=cases.find(x=>x.lane==='Premarital');if(sample){open(sample.id);setSection('RTT & preparation');}}}>Open RTT preview <ArrowRight size={16}/></button></div><p className={s.muted}>Preparation checklist preview. The full RTT questionnaire and sealed answers are not connected yet.</p></section>}
           <section className={s.panel}><div className={s.toolbar}><h2>Care journeys</h2>{role==='Counsellor'&&<button className={s.primary} onClick={()=>{setCreating(true);resetFeedback();}}><Plus size={16}/>Sample enquiry</button>}</div>
             <label className={s.field}>Find a sample person or couple<input className={s.search} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search names"/></label>
             <div className={s.tabs}>{['All','Premarital','Marriage enrichment','Personal support'].map(x=><button aria-pressed={filter===x} key={x} onClick={()=>setFilter(x)}>{x}</button>)}</div>
