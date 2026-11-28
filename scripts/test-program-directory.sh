@@ -31,6 +31,7 @@ run link_existing followup-link.sql -v precreate=1
 run person_links person-links.sql
 run person_records person-records.sql
 run contact_permissions contact-permissions.sql
+run staff_invitations staff-invitations.sql
 
 # Two simultaneous saves for one contact: the second must be refused with HB001.
 db="${prefix}_link_fresh"

@@ -18,10 +18,12 @@ import TreasurySummary from "@/components/admin/TreasurySummary";
 import MemberHome from "@/components/admin/MemberHome";
 import MemberProfile from "@/components/admin/MemberProfile";
 import PastoratePilot from "./PastoratePilot";
+import InvitationAccept from "./InvitationAccept";
 
 type Workspace = "pastor" | "media" | "attendance" | "treasury" | "school" | "evangelism";
 function WorkspaceContent() {
-  const requested = useSearchParams().get("view");
+  const params = useSearchParams();
+  const requested = params.get("view");
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [identityReady, setIdentityReady] = useState(false);
   const [message, setMessage] = useState("Opening your workspace…");
@@ -33,7 +35,8 @@ function WorkspaceContent() {
       const { data } = await supabase.auth.getUser();
       if (!current) return;
       if (!data.user) {
-        window.location.replace("/login?callbackUrl=%2Fadmin");
+        // Keep the page (for example an invitation link) so sign-in can return to it.
+        window.location.replace(`/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`);
         return;
       }
       const fullName = data.user.user_metadata?.full_name;
@@ -51,6 +54,7 @@ function WorkspaceContent() {
     return () => { current = false; };
   }, []);
   if (!identityReady) return <p role="status" className="p-8">{requested === "help" ? "Opening Pulse OS Help…" : "Opening training…"}</p>;
+  if (requested === "invitation") return <InvitationAccept token={params.get("token") ?? ""} />;
   if (requested === "help") return <main id="main-content" className="mx-auto max-w-7xl bg-[#f5f2f7] p-4 sm:p-8"><PulseHelp /></main>;
   if (requested === "profile") return <MemberProfile />;
   if (workspace === "pastor") return <PastorDashboard />;
