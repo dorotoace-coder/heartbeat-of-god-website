@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { summariseLinks as summarisePersonLinks, type LinkedPerson } from "@/lib/people/links";
+import PersonLinkPanel from "./PersonLinkPanel";
 import { describeEvidence, filterDirectory, linkStatus, refreshProblem, relationshipLabels, summariseLinks, type DirectoryContact, type DirectoryLink } from "@/lib/followup/directory";
 
 export type ChosenContact = { importKey: string | null; name: string; phone: string };
@@ -20,19 +22,30 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
   const [revision, setRevision] = useState(0);
   const [links, setLinks] = useState<Record<string, DirectoryLink>>({});
   const [linkProblem, setLinkProblem] = useState(false);
+  const [people, setPeople] = useState<Record<string, LinkedPerson>>({});
+  const [peopleProblem, setPeopleProblem] = useState(false);
   useEffect(() => {
     let active = true;
     async function load() {
       setRefreshing(true);
       try {
-        const [result, history] = await Promise.all([
+        const [result, history, personLinks] = await Promise.all([
           supabase.rpc("program_directory_current"),
           supabase.from("ministry_followup_requests").select("directory_import_key,followup_date,completed_at,closure_outcome")
             .not("directory_import_key", "is", null).order("created_at", { ascending: false }).limit(1000),
+          supabase.from("person_source_links").select("id,person_id,source_key")
+            .eq("source_type", "directory_contact").is("unlinked_at", null).limit(1000),
         ]);
         if (!active) return;
         setLinkProblem(!!history.error);
         if (!history.error) setLinks(summariseLinks(history.data ?? []));
+        let names: Record<string, string> = {};
+        const personIds = [...new Set((personLinks.data ?? []).map(link => link.person_id))];
+        const named = personIds.length ? await supabase.from("congregation_people").select("id,full_name").in("id", personIds) : { data: [], error: null };
+        if (!active) return;
+        if (!named.error) names = Object.fromEntries((named.data ?? []).map(person => [person.id, person.full_name]));
+        setPeopleProblem(!!personLinks.error || !!named.error);
+        if (!personLinks.error) setPeople(summarisePersonLinks(personLinks.data ?? [], names));
         if (result.error) { setProblem(refreshProblem(result.status, result.error.code)); return; }
         setContacts(result.data ?? []); setUpdatedAt(new Date()); setProblem("");
       } catch { if (active) setProblem(refreshProblem(0)); }
@@ -62,6 +75,7 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
     </div>
     {problem && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{problem}{contacts && time ? ` Showing results from ${time}.` : ""}</p>}
     {linkProblem && <p className="text-sm text-amber-900">Follow-up status could not load.</p>}
+    {peopleProblem && <p className="text-sm text-amber-900">Linked people could not load.</p>}
     {!contacts ? (!problem && <p role="status">Loading program contacts…</p>) : <>
       <p role="status" className="text-sm text-slate-600">{visible.length} matching contacts</p>
       <ul className="space-y-3">{visible.map(contact => { const status = linkStatus(links[contact.import_key]); return <li key={contact.import_key} className="rounded-xl border border-purple-100 p-4">
@@ -72,6 +86,7 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
         <ul className="mt-1 text-sm">{describeEvidence(contact).map(line => <li key={line}>{line}</li>)}</ul>
         {status.text && <p className="mt-1 text-sm font-semibold">{status.text}</p>}
         {contact.relationship === "review" ? <p className="mt-2 text-sm text-amber-900">Contact details need review before follow-up.</p> : status.canPrepare && <button type="button" onClick={() => onChoose({ importKey: contact.import_key, name: contact.display_name, phone: contact.phone_original })} className="mt-3 min-h-11 rounded-lg border border-purple-200 px-4">Prepare follow-up</button>}
+        {!peopleProblem && <PersonLinkPanel contactKey={contact.import_key} contactName={contact.display_name} linked={people[contact.import_key]} onChanged={() => setRevision(value => value + 1)} />}
       </li>; })}</ul>
       {!visible.length && <p>No matching contacts.</p>}
     </>}
