@@ -10,6 +10,7 @@ import { AdminContext } from "@/lib/permissions";
 import type { UserRole } from "@/lib/types";
 import PastorOverview from "./PastorOverview";
 import TrainingHub from "./TrainingHub";
+import PastoratePilot from "./PastoratePilot";
 import PrivateMediaVault from "./PrivateMediaVault";
 import PeopleDirectory from "./PeopleDirectory";
 import SchoolAdministration from "./SchoolAdministration";
@@ -27,7 +28,7 @@ import LiveMeetings from "./LiveMeetings";
 import DepartmentsView from "./DepartmentsView";
 
 const navigation = [
-  ["overview", "Overview"], ["profile", "My profile"], ["help", "Pulse OS Help"], ["live", "Live Church"], ["training", "Training"], ["attendance", "Attendance"], ["members", "People"], ["departments", "Departments"],
+  ["overview", "Overview"], ["profile", "My profile"], ["help", "Pulse OS Help"], ["live", "Live Church"], ["training", "Training"], ["pastorate", "Pastorate"], ["attendance", "Attendance"], ["members", "People"], ["departments", "Departments"],
   ["treasury", "Treasury"], ["media", "Media"], ["school", "Foundation School"],
   ["followup", "Follow-up"], ["evangelism", "Evangelism"], ["events", "Events"], ["inquiries", "Intake Inbox"],
   ["dailyword", "Daily Word"], ["prayerwall", "Prayer Wall"],
@@ -57,6 +58,7 @@ export default function PastorDashboard() {
   function content() {
     switch (view) {
       case "live": return <LiveMeetings />;
+      case "pastorate": return <PastoratePilot />;
       case "training": return <TrainingHub />;
       case "attendance": return <ServiceAttendance />;
       case "members": return <PeopleDirectory />;

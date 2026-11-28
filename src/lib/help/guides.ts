@@ -12,6 +12,22 @@ export const startSteps = [
   "Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.",
 ];
 export const pulseGuides: PulseGuide[] = [
+  {
+    id: "worker-conduct",
+    title: "Preparing to serve on Sunday",
+    audience: "Workers and assigned platform team",
+    where: "Pulse OS Help",
+    summary: "Confirm your duty, prepare for worship and follow the service cues.",
+    steps: [
+      "Confirm your assignment, arrival time and supervisor before Sunday.",
+      "Wear clean, modest and practical clothing suited to your duty. Ask the lead about any uniform or platform dress guidance.",
+      "If assigned a platform duty, prepare your contribution, check pronunciations and agree your time and closing cue.",
+      "Ask permission before sharing a testimony and take sensitive matters to the responsible lead in private.",
+      "After service, hand over any open tasks and agree follow-up with your supervisor.",
+    ],
+    confirmation: "Your lead confirms your duty and any rehearsal or follow-up.",
+    recovery: "If you expect to arrive late or cannot serve, contact the coordinator so the backup can prepare.",
+  },
 {
   "id": "worker-checkin",
   "title": "Worker service check-in",
