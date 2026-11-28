@@ -45,7 +45,7 @@ const linkErrors: Record<string, string> = {
 /** Message for a failed link or unlink, and whether the request can be retried unchanged. */
 export function linkProblem(code: string | null | undefined, status: number) {
   if (status === 0) return { message: "Not saved. Check your connection and try again.", retry: true, refresh: false };
-  const message = (code && linkErrors[code]) || "Not saved. Try again in a moment.";
+  const message = (code && (linkErrors[code] ?? permissionErrors[code])) || "Not saved. Try again in a moment.";
   return { message, retry: status >= 500 || status === 408 || status === 429, refresh: !!code && /^HB01[1-7]$/.test(code) && code !== "HB014" };
 }
 
@@ -65,3 +65,33 @@ export const recordKindLabels: Record<string, string> = {
   mta_registration: "Mighty Turn Around registration",
   followup: "Follow-up",
 };
+
+export const permissionPurposes = [
+  ["event_invitation", "Event invitations"],
+  ["ministry_news", "Ministry news"],
+  ["greetings", "Greetings and encouragement"],
+] as const;
+export type PermissionRow = { address: string; purpose: string; decision: "granted" | "withdrawn" | null; method: string | null; recorded_at: string | null; suppressed: boolean; allowed: boolean };
+export type PermissionState = "allowed" | "withdrawn" | "unknown" | "suppressed";
+
+/** Address → purpose → state. Unknown means nobody has asked; it is never treated as permission. */
+export function summarisePermissions(rows: PermissionRow[]) {
+  const result: Record<string, Record<string, PermissionState>> = {};
+  for (const row of rows) {
+    const state: PermissionState = row.suppressed ? "suppressed" : row.allowed ? "allowed" : row.decision === "withdrawn" ? "withdrawn" : "unknown";
+    (result[row.address] ??= {})[row.purpose] = state;
+  }
+  return result;
+}
+
+export const permissionStateLabels: Record<PermissionState, string> = {
+  allowed: "agreed", withdrawn: "asked to stop", unknown: "not asked", suppressed: "blocked (opted out of all ministry email)",
+};
+
+const permissionErrors: Record<string, string> = {
+  HB021: "Check the email address and choose at least one type of message.",
+  HB022: "Record the question you asked, how they agreed, and confirm you checked who they are.",
+};
+export function permissionProblem(code: string | null | undefined) {
+  return (code && permissionErrors[code]) || null;
+}

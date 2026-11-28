@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { summariseLinks as summarisePersonLinks, type LinkedPerson } from "@/lib/people/links";
+import { summariseLinks as summarisePersonLinks, summarisePermissions, type LinkedPerson, type PermissionState } from "@/lib/people/links";
 import PersonLinkPanel from "./PersonLinkPanel";
+import ContactPermissionPanel from "./ContactPermissionPanel";
 import { describeEvidence, filterDirectory, linkStatus, refreshProblem, relationshipLabels, summariseLinks, type DirectoryContact, type DirectoryLink } from "@/lib/followup/directory";
 
 export type ChosenContact = { importKey: string | null; name: string; phone: string };
@@ -24,6 +25,7 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
   const [linkProblem, setLinkProblem] = useState(false);
   const [people, setPeople] = useState<Record<string, LinkedPerson>>({});
   const [peopleProblem, setPeopleProblem] = useState(false);
+  const [permissions, setPermissions] = useState<Record<string, Record<string, PermissionState>> | null>(null);
   useEffect(() => {
     let active = true;
     async function load() {
@@ -48,6 +50,9 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
         if (!personLinks.error) setPeople(summarisePersonLinks(personLinks.data ?? [], names));
         if (result.error) { setProblem(refreshProblem(result.status, result.error.code)); return; }
         setContacts(result.data ?? []); setUpdatedAt(new Date()); setProblem("");
+        const addresses = [...new Set((result.data ?? []).map((contact: DirectoryContact) => contact.email))];
+        const status = addresses.length ? await supabase.rpc("permission_status", { p_addresses: addresses }) : { data: [], error: null };
+        if (active) setPermissions(status.error ? null : summarisePermissions(status.data ?? []));
       } catch { if (active) setProblem(refreshProblem(0)); }
       finally { if (active) setRefreshing(false); }
     }
@@ -86,6 +91,7 @@ export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (
         <ul className="mt-1 text-sm">{describeEvidence(contact).map(line => <li key={line}>{line}</li>)}</ul>
         {status.text && <p className="mt-1 text-sm font-semibold">{status.text}</p>}
         {contact.relationship === "review" ? <p className="mt-2 text-sm text-amber-900">Contact details need review before follow-up.</p> : status.canPrepare && <button type="button" onClick={() => onChoose({ importKey: contact.import_key, name: contact.display_name, phone: contact.phone_original })} className="mt-3 min-h-11 rounded-lg border border-purple-200 px-4">Prepare follow-up</button>}
+        <ContactPermissionPanel address={contact.email} personId={people[contact.import_key]?.personId} states={permissions ? permissions[contact.email] ?? {} : undefined} onChanged={() => setRevision(value => value + 1)} />
         {!peopleProblem && <PersonLinkPanel contactKey={contact.import_key} contactName={contact.display_name} linked={people[contact.import_key]} onChanged={() => setRevision(value => value + 1)} />}
       </li>; })}</ul>
       {!visible.length && <p>No matching contacts.</p>}

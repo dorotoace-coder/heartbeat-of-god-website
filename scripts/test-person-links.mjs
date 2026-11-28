@@ -6,7 +6,7 @@ const exports = {};
 runInNewContext(ts.transpileModule(readFileSync('src/lib/people/links.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, { exports });
-const { summariseLinks, describeReasons, linkProblem, isUnconfirmedDirectoryPerson, offerForSchool, recordKindLabels } = exports;
+const { summariseLinks, describeReasons, linkProblem, isUnconfirmedDirectoryPerson, offerForSchool, recordKindLabels, summarisePermissions, permissionProblem } = exports;
 
 const links = summariseLinks([
   { id: 'l1', person_id: 'p1', source_key: 'k1' }, { id: 'l2', person_id: 'p1', source_key: 'k2' },
@@ -37,4 +37,11 @@ assert.equal(linkProblem('HB017', 400).refresh, true);
 assert.match(linkProblem('HB017', 400).message, /earlier details/);
 assert.equal(recordKindLabels.mta_registration, 'Mighty Turn Around registration');
 assert.equal(recordKindLabels.member_profile, 'Member profile');
-console.log('PASS: link summaries, reasons, error handling, membership badge, school list rule, record labels');
+const row = (purpose, extra) => ({ address: 'a@example.test', purpose, decision: null, method: null, recorded_at: null, suppressed: false, allowed: false, ...extra });
+const states = summarisePermissions([row('event_invitation', { decision: 'granted', allowed: true }), row('ministry_news', { decision: 'withdrawn' }), row('greetings')]);
+assert.deepEqual({ ...states['a@example.test'] }, { event_invitation: 'allowed', ministry_news: 'withdrawn', greetings: 'unknown' });
+assert.equal(summarisePermissions([row('greetings', { decision: 'granted', suppressed: true })])['a@example.test'].greetings, 'suppressed');
+assert.match(permissionProblem('HB022'), /question you asked/);
+assert.equal(permissionProblem('HB011'), null);
+assert.match(linkProblem('HB021', 400).message, /email address/);
+console.log('PASS: link summaries, reasons, error handling, membership badge, school list rule, record labels, permission states');
