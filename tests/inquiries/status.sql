@@ -59,7 +59,7 @@ select public.t_as(1,'pastor');
 select public.t_check('bug reproduced: owner update reaches no row before the migration', public.t_update(101,'reviewed')=0);
 reset role;
 
-\ir ../../supabase/migrations/20261128060000_inquiry_status_update.sql
+\ir ../../supabase/migrations/20261128045459_inquiry_status_update.sql
 
 set role authenticated;
 select public.t_as(1,'pastor');
