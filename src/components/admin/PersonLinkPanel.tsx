@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { describeReasons, evidenceOptions, linkProblem, type LinkedPerson } from "@/lib/people/links";
+import { describeReasons, evidenceOptions, type LinkedPerson } from "@/lib/people/links";
+import { useSafeSave } from "@/lib/people/useSafeSave";
+import RegistrationLinks from "./RegistrationLinks";
 
 type Candidate = { person_id: string; full_name: string; reasons: string[]; active_links: number };
 const button = "min-h-11 rounded-lg border border-purple-200 px-4 disabled:opacity-50";
@@ -12,25 +14,7 @@ export default function PersonLinkPanel({ contactKey, contactName, linked, onCha
   contactKey: string; contactName: string; linked?: LinkedPerson; onChanged: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [request, setRequest] = useState<{ id: string; signature: string } | null>(null);
-
-  async function run(signature: string, call: (id: string) => PromiseLike<{ error: { code?: string } | null; status: number }>) {
-    if (request && request.signature !== signature) { setMessage("The last save was not confirmed. Retry it unchanged, or refresh contacts before changing it."); return false; }
-    const attempt = request ?? { id: crypto.randomUUID(), signature };
-    setRequest(attempt); setBusy(true); setMessage("");
-    try {
-      const result = await call(attempt.id);
-      if (!result.error) { setRequest(null); setOpen(false); onChanged(); return true; }
-      const problem = linkProblem(result.error.code, result.status);
-      if (!problem.retry) setRequest(null);
-      setMessage(problem.message);
-      if (problem.refresh) onChanged();
-    } catch { setMessage(linkProblem(null, 0).message); }
-    finally { setBusy(false); }
-    return false;
-  }
+  const { run, busy, message, setMessage } = useSafeSave(() => { setOpen(false); onChanged(); }, onChanged);
 
   if (linked) return <div className="mt-3 rounded-lg bg-purple-50 p-3 text-sm">
     <p className="font-semibold">Linked to {linked.name}</p>
@@ -39,6 +23,7 @@ export default function PersonLinkPanel({ contactKey, contactName, linked, onCha
       <UnlinkForm busy={busy} onCancel={() => setOpen(false)} onSubmit={reason =>
         run(`unlink:${linked.linkId}:${reason}`, () => supabase.rpc("person_unlink", { p_link: linked.linkId, p_reason: reason }))} />}
     {message && <p role="alert" className="mt-2 text-amber-900">{message}</p>}
+    <RegistrationLinks contactKey={contactKey} person={linked} />
   </div>;
 
   return <div className="mt-3">
