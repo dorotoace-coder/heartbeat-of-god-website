@@ -39,13 +39,14 @@ const linkErrors: Record<string, string> = {
   HB014: "Confirm you checked their identity and choose at least one piece of evidence.",
   HB015: "That link no longer exists. The list has been refreshed.",
   HB016: "That link was already removed. The list has been refreshed.",
+  HB017: "Those earlier details are no longer available. The list has been refreshed.",
   "42501": "Only the owner account can link or unlink contacts.",
 };
 /** Message for a failed link or unlink, and whether the request can be retried unchanged. */
 export function linkProblem(code: string | null | undefined, status: number) {
   if (status === 0) return { message: "Not saved. Check your connection and try again.", retry: true, refresh: false };
   const message = (code && linkErrors[code]) || "Not saved. Try again in a moment.";
-  return { message, retry: status >= 500 || status === 408 || status === 429, refresh: !!code && /^HB01[1-6]$/.test(code) && code !== "HB014" };
+  return { message, retry: status >= 500 || status === 408 || status === 429, refresh: !!code && /^HB01[1-7]$/.test(code) && code !== "HB014" };
 }
 
 /** People from the program directory show as unconfirmed until a reviewed member profile says otherwise. */
@@ -57,3 +58,10 @@ export function isUnconfirmedDirectoryPerson(origin: PersonOrigin | undefined, r
 export function offerForSchool(person: { origin?: PersonOrigin; requests_school?: boolean }, reviewedMember: boolean) {
   return !isUnconfirmedDirectoryPerson(person.origin, reviewedMember) || !!person.requests_school;
 }
+
+export const recordKindLabels: Record<string, string> = {
+  directory_contact: "Program contact",
+  member_profile: "Member profile",
+  mta_registration: "Mighty Turn Around registration",
+  followup: "Follow-up",
+};

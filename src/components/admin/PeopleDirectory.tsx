@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import MemberProfileReview from "./MemberProfileReview";
 import PeopleIntake from "./PeopleIntake";
 import TrainingPersonSummary from "./TrainingPersonSummary";
+import PersonRecords from "./PersonRecords";
 import { isUnconfirmedDirectoryPerson, type PersonOrigin } from "@/lib/people/links";
 
 type Person = { id: string; full_name: string; phone: string | null; address: string | null; social_contact: string | null; requests_school: boolean; origin?: PersonOrigin };
@@ -44,7 +45,7 @@ export default function PeopleDirectory() {
           <p>Ministry emails: {contacts[person.id].ministry_emails?"Opted in":"Not opted in"}</p>
           <p>Partnership invitations: {contacts[person.id].partnership_invitations?"Opted in":"Not opted in"}</p>
           {!contacts[person.id].reviewed_at&&<p>Latest profile changes await review.</p>}
-        </div>}<TrainingPersonSummary personId={person.id} /></>}
+        </div>}<PersonRecords personId={person.id} onRestored={() => setRevision(v => v + 1)} /><TrainingPersonSummary personId={person.id} /></>}
       </details>)}
     </div>
   </section>;

@@ -6,7 +6,7 @@ const exports = {};
 runInNewContext(ts.transpileModule(readFileSync('src/lib/people/links.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, { exports });
-const { summariseLinks, describeReasons, linkProblem, isUnconfirmedDirectoryPerson, offerForSchool } = exports;
+const { summariseLinks, describeReasons, linkProblem, isUnconfirmedDirectoryPerson, offerForSchool, recordKindLabels } = exports;
 
 const links = summariseLinks([
   { id: 'l1', person_id: 'p1', source_key: 'k1' }, { id: 'l2', person_id: 'p1', source_key: 'k2' },
@@ -33,4 +33,8 @@ assert.equal(offerForSchool({ origin: 'program_directory' }, false), false);
 assert.equal(offerForSchool({ origin: 'program_directory', requests_school: true }, false), true);
 assert.equal(offerForSchool({ origin: 'program_directory' }, true), true);
 assert.equal(offerForSchool({ origin: 'staff' }, false), true);
-console.log('PASS: link summaries, reasons, error handling, membership badge, school list rule');
+assert.equal(linkProblem('HB017', 400).refresh, true);
+assert.match(linkProblem('HB017', 400).message, /earlier details/);
+assert.equal(recordKindLabels.mta_registration, 'Mighty Turn Around registration');
+assert.equal(recordKindLabels.member_profile, 'Member profile');
+console.log('PASS: link summaries, reasons, error handling, membership badge, school list rule, record labels');
