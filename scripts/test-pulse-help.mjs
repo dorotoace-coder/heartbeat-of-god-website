@@ -56,19 +56,23 @@ assert.ok(!videoMarkup.includes('not playable videos'));
 function render(workspace,ready,view){
  let call=0;const state=[workspace,ready,'Assignment pending'];
  const hooks={...React,useState:()=>[state[call++],()=>{}],useEffect:()=>{}};
+ // Routing lives in StaffWorkspace; the admin page only wraps it in Suspense.
  const page={};
- runInNewContext(output('src/app/admin/page.tsx'),{exports:page,require:(name)=>{
+ runInNewContext(output('src/components/admin/StaffWorkspace.tsx'),{exports:page,require:(name)=>{
   if(name==='react')return hooks;
   if(name==='next/navigation')return {useSearchParams:()=>({get:()=>view})};
   if(name==='@/lib/supabase')return {supabase:{}};
-  if(name.startsWith('@/components/admin/')){
+  if(name.startsWith('@/components/')||name.startsWith('./')){
    const marker=name.split('/').at(-1);
    return {__esModule:true,default:()=>React.createElement('div',{'data-component':marker})};
   }
   return require(name);
  }});
- return renderToStaticMarkup(React.createElement(page.default));
+ return renderToStaticMarkup(React.createElement(page.default,{marriagesEnabled:false}));
 }
+// The admin page must keep delegating to StaffWorkspace, or the checks below test the wrong file.
+const adminPage=readFileSync('src/app/admin/page.tsx','utf8');
+assert.ok(/import StaffWorkspace from '@\/components\/admin\/StaffWorkspace'/.test(adminPage)&&adminPage.includes('<StaffWorkspace '),'Admin page no longer renders StaffWorkspace');
 assert.ok(!render(null,false,'help').includes('data-component="PulseHelp"'),'Help rendered before identity was ready');
 for(const workspace of [null,'pastor','media','school','attendance','treasury','evangelism']){
  const html=render(workspace,true,'help');
@@ -90,6 +94,7 @@ const home = {};
 runInNewContext(output('src/components/admin/MemberHome.tsx'), {exports:home,require:(name)=>{
  if(name==='next/link')return {__esModule:true,default:(props)=>React.createElement('a',props)};
  if(name==='@/lib/supabase')return {supabase:{}};
+ if(name==='@/components/ui/MinistryLogo')return {__esModule:true,default:()=>React.createElement('img',{alt:'HBG'})};
  return require(name);
 }});
 const homeHtml=renderToStaticMarkup(React.createElement(home.default,{name:'<Test> Person',restricted:true}));
