@@ -17,6 +17,7 @@ import ServiceAttendance from "@/components/admin/ServiceAttendance";
 import TreasurySummary from "@/components/admin/TreasurySummary";
 import MemberHome from "@/components/admin/MemberHome";
 import MemberProfile from "@/components/admin/MemberProfile";
+import PastoratePilot from "./PastoratePilot";
 
 type Workspace = "pastor" | "media" | "attendance" | "treasury" | "school" | "evangelism";
 function WorkspaceContent() {
@@ -53,6 +54,7 @@ function WorkspaceContent() {
   if (requested === "help") return <main id="main-content" className="mx-auto max-w-7xl bg-[#f5f2f7] p-4 sm:p-8"><PulseHelp /></main>;
   if (requested === "profile") return <MemberProfile />;
   if (workspace === "pastor") return <PastorDashboard />;
+  if (requested === "pastorate") return <main className="mx-auto max-w-4xl p-6"><PastoratePilot /></main>;
   if (requested === "training") return <main className="mx-auto max-w-7xl p-4 sm:p-8"><a href="/admin" className="mb-5 inline-block min-h-11 text-purple-900 underline">Back to my workspace</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a><TrainingHub /></main>;
   if (!workspace) return <MemberHome name={memberName} accessError={accessError} restricted={!!requested} />;
   return <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">

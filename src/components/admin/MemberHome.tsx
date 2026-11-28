@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { BookOpen, Compass, Heart, ArrowUpRight, Users } from "lucide-react";
 
 const destinations = [
+  { title: "My pastoral assignments", description: "Open your pastoral assignments and service preparation guide.", href: "/admin?view=pastorate", icon: BookOpen, color: "from-purple-100 to-white" },
   { title: "My member profile", description: "Add or update your contact details and communication preferences.", href: "/admin?view=profile", icon: Users, color: "from-purple-100 to-white" },
   { title: "Learn PulseOS", description: "Short guides and videos to help you find your way.", href: "/admin?view=help", icon: Compass, color: "from-purple-100 to-white" },
   { title: "My training", description: "Open the lessons available through your enrolment and training access.", href: "/admin?view=training", icon: BookOpen, color: "from-sky-100 to-white" },
