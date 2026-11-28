@@ -8,16 +8,19 @@ function load(file,state){let hook=0;const exports={};runInNewContext(ts.transpi
  if(id==='next/navigation')return {useRouter:()=>({push:()=>{}})};
  if(id==='next/link')return {__esModule:true,default:(props)=>React.createElement('a',props)};
  if(id==='next/image')return {__esModule:true,default:({priority,...props})=>React.createElement('img',props)};
+ if(id.endsWith('.module.css'))return new Proxy({},{get:(_,key)=>String(key)});
+ if(id==='@/components/ui/MinistryLogo')return {__esModule:true,default:()=>React.createElement('img',{alt:'HBG'})};
  if(id==='@/lib/supabase')return {supabase:{}};
  if(id==='@/components/auth/ForgotPassword')return {__esModule:true,default:()=>React.createElement('button',null,'Forgot password?')};
  return require(id);
 }});return renderToStaticMarkup(React.createElement(exports.default));}
 for(const mode of ['signin','signup']){
- const html=load('src/app/login/page.tsx',['','','',false,'','',mode]);
- assert.ok(html.includes('HBG PulseOS'));assert.ok(html.includes('/hbg-logo.png'));
+ // Hook order: showPassword, email, fullName, password, loading, error, success, mode.
+ const html=load('src/app/login/page.tsx',[false,'','','',false,'','',mode]);
+ assert.ok(html.includes('HBG PulseOS'));assert.ok(html.includes('/hbg-logo-premium.png'));
  assert.ok(!/System Uplink|Terminal Access|Register New Unit|Initialize Subsystem|Beacon Status/.test(html));
  assert.ok(html.includes('Email'));assert.ok(html.includes('Password'));
- if(mode==='signup')assert.ok(html.includes('Full name'));
+ assert.equal(html.includes('Full name'),mode==='signup',`Full name shown only when creating an account (${mode})`);
 }
 const profile={full_name:'Synthetic Visitor',email:'person@example.invalid',phone:'',address:'',member_type:'exploring',department_id:'',ministry_emails:false,partnership_invitations:false,reviewed_at:null};
 const html=load('src/components/admin/MemberProfile.tsx',[profile,[{id:'synthetic-department',name:'Sanitary Department'}],'Ready',false]);
