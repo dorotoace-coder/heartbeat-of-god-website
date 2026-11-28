@@ -9,6 +9,7 @@ function load(file,state){let hook=0;const exports={};runInNewContext(ts.transpi
  if(id==='next/link')return {__esModule:true,default:(props)=>React.createElement('a',props)};
  if(id==='next/image')return {__esModule:true,default:({priority,...props})=>React.createElement('img',props)};
  if(id.endsWith('.module.css'))return new Proxy({},{get:(_,key)=>String(key)});
+ if(id==='@/lib/auth/callback')return {safeCallback:()=>'/admin'};
  if(id==='@/components/ui/MinistryLogo')return {__esModule:true,default:()=>React.createElement('img',{alt:'HBG'})};
  if(id==='@/lib/supabase')return {supabase:{}};
  if(id==='@/components/auth/ForgotPassword')return {__esModule:true,default:()=>React.createElement('button',null,'Forgot password?')};

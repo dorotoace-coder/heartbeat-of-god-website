@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import styles from "./login.module.css";
 import { supabase } from "@/lib/supabase";
 import ForgotPassword from "@/components/auth/ForgotPassword";
+import { safeCallback } from "@/lib/auth/callback";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function LoginPage() {
         timer = setTimeout(() => reject(new Error("We could not connect. Please try again.")), 15000);
       })]);
       if (result.error) throw result.error;
-      if (mode === "signin" || result.data.session) router.push("/admin");
+      if (mode === "signin" || result.data.session) router.push(safeCallback(window.location.search));
       else { setSuccess("Your account has been created. Check your email to confirm it, then sign in."); setMode("signin"); }
     } catch (cause) { setError(cause instanceof Error ? cause.message : "We could not complete that request. Please try again."); }
     finally { if (timer) clearTimeout(timer); setLoading(false); }

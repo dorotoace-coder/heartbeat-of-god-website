@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import PastorStaffAccess from "./PastorStaffAccess";
+import StaffInvitations from "./StaffInvitations";
 
 const areas = [
   { name: "Attendance", detail: "Service counts and first-time visitors", view: "attendance" },
@@ -87,6 +88,7 @@ export default function PastorOverview() {
       <p className="mt-4 text-xs text-slate-500">Counts show records currently visible to the Pastor. They are not a financial reconciliation or a record of who is online.</p>
     </div>
     <PastorStaffAccess />
+    <StaffInvitations />
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {areas.map(area => <Link key={area.view} href={`/admin?view=${area.view}`}
         className="rounded-2xl border border-purple-100 bg-white p-5 text-slate-950 shadow-sm transition hover:border-purple-400 hover:shadow-md">
