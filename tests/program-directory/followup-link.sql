@@ -36,7 +36,7 @@ create policy program_directory_pastor_read on public.program_outreach_directory
 
 \ir ../../supabase/migrations/20261123210000_ministry_followup_board.sql
 \ir ../../supabase/migrations/20261128040716_program_directory_review_evidence.sql
-\ir ../../supabase/migrations/20261128050000_directory_followup_link.sql
+\ir ../../supabase/migrations/20261128043416_directory_followup_link.sql
 
 create function public.t_check(label text, ok boolean) returns void language plpgsql as $$
 begin if ok is not true then raise exception 'FAIL: %', label; end if; raise notice 'PASS: %', label; end $$;
