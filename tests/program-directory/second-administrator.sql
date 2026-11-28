@@ -33,7 +33,7 @@ grant execute on function auth.uid() to authenticated, anon;
 grant select on public.profiles, public.treasury_income, public.congregation_people, public.treasury_portal_access to authenticated;
 grant execute on function public.treasury_has_role(uuid, public.treasury_role[]), public.partnership_officer() to authenticated;
 
-\ir ../../supabase/migrations/20261128110000_second_administrator.sql
+\ir ../../supabase/migrations/20261128143100_second_administrator.sql
 
 create policy people_pastor_read on public.congregation_people for select to authenticated using ((select public.staff_workspace())='pastor');
 create function public.t_check(label text, ok boolean) returns void language plpgsql as $$
