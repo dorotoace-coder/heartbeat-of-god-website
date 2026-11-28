@@ -4,7 +4,7 @@ export type PulseGuide = {
   steps: string[]; confirmation: string; recovery: string;
   seconds?: number; narration?: string;
 };
-export const guideEdition = "01 · 23 November 2026";
+export const guideEdition = "02 · 27 November 2026";
 export const startSteps = [
   "Sign in to HBG PulseOS with your own email and password. Use Create an account if you are new.",
   "Choose Sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.",
@@ -12,6 +12,68 @@ export const startSteps = [
   "Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.",
 ];
 export const pulseGuides: PulseGuide[] = [
+{
+  "id": "worker-checkin",
+  "title": "Worker service check-in",
+  "audience": "Pastor records arrivals; workers confirm details with their leader",
+  "where": "Training → Worker service check-in",
+  "summary": "Record an enrolled worker’s arrival for a scheduled service in Lagos time.",
+  "steps": [
+    "Refresh Pulse OS, open Training and expand Worker service check-in.",
+    "Choose the service and enrolled worker. If the worker list is empty, use Training administration to enrol the worker first.",
+    "Enter the actual arrival time in Lagos time and an optional explanation or correction note.",
+    "Choose Save worker check-in and wait for Check-in saved. Saving the same worker and service updates that entry."
+  ],
+  "confirmation": "Look for Check-in saved. Arrival times are recorded in Lagos time.",
+  "recovery": "If saving cannot be confirmed, retain the entries and retry the same worker and service. Ask the Pastor about a missing service or worker."
+},
+{
+  "id": "formation",
+  "title": "Mentors and supervised service",
+  "audience": "Pastor, assigned mentors, supervisors and enrolled learners",
+  "where": "Training → Mentoring and supervised service",
+  "summary": "Connect learning with a named mentor, practical assignment and pastoral review.",
+  "steps": [
+    "The Pastor chooses the learner, formation stage, mentor and service supervisor.",
+    "Enter a practical assignment and review date, then choose Assign supervised service.",
+    "The assigned mentor or supervisor opens the placement and records observed service and feedback. Write feedback suitable for the learner to read.",
+    "The Pastor records a review outcome and agreed next step. Review the learner’s calling, character and practice when considering responsibility."
+  ],
+  "confirmation": "The saved placement, observations and reviews appear in the mentoring section.",
+  "recovery": "If no learners appear, enrol them through Training administration. If records are unavailable, refresh and ask the Pastor to check the assignment."
+},
+{
+  "id": "graduation",
+  "title": "Foundation graduation and department intake",
+  "audience": "Foundation teachers, Pastor, graduates and department leads",
+  "where": "Training → Foundation School; Foundation School register",
+  "summary": "Complete learning and review, then arrange graduation and supervised department service.",
+  "steps": [
+    "Follow the four Sunday lessons and record actual participation in the Foundation School register. Arrange recovery teaching for missed sessions.",
+    "Complete the knowledge check and the authorised attendance and practical review.",
+    "Agree the graduate list and ceremony date with the Pastor. The proposed ceremony includes Scripture, certificates, pastoral prayer and introductions to department leads.",
+    "Discuss gifts, availability and a preferred department. The Pastor and receiving lead agree a supervised assignment, induction and review date.",
+    "Use Mentoring and supervised service to record the placement. The proposed first review follows four services. Complete role-specific approvals before duties begin."
+  ],
+  "confirmation": "Check lesson and review records and the receiving department’s agreed placement. The ceremony and four-service review are proposals for pastoral confirmation.",
+  "recovery": "Arrange catch-up for unfinished learning. Ask the receiving lead to confirm responsibilities before starting an assignment."
+},
+{
+  "id": "children-training",
+  "title": "Children’s Church teacher training",
+  "audience": "Children’s Church teachers and supervising leaders",
+  "where": "Training → Children’s Church; Departments → Children’s Church",
+  "summary": "Prepare one shared Bible lesson with activities suited to different ages.",
+  "steps": [
+    "Open Children’s Church in Training. The revised course is a draft for pastoral review.",
+    "Complete the shared teacher induction and rehearse a short lesson with the lead teacher. Follow the ministry’s approved child-protection and caregiver handover arrangements.",
+    "Prepare one story, one truth, one short verse and one response. Use pictures and movement for ages 2–5, retelling for ages 6–8, and reading and discussion for ages 9–12.",
+    "Use the eight-Sunday starter sequence in the lesson. Share one optional home conversation with caregivers.",
+    "After the session, review what helped children learn and agree one improvement. Record supervised teacher feedback through the assigned placement."
+  ],
+  "confirmation": "The supervising leader confirms readiness and the next teaching assignment. Check the module’s approval status before using the revised teaching.",
+  "recovery": "Ask the lead teacher for support with age adaptations or staffing. Children under two need their caregiver or an approved separately staffed arrangement."
+},
   {
     id: "profile", title: "My member profile", audience: "Signed-in members and visitors", where: "My member profile",
     summary: "Submit contact details, serving interests and optional communication preferences for staff review.",
