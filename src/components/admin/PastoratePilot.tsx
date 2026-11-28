@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PastorateAccess from "./PastorateAccess";
 
 const rehearsal = [
   "Name the service coordinator and backup. Confirm who leads each segment and who can approve changes.",
@@ -14,6 +15,7 @@ export default function PastoratePilot() {
         <h1 id="pastorate-title" className="text-3xl font-semibold">Pastorate</h1>
         <p className="mt-2 text-purple-100">Plan and review one Sunday service with the assigned team.</p>
       </header>
+      <PastorateAccess />
       <div className="rounded-2xl border border-purple-100 bg-white p-6">
         <h2 className="text-xl font-semibold">Sunday rehearsal</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5">{rehearsal.map(step => <li key={step}>{step}</li>)}</ol>
