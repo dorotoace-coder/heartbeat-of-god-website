@@ -3,8 +3,9 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import FoundationSchool from "./FoundationSchool";
+import { offerForSchool, type PersonOrigin } from "@/lib/people/links";
 
-type Person = { id: string; full_name: string; requests_school?: boolean };
+type Person = { id: string; full_name: string; requests_school?: boolean; origin?: PersonOrigin };
 type ClassRow = { id: string; title: string; starts_on: string; teacher_id: string };
 type Enrollment = { class_id: string; person_id: string; graduated_on: string | null };
 const field = "block w-full rounded border px-3 py-2";
@@ -17,24 +18,26 @@ export default function SchoolAdministration() {
   const [selected,setSelected] = useState("");
   const [revision,refresh] = useState(0);
   const [ready,setReady] = useState(false);
+  const [memberIds,setMemberIds] = useState<Set<string>>(new Set());
   const [busy,setBusy] = useState(false);
   const [status,setStatus] = useState("");
 
   useEffect(() => {
     let active = true;
     async function load() {
-      const [staff, members, groups, registrations] = await Promise.all([
+      const [staff, members, groups, registrations, profiles] = await Promise.all([
         supabase.from("foundation_teachers").select("id,full_name").order("full_name"),
-        supabase.from("congregation_people").select("id,full_name,requests_school").order("full_name"),
+        supabase.from("congregation_people").select("id,full_name,requests_school,origin").order("full_name"),
         supabase.from("foundation_classes").select("id,title,starts_on,teacher_id").order("starts_on",{ascending:false}),
-        supabase.from("foundation_students").select("class_id,person_id,graduated_on")
+        supabase.from("foundation_students").select("class_id,person_id,graduated_on"),
+        supabase.from("member_profile_intake").select("person_id").eq("member_type","member").not("reviewed_at","is",null).not("person_id","is",null)
       ]);
       if (!active) return;
-      if ([staff,members,groups,registrations].some(result => result.error)) {
+      if ([staff,members,groups,registrations,profiles].some(result => result.error)) {
         setReady(false); setStatus("School records could not be loaded. Refresh to retry."); return;
       }
       setTeachers(staff.data ?? []); setPeople(members.data ?? []); setClasses(groups.data ?? []);
-      setEnrollments(registrations.data ?? []); setSelected(current => current || groups.data?.[0]?.id || "");
+      setEnrollments(registrations.data ?? []); setMemberIds(new Set((profiles.data ?? []).map(row => row.person_id as string))); setSelected(current => current || groups.data?.[0]?.id || "");
       setReady(true);
     }
     void load();
@@ -69,7 +72,7 @@ export default function SchoolAdministration() {
   }
 
   const enrolled = enrollments.filter(row => row.class_id === selected);
-  const available = people.filter(p => !enrolled.some(row => row.person_id===p.id));
+  const available = people.filter(p => !enrolled.some(row => row.person_id===p.id) && offerForSchool(p, memberIds.has(p.id)));
   const awaitingGraduation = enrolled.filter(row => !row.graduated_on);
   return <section className="grid gap-5">
     <div className="grid gap-4 rounded-2xl bg-white p-6 text-slate-900">

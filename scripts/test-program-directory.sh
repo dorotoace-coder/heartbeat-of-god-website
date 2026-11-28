@@ -28,6 +28,7 @@ run() { # database name, test file, extra psql arguments
 run matching matching.sql
 run link_fresh followup-link.sql
 run link_existing followup-link.sql -v precreate=1
+run person_links person-links.sql
 
 # Two simultaneous saves for one contact: the second must be refused with HB001.
 db="${prefix}_link_fresh"
@@ -42,4 +43,19 @@ if [[ "$second" == *HB001* && "$count" == 1 ]]; then
  echo "PASS: simultaneous saves leave one follow-up (HB001 for the second)"
 else
  echo "FAIL: simultaneous saves (rows=$count) $second"; exit 1
+fi
+
+# Two simultaneous links for one contact: the second must be refused with HB011.
+db="${prefix}_person_links"
+link() { echo "set role authenticated; select public.t_as(1); select public.t_link($1,'k-ben',null);"; }
+docker exec "$container" psql -U postgres -d "$db" -q -v ON_ERROR_STOP=1 -c "begin; $(link 301) select pg_sleep(3); commit;" >/dev/null &
+first=$!
+sleep 1
+second="$(docker exec "$container" psql -U postgres -d "$db" -q -v ON_ERROR_STOP=1 -v VERBOSITY=verbose -c "$(link 302)" 2>&1 || true)"
+wait "$first"
+count="$(docker exec "$container" psql -U postgres -d "$db" -Atc "select count(*) from public.person_source_links where source_key='k-ben' and unlinked_at is null"),$(docker exec "$container" psql -U postgres -d "$db" -Atc "select count(*) from public.congregation_people where origin='program_directory' and full_name='Ben Example'")"
+if [[ "$second" == *HB011* && "$count" == "1,1" ]]; then
+ echo "PASS: simultaneous links leave one link and one new person (HB011 for the second)"
+else
+ echo "FAIL: simultaneous links (links,people=$count) $second"; exit 1
 fi
