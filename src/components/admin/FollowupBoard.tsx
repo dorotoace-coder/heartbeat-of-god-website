@@ -5,13 +5,13 @@ import { supabase } from "@/lib/supabase";
 import { boardLanes, filterFollowups, followupLane, ministryToday, type FollowupSource } from "@/lib/followup/board";
 import OutreachFollowupCard, { type OutreachFollowup, type OutreachWorker } from "./OutreachFollowupCard";
 
-import ProgramDirectory from "./ProgramDirectory";
+import ProgramDirectory, { type ChosenContact } from "./ProgramDirectory";
 
 const fields = "id,full_name,phone,address,followup_date,assigned_to,completed_at,closure_outcome";
 const requestFields = "id,full_name,phone,followup_date,assigned_to,completed_at,closure_outcome,kind";
 const field = "mt-1 block min-h-11 w-full rounded-lg border border-purple-200 bg-white p-2";
 export default function FollowupBoard() {
-  const [selectedContact, setSelectedContact] = useState<{ name: string; phone: string } | null>(null);
+  const [selected, setSelected] = useState<{ contact: ChosenContact; selection: number } | null>(null);
   const [items, setItems] = useState<OutreachFollowup[]>([]);
   const [workers, setWorkers] = useState<OutreachWorker[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
@@ -79,9 +79,17 @@ export default function FollowupBoard() {
         if (result.status >= 400 && result.status < 500 && ![408, 409, 429].includes(result.status)) setAttempt(null);
         setMessage("Save not confirmed. Check permission, date and worker, then retry."); return;
       }
-      setAttempt(null); form.reset(); setMessage("Follow-up created."); refresh();
+      setAttempt(null); form.reset(); setSelected(null); setMessage("Follow-up created."); refresh();
     } catch { setMessage("Save unverified. Retry the same details before changing them."); }
     finally { setSaving(false); }
+  }
+  function chooseContact(contact: ChosenContact) {
+    if (saving) return;
+    // Every choice remounts the form, so permission must be confirmed again for this person.
+    setSelected(previous => ({ contact, selection: (previous?.selection ?? 0) + 1 }));
+    setMessage(attempt ? "The previous save was not confirmed. Check the board before entering it again." : "");
+    setAttempt(null);
+    document.getElementById("followup-create")?.scrollIntoView({ behavior: "smooth" });
   }
   const visible = filterFollowups(items, { search, source, assignment, userId });
   return <section className="space-y-6 text-slate-950">
@@ -89,13 +97,13 @@ export default function FollowupBoard() {
       <h1 className="font-serif text-3xl">Visitor &amp; ministry follow-up</h1>
       <p className="mt-2 text-sm text-purple-100">See who needs a conversation, who is responsible, and the next contact date.</p>
     </header>
-    {pastor && <ProgramDirectory onChoose={contact => { setSelectedContact(contact); document.getElementById("followup-create")?.scrollIntoView({ behavior: "smooth" }); }} />}
-    <form id="followup-create" key={selectedContact ? JSON.stringify(selectedContact) : "blank"} onSubmit={create} className="rounded-2xl border border-purple-100 bg-white p-5">
+    {pastor && <ProgramDirectory onChoose={chooseContact} />}
+    <form id="followup-create" key={selected ? `selection-${selected.selection}` : "blank"} onSubmit={create} className="rounded-2xl border border-purple-100 bg-white p-5">
       <fieldset disabled={saving || loading || !!error} className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-3 text-lg font-semibold">Add a follow-up</legend>
-        <label>Full name<input name="name" defaultValue={selectedContact?.name ?? ""} className={field} required maxLength={160} /></label>
+        <label>Full name<input name="name" defaultValue={selected?.contact.name ?? ""} className={field} required maxLength={160} /></label>
         <label>Reason<select name="kind" className={field}><option value="visitor">First-time visitor</option><option value="ministry">Ministry interest</option></select></label>
-        <label>Phone (optional)<input name="phone" defaultValue={selectedContact?.phone ?? ""} type="tel" maxLength={80} className={field} /></label>
+        <label>Phone (optional)<input name="phone" defaultValue={selected?.contact.phone ?? ""} type="tel" maxLength={80} className={field} /></label>
         <label>Next contact date<input name="due" type="date" min={today} required className={field} /></label>
         {pastor && <label>Assigned worker<select name="worker" className={field}><option value="">Unassigned</option>{workers.map(worker => <option key={worker.user_id} value={worker.user_id}>{worker.full_name}</option>)}</select></label>}
         <label className="flex items-center gap-2 sm:col-span-2"><input name="permission" type="checkbox" required /> This person agreed to follow-up and to share these details.</label>
