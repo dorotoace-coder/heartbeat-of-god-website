@@ -1,3 +1,5 @@
+import { ministryToday } from "./board";
+
 export type DirectoryContact = {
   import_key: string;
   display_name: string;
@@ -70,4 +72,42 @@ export function refreshProblem(status: number, code?: string | null) {
   if (status === 401 || status === 403 || code === "42501") return "Contacts could not refresh. Check your access and retry.";
   if (status === 0) return "Contacts could not refresh. Retry when connected.";
   return "Contacts could not refresh. Retry in a moment.";
+}
+
+export type DirectoryLinkRow = {
+  directory_import_key: string;
+  followup_date: string;
+  completed_at: string | null;
+  closure_outcome: "completed" | "declined" | null;
+};
+export type DirectoryLink = { openDue?: string; declined?: boolean; closedAt?: string };
+
+export function summariseLinks(rows: DirectoryLinkRow[]) {
+  const links: Record<string, DirectoryLink> = {};
+  for (const row of rows) {
+    const link = (links[row.directory_import_key] ??= {});
+    if (!row.completed_at) { link.openDue = row.followup_date; continue; }
+    if (row.closure_outcome === "declined") link.declined = true;
+    if (!link.closedAt || Date.parse(row.completed_at) > Date.parse(link.closedAt)) link.closedAt = row.completed_at;
+  }
+  return links;
+}
+
+/** What a contact's follow-up history allows. The database enforces the same two blocks. */
+export function linkStatus(link: DirectoryLink | undefined) {
+  if (link?.declined) return { text: "Asked for no further contact", canPrepare: false };
+  if (link?.openDue) return { text: `Follow-up open, next contact ${link.openDue}`, canPrepare: false };
+  if (link?.closedAt) return { text: `Previous follow-up closed ${ministryToday(new Date(link.closedAt))}`, canPrepare: true };
+  return { text: "", canPrepare: true };
+}
+
+const rejections: Record<string, string> = {
+  HB001: "This contact already has an open follow-up. Find it on the board below.",
+  HB002: "This contact needs review before follow-up.",
+  HB003: "This directory contact has changed. Refresh contacts and choose again.",
+  HB004: "This person asked for no further contact.",
+};
+/** Message for a follow-up the database refused because of its directory link, else null. */
+export function linkRejection(code: string | null | undefined) {
+  return (code && rejections[code]) || null;
 }

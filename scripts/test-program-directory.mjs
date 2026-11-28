@@ -2,11 +2,15 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
+const board = {};
+runInNewContext(ts.transpileModule(readFileSync('src/lib/followup/board.ts', 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, { exports: board, Intl, Date });
 const exports = {};
 runInNewContext(ts.transpileModule(readFileSync('src/lib/followup/directory.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-}).outputText, { exports });
-const { filterDirectory, describeEvidence, refreshProblem } = exports;
+}).outputText, { exports, require: () => board, Date, Intl });
+const { filterDirectory, describeEvidence, refreshProblem, summariseLinks, linkStatus, linkRejection } = exports;
 const base = { import_key: 'k1', display_name: 'Example Person', email: 'person@example.test', phone_original: '+1 204 555 0101',
   programs: ['MTA'], review_flags: [], relationship: 'unconfirmed', attendance: 'unknown' };
 const all = { query: '', program: '', relationship: '', attendance: '' };
@@ -31,4 +35,18 @@ assert.match(refreshProblem(403), /Check your access/);
 assert.match(refreshProblem(401), /Check your access/);
 assert.match(refreshProblem(400, '42501'), /Check your access/);
 assert.match(refreshProblem(500), /Retry in a moment/);
-console.log('PASS: directory filters, legacy and evidence descriptions, refresh messages');
+const row = (key, extra) => ({ directory_import_key: key, followup_date: '2026-12-01', completed_at: null, closure_outcome: null, ...extra });
+const links = summariseLinks([
+  row('open'), row('open', { completed_at: '2026-11-01T10:00:00Z', closure_outcome: 'completed' }),
+  row('closed', { completed_at: '2026-11-02T10:00:00Z', closure_outcome: 'completed' }),
+  row('closed', { completed_at: '2026-11-20T23:30:00Z', closure_outcome: 'completed' }),
+  row('declined', { completed_at: '2026-11-03T10:00:00Z', closure_outcome: 'declined' }), row('declined'),
+]);
+assert.deepEqual({ ...linkStatus(links.open) }, { text: 'Follow-up open, next contact 2026-12-01', canPrepare: false });
+assert.deepEqual({ ...linkStatus(links.closed) }, { text: 'Previous follow-up closed 2026-11-21', canPrepare: true }); // West Africa date
+assert.deepEqual({ ...linkStatus(links.declined) }, { text: 'Asked for no further contact', canPrepare: false });
+assert.deepEqual({ ...linkStatus(undefined) }, { text: '', canPrepare: true });
+for (const code of ['HB001', 'HB002', 'HB003', 'HB004']) assert.ok(linkRejection(code));
+assert.equal(linkRejection('P0001'), null);
+assert.equal(linkRejection(undefined), null);
+console.log('PASS: directory filters, evidence descriptions, refresh messages, follow-up link status');

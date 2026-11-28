@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { boardLanes, filterFollowups, followupLane, ministryToday, type FollowupSource } from "@/lib/followup/board";
+import { linkRejection } from "@/lib/followup/directory";
 import OutreachFollowupCard, { type OutreachFollowup, type OutreachWorker } from "./OutreachFollowupCard";
 
 import ProgramDirectory, { type ChosenContact } from "./ProgramDirectory";
@@ -68,6 +69,7 @@ export default function FollowupBoard() {
       p_kind: String(data.get("kind")), p_due: String(data.get("due")),
       p_worker: pastor ? String(data.get("worker") ?? "") || null : userId,
       p_permission: data.has("permission"),
+      ...(selected?.contact.importKey ? { p_directory_key: selected.contact.importKey } : {}),
     };
     const signature = JSON.stringify(payload);
     if (attempt && attempt.signature !== signature) { setMessage("Previous save unverified. Retry the same details or reload before changing them."); return; }
@@ -77,7 +79,9 @@ export default function FollowupBoard() {
       const result = await supabase.rpc("create_ministry_followup", { p_id: request.id, ...payload });
       if (result.error) {
         if (result.status >= 400 && result.status < 500 && ![408, 409, 429].includes(result.status)) setAttempt(null);
-        setMessage("Save not confirmed. Check permission, date and worker, then retry."); return;
+        const rejection = linkRejection(result.error.code);
+        if (rejection) refresh();
+        setMessage(rejection ?? "Save not confirmed. Check permission, date and worker, then retry."); return;
       }
       setAttempt(null); form.reset(); setSelected(null); setMessage("Follow-up created."); refresh();
     } catch { setMessage("Save unverified. Retry the same details before changing them."); }
@@ -97,11 +101,15 @@ export default function FollowupBoard() {
       <h1 className="font-serif text-3xl">Visitor &amp; ministry follow-up</h1>
       <p className="mt-2 text-sm text-purple-100">See who needs a conversation, who is responsible, and the next contact date.</p>
     </header>
-    {pastor && <ProgramDirectory onChoose={chooseContact} />}
+    {pastor && <ProgramDirectory onChoose={chooseContact} refreshKey={revision} />}
     <form id="followup-create" key={selected ? `selection-${selected.selection}` : "blank"} onSubmit={create} className="rounded-2xl border border-purple-100 bg-white p-5">
       <fieldset disabled={saving || loading || !!error} className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-3 text-lg font-semibold">Add a follow-up</legend>
-        <label>Full name<input name="name" defaultValue={selected?.contact.name ?? ""} className={field} required maxLength={160} /></label>
+        {selected?.contact.importKey && <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-purple-50 p-3 text-sm sm:col-span-2">
+          <p>Linked to a program directory contact. Remove the link to change the name.</p>
+          <button type="button" onClick={() => chooseContact({ ...selected.contact, importKey: null })} className="min-h-11 rounded-lg border border-purple-200 bg-white px-4">Remove link</button>
+        </div>}
+        <label>Full name<input name="name" defaultValue={selected?.contact.name ?? ""} readOnly={!!selected?.contact.importKey} className={`${field} read-only:bg-slate-100`} required maxLength={160} /></label>
         <label>Reason<select name="kind" className={field}><option value="visitor">First-time visitor</option><option value="ministry">Ministry interest</option></select></label>
         <label>Phone (optional)<input name="phone" defaultValue={selected?.contact.phone ?? ""} type="tel" maxLength={80} className={field} /></label>
         <label>Next contact date<input name="due" type="date" min={today} required className={field} /></label>

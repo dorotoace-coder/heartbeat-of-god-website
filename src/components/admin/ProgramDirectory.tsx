@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { describeEvidence, filterDirectory, refreshProblem, relationshipLabels, type DirectoryContact } from "@/lib/followup/directory";
+import { describeEvidence, filterDirectory, linkStatus, refreshProblem, relationshipLabels, summariseLinks, type DirectoryContact, type DirectoryLink } from "@/lib/followup/directory";
 
-export type ChosenContact = { importKey: string; name: string; phone: string };
+export type ChosenContact = { importKey: string | null; name: string; phone: string };
 
 const field = "mt-1 block min-h-11 w-full rounded-lg border border-purple-200 p-2";
 
-export default function ProgramDirectory({ onChoose }: { onChoose: (contact: ChosenContact) => void }) {
+export default function ProgramDirectory({ onChoose, refreshKey }: { onChoose: (contact: ChosenContact) => void; refreshKey: number }) {
   const [contacts, setContacts] = useState<DirectoryContact[] | null>(null);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [problem, setProblem] = useState("");
@@ -18,13 +18,21 @@ export default function ProgramDirectory({ onChoose }: { onChoose: (contact: Cho
   const [attendance, setAttendance] = useState("");
   const [program, setProgram] = useState("");
   const [revision, setRevision] = useState(0);
+  const [links, setLinks] = useState<Record<string, DirectoryLink>>({});
+  const [linkProblem, setLinkProblem] = useState(false);
   useEffect(() => {
     let active = true;
     async function load() {
       setRefreshing(true);
       try {
-        const result = await supabase.rpc("program_directory_current");
+        const [result, history] = await Promise.all([
+          supabase.rpc("program_directory_current"),
+          supabase.from("ministry_followup_requests").select("directory_import_key,followup_date,completed_at,closure_outcome")
+            .not("directory_import_key", "is", null).order("created_at", { ascending: false }).limit(1000),
+        ]);
         if (!active) return;
+        setLinkProblem(!!history.error);
+        if (!history.error) setLinks(summariseLinks(history.data ?? []));
         if (result.error) { setProblem(refreshProblem(result.status, result.error.code)); return; }
         setContacts(result.data ?? []); setUpdatedAt(new Date()); setProblem("");
       } catch { if (active) setProblem(refreshProblem(0)); }
@@ -33,7 +41,7 @@ export default function ProgramDirectory({ onChoose }: { onChoose: (contact: Cho
     void load();
     const timer = window.setInterval(() => setRevision(value => value + 1), 60_000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [revision]);
+  }, [revision, refreshKey]);
   const visible = contacts ? filterDirectory(contacts, { query, program, relationship, attendance }) : [];
   const time = updatedAt?.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   return <section className="space-y-4 rounded-2xl border border-purple-100 bg-white p-5">
@@ -53,16 +61,18 @@ export default function ProgramDirectory({ onChoose }: { onChoose: (contact: Cho
       {time && <p className="text-sm text-slate-600">Updated {time}</p>}
     </div>
     {problem && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{problem}{contacts && time ? ` Showing results from ${time}.` : ""}</p>}
+    {linkProblem && <p className="text-sm text-amber-900">Follow-up status could not load.</p>}
     {!contacts ? (!problem && <p role="status">Loading program contacts…</p>) : <>
       <p role="status" className="text-sm text-slate-600">{visible.length} matching contacts</p>
-      <ul className="space-y-3">{visible.map(contact => <li key={contact.import_key} className="rounded-xl border border-purple-100 p-4">
+      <ul className="space-y-3">{visible.map(contact => { const status = linkStatus(links[contact.import_key]); return <li key={contact.import_key} className="rounded-xl border border-purple-100 p-4">
         <h3 className="font-semibold">{contact.display_name}</h3>
         <p className="break-all text-sm">{contact.email}</p>
         {contact.phone_original && <p className="text-sm">{contact.phone_original}</p>}
         <p className="text-sm text-slate-600">{contact.programs.map(value => value === "MTA" ? "Mighty Turn Around" : value).join(" · ")}</p>
         <ul className="mt-1 text-sm">{describeEvidence(contact).map(line => <li key={line}>{line}</li>)}</ul>
-        {contact.relationship === "review" ? <p className="mt-2 text-sm text-amber-900">Contact details need review before follow-up.</p> : <button type="button" onClick={() => onChoose({ importKey: contact.import_key, name: contact.display_name, phone: contact.phone_original })} className="mt-3 min-h-11 rounded-lg border border-purple-200 px-4">Prepare follow-up</button>}
-      </li>)}</ul>
+        {status.text && <p className="mt-1 text-sm font-semibold">{status.text}</p>}
+        {contact.relationship === "review" ? <p className="mt-2 text-sm text-amber-900">Contact details need review before follow-up.</p> : status.canPrepare && <button type="button" onClick={() => onChoose({ importKey: contact.import_key, name: contact.display_name, phone: contact.phone_original })} className="mt-3 min-h-11 rounded-lg border border-purple-200 px-4">Prepare follow-up</button>}
+      </li>; })}</ul>
       {!visible.length && <p>No matching contacts.</p>}
     </>}
   </section>;
