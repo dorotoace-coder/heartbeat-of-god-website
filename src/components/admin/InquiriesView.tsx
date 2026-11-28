@@ -8,7 +8,7 @@ import type { Inquiry } from "@/lib/types";
 const FILTERS = ["All", "Prayer Request", "First-Timer Card", "General Inquiry", "Testimony Submission", "Department Application", "Event Registration", "ILPC 2027 Interest", "Media/Sound Inquiry"];
 const STATUSES: Inquiry["status"][] = ["pending", "reviewed", "contacted"];
 
-const STATUS_STYLES: Record<Inquiry["status"], string> = {
+const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400",
   reviewed: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400",
   contacted: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400",
@@ -18,6 +18,8 @@ export function InquiriesView() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [saveErrors, setSaveErrors] = useState<Record<string, string>>({});
 
   const fetchInquiries = useCallback(async () => {
     setLoading(true);
@@ -38,10 +40,22 @@ export function InquiriesView() {
   // Initial load is deferred a microtask so setState isn't called synchronously in the effect body (react-hooks/set-state-in-effect).
   useEffect(() => { queueMicrotask(() => { void fetchInquiries(); }); }, [fetchInquiries]);
 
-  const updateStatus = async (id: string, status: Inquiry["status"]) => {
+  const updateStatus = async (id: string, previous: string, status: Inquiry["status"]) => {
     setInquiries((prev) => prev.map((i) => (i.id === id ? { ...i, status } : i)));
-    const { error } = await supabase.from("inquiries").update({ status }).eq("id", id);
-    if (error) console.error("Failed to update status:", error);
+    setSaving((prev) => ({ ...prev, [id]: true }));
+    setSaveErrors((prev) => ({ ...prev, [id]: "" }));
+    let message = "";
+    try {
+      // Ask for the changed row back: a refused update returns no error, just no row.
+      const { data, error, status: httpStatus } = await supabase.from("inquiries").update({ status }).eq("id", id).select("id,status");
+      if (error) message = httpStatus === 0 ? "Status not saved. Check your connection and try again." : "Status not saved. Check your access and try again.";
+      else if (data?.length !== 1 || data[0].status !== status) message = "Status not saved. You may not have permission to change it.";
+    } catch { message = "Status not saved. Check your connection and try again."; }
+    if (message) {
+      setInquiries((prev) => prev.map((i) => (i.id === id && i.status === status ? { ...i, status: previous as Inquiry["status"] } : i)));
+      setSaveErrors((prev) => ({ ...prev, [id]: message }));
+    }
+    setSaving((prev) => ({ ...prev, [id]: false }));
   };
 
   const visible = filter === "All" ? inquiries : inquiries.filter((i) => i.type === filter);
@@ -124,15 +138,22 @@ export function InquiriesView() {
                   )}
                 </div>
 
-                <div className="relative">
-                  <select
-                    value={inq.status}
-                    onChange={(e) => updateStatus(inq.id, e.target.value as Inquiry["status"])}
-                    className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none ${STATUS_STYLES[inq.status]}`}
-                  >
-                    {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+                <div className="flex flex-col items-end gap-1">
+                  <div className="relative">
+                    <select
+                      aria-label={`Status for ${inq.full_name}`}
+                      value={inq.status}
+                      disabled={!!saving[inq.id]}
+                      onChange={(e) => updateStatus(inq.id, inq.status, e.target.value as Inquiry["status"])}
+                      className={`appearance-none pl-3 pr-8 py-1.5 min-h-11 rounded-lg text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none disabled:opacity-60 ${STATUS_STYLES[inq.status] ?? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}
+                    >
+                      {!STATUSES.includes(inq.status) && <option value={inq.status} disabled>{inq.status || "no status"}</option>}
+                      {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+                  </div>
+                  {saving[inq.id] && <p role="status" className="text-xs text-slate-500">Saving…</p>}
+                  {saveErrors[inq.id] && <p role="alert" className="max-w-56 text-right text-xs text-red-700 dark:text-red-400">{saveErrors[inq.id]}</p>}
                 </div>
               </div>
             </div>
