@@ -69,7 +69,7 @@ export default function StaffInvitations() {
 
   return <section className="space-y-4 rounded-2xl border border-purple-100 bg-white p-6 text-slate-950">
     <h2 className="text-xl font-semibold">Staff invitations</h2>
-    <p className="text-sm text-slate-600">Invite someone by email into one staff role. The link works only for that email address, once, for 7 days. Treasury and administrator access are never given by invitation.</p>
+    <p className="text-sm text-slate-600">Invite someone by email into one staff role. Access goes to whoever owns that email address; the name you type is only a label. The link works only for that address, once, for 7 days. Treasury and administrator access are never given by invitation.</p>
     <form onSubmit={invite} className="grid gap-3 sm:grid-cols-2">
       <fieldset disabled={busy} className="contents">
         <label>Their name<input name="name" required maxLength={160} className={field} /></label>

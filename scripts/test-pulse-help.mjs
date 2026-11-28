@@ -62,6 +62,7 @@ function render(workspace,ready,view){
   if(name==='react')return hooks;
   if(name==='next/navigation')return {useSearchParams:()=>({get:()=>view})};
   if(name==='@/lib/supabase')return {supabase:{}};
+  if(name==='@/lib/people/useAccessFlags')return {useAccessFlags:()=>({treasurySeat:null,pastoralAssignment:false})};
   if(name.startsWith('@/components/')||name.startsWith('./')){
    const marker=name.split('/').at(-1);
    return {__esModule:true,default:()=>React.createElement('div',{'data-component':marker})};

@@ -19,6 +19,7 @@ import MemberHome from "@/components/admin/MemberHome";
 import MemberProfile from "@/components/admin/MemberProfile";
 import PastoratePilot from "./PastoratePilot";
 import InvitationAccept from "./InvitationAccept";
+import { useAccessFlags } from "@/lib/people/useAccessFlags";
 
 type Workspace = "pastor" | "media" | "attendance" | "treasury" | "school" | "evangelism";
 function WorkspaceContent() {
@@ -29,6 +30,7 @@ function WorkspaceContent() {
   const [message, setMessage] = useState("Opening your workspace…");
   const [memberName, setMemberName] = useState("");
   const [accessError, setAccessError] = useState(false);
+  const access = useAccessFlags();
   useEffect(() => {
     let current = true;
     async function load() {
@@ -63,7 +65,7 @@ function WorkspaceContent() {
   if (!workspace) return <MemberHome name={memberName} accessError={accessError} restricted={!!requested} />;
   return <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
     <header className="flex items-center justify-between gap-3">
-      <div><MinistryLogo className="mb-4 h-12 w-auto" /><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · <a href="/admin?view=profile" className="inline-block min-h-11 text-purple-900 underline">My profile</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
+      <div><MinistryLogo className="mb-4 h-12 w-auto" /><h1 className="text-xl font-semibold">HBG Pulse OS</h1><a href="/admin?view=training" className="mt-2 inline-block min-h-11 text-purple-900 underline">Open training</a> · {access?.pastoralAssignment && <><a href="/admin?view=pastorate" className="inline-block min-h-11 font-semibold text-purple-900 underline">My pastoral assignment</a> · </>}<a href="/admin?view=profile" className="inline-block min-h-11 text-purple-900 underline">My profile</a> · <a href="/partnership" className="inline-block min-h-11 text-purple-900 underline">My partnerships</a> · <a href="/admin?view=help" className="inline-block min-h-11 text-purple-900 underline">Pulse OS Help</a></div>
       <button onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
     </header>
     {!workspace ? <p role="status">{message}</p> : workspace === "evangelism" && requested === "followup" ? <FollowupBoard /> : requested && requested !== workspace ?

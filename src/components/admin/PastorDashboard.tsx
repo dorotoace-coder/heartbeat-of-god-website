@@ -26,6 +26,7 @@ import { PrayerWallView } from "./PrayerWallView";
 
 import LiveMeetings from "./LiveMeetings";
 import DepartmentsView from "./DepartmentsView";
+import { useAccessFlags } from "@/lib/people/useAccessFlags";
 
 const navigation = [
   ["overview", "Overview"], ["profile", "My profile"], ["help", "Pulse OS Help"], ["live", "Live Church"], ["training", "Training"], ["pastorate", "Pastorate"], ["attendance", "Attendance"], ["members", "People"], ["departments", "Departments"],
@@ -38,6 +39,9 @@ export default function PastorDashboard() {
   const requested = useSearchParams().get("view") ?? "overview";
   const view = navigation.some(([id]) => id === requested) ? requested : "overview";
   const [name, setName] = useState("Pastor");
+  // Treasury is shown only to the holder of a Treasury seat, never to a second administrator.
+  const { treasurySeat } = useAccessFlags();
+  const menu = navigation.filter(([id]) => id !== "treasury" || treasurySeat !== false);
   const [role, setRole] = useState<UserRole>("pastor");
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function PastorDashboard() {
       case "attendance": return <ServiceAttendance />;
       case "members": return <PeopleDirectory />;
       case "departments": return <DepartmentsView />;
-      case "treasury": return <TreasurySummary />;
+      case "treasury": return treasurySeat === false ? <p role="status" className="rounded-2xl bg-white p-6">Treasury is limited to the Pastor and the Treasury Leader.</p> : <TreasurySummary />;
       case "media": return <div className="space-y-8"><PrivateMediaVault /><MediaView /></div>;
       case "school": return <SchoolAdministration />;
       case "followup": return <FollowupBoard />;
@@ -86,7 +90,7 @@ export default function PastorDashboard() {
             onClick={async () => { await supabase.auth.signOut(); window.location.replace("/login"); }}>Sign out</button>
         </div>
         <nav aria-label="Pastor workspaces" className="mx-auto mt-4 flex max-w-7xl flex-wrap gap-2">
-          {navigation.map(([id, label]) => <Link key={id} href={id === "overview" ? "/admin" : `/admin?view=${id}`}
+          {menu.map(([id, label]) => <Link key={id} href={id === "overview" ? "/admin" : `/admin?view=${id}`}
             aria-current={view === id ? "page" : undefined}
             className={`rounded-full px-3 py-2 text-sm font-medium transition ${view === id ? "bg-[#2e1252] text-white" : "bg-purple-50 text-purple-950 hover:bg-purple-100"}`}>{label}</Link>)}
         </nav>
