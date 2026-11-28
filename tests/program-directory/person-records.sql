@@ -44,7 +44,7 @@ insert into public.congregation_people(id,full_name,created_by) values (public.t
 insert into public.member_profile_intake(user_id,full_name,email,member_type,reviewed_at,person_id)
  values (public.t_id(13),'Legacy Person','legacy@example.test','member',now(),public.t_id(500));
 
-\ir ../../supabase/migrations/20261128080000_person_links_members_registrations.sql
+\ir ../../supabase/migrations/20261128051355_person_links_members_registrations.sql
 
 create function public.t_check(label text, ok boolean) returns void language plpgsql as $$
 begin if ok is not true then raise exception 'FAIL: %', label; end if; raise notice 'PASS: %', label; end $$;
