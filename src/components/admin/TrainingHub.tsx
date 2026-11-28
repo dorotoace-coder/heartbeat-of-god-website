@@ -15,6 +15,7 @@ import TrainingReader from "./TrainingReader";
 import TrainingEditor from "./TrainingEditor";
 import TrainingManagement from "./TrainingManagement";
 import FormationPlan from "./FormationPlan";
+import WorkerCheckin from "./WorkerCheckin";
 import FormationRecords from "./FormationRecords";
 import { BookOpen, ArrowUpRight, Layers3, Search } from "lucide-react";
 import { trainingCatalogue } from "@/lib/training/catalogue";
@@ -132,6 +133,7 @@ export default function TrainingHub() {
     >
       <Link href="/admin?view=help" className="inline-flex min-h-11 items-center rounded-xl border border-purple-200 bg-white px-4 text-sm font-semibold text-purple-950">How to use Pulse OS →</Link>
       {isPastor && <FormationPlan />}
+      {isPastor && <WorkerCheckin learners={learners} />}
       {userId && <FormationRecords learners={learners} isPastor={isPastor} userId={userId} />}
       <header className="relative overflow-hidden rounded-[2rem] bg-[#2e1252] p-7 text-white shadow-xl shadow-purple-950/10 sm:p-12">
         <div
