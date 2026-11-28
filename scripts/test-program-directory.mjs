@@ -6,7 +6,7 @@ const exports = {};
 runInNewContext(ts.transpileModule(readFileSync('src/lib/followup/directory.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, { exports });
-const { filterDirectory, describeEvidence } = exports;
+const { filterDirectory, describeEvidence, refreshProblem } = exports;
 const base = { import_key: 'k1', display_name: 'Example Person', email: 'person@example.test', phone_original: '+1 204 555 0101',
   programs: ['MTA'], review_flags: [], relationship: 'unconfirmed', attendance: 'unknown' };
 const all = { query: '', program: '', relationship: '', attendance: '' };
@@ -26,4 +26,9 @@ assert.deepEqual([...describeEvidence({ ...base, relationship: 'worker', worker_
 assert.deepEqual([...describeEvidence({ ...base, relationship: 'review', worker_match: false, member_match: false, review_reasons: ['shared_phone', 'member_details_differ'] })],
   ['Needs review: Phone shared with another contact; Membership profile has different details', 'Attendance unknown']);
 assert.deepEqual([...describeEvidence({ ...base, relationship: 'review', review_reasons: ['new_reason'] })], ['Needs review: new_reason', 'Attendance unknown']);
-console.log('PASS: directory filters, legacy and evidence descriptions');
+assert.match(refreshProblem(0), /Retry when connected/);
+assert.match(refreshProblem(403), /Check your access/);
+assert.match(refreshProblem(401), /Check your access/);
+assert.match(refreshProblem(400, '42501'), /Check your access/);
+assert.match(refreshProblem(500), /Retry in a moment/);
+console.log('PASS: directory filters, legacy and evidence descriptions, refresh messages');

@@ -64,3 +64,10 @@ export function describeEvidence(contact: DirectoryContact) {
   lines.push(contact.attendance === "mta_attended" ? "MTA attendance confirmed" : "Attendance unknown");
   return lines;
 }
+
+/** Message for a failed directory refresh. supabase-js reports network failures as status 0. */
+export function refreshProblem(status: number, code?: string | null) {
+  if (status === 401 || status === 403 || code === "42501") return "Contacts could not refresh. Check your access and retry.";
+  if (status === 0) return "Contacts could not refresh. Retry when connected.";
+  return "Contacts could not refresh. Retry in a moment.";
+}

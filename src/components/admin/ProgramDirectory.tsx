@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { describeEvidence, filterDirectory, relationshipLabels, type DirectoryContact } from "@/lib/followup/directory";
+import { describeEvidence, filterDirectory, refreshProblem, relationshipLabels, type DirectoryContact } from "@/lib/followup/directory";
 
 export type ChosenContact = { importKey: string; name: string; phone: string };
 
@@ -25,9 +25,9 @@ export default function ProgramDirectory({ onChoose }: { onChoose: (contact: Cho
       try {
         const result = await supabase.rpc("program_directory_current");
         if (!active) return;
-        if (result.error) { setProblem("Contacts could not refresh. Check your access and retry."); return; }
+        if (result.error) { setProblem(refreshProblem(result.status, result.error.code)); return; }
         setContacts(result.data ?? []); setUpdatedAt(new Date()); setProblem("");
-      } catch { if (active) setProblem("Contacts could not refresh. Retry when connected."); }
+      } catch { if (active) setProblem(refreshProblem(0)); }
       finally { if (active) setRefreshing(false); }
     }
     void load();
@@ -54,7 +54,7 @@ export default function ProgramDirectory({ onChoose }: { onChoose: (contact: Cho
     </div>
     {problem && <p role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{problem}{contacts && time ? ` Showing results from ${time}.` : ""}</p>}
     {!contacts ? (!problem && <p role="status">Loading program contacts…</p>) : <>
-      <p className="text-sm text-slate-600">{visible.length} matching contacts</p>
+      <p role="status" className="text-sm text-slate-600">{visible.length} matching contacts</p>
       <ul className="space-y-3">{visible.map(contact => <li key={contact.import_key} className="rounded-xl border border-purple-100 p-4">
         <h3 className="font-semibold">{contact.display_name}</h3>
         <p className="break-all text-sm">{contact.email}</p>
