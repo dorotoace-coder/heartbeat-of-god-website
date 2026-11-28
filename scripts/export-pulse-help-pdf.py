@@ -52,4 +52,5 @@ for name in ['pulse-os-overview.pdf','pulse-os-team-guide.pdf']:
  if 'team-guide' in name:
   assert len(reader.pages)==len(data['guides'])+1,'Guide spilled beyond the one-page-per-workspace layout'
   texts='\n'.join(page.extract_text() or '' for page in reader.pages)
-  for g in data['guides']:assert g['title'] in texts,g['title']
+  flat=' '.join(texts.split())  # long titles wrap onto two lines
+  for g in data['guides']:assert g['title'] in flat,g['title']

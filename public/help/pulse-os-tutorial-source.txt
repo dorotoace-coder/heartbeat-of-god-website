@@ -1,6 +1,6 @@
 HBG PULSE OS — APP TUTORIAL SOURCE PACK
 
-Guide edition 01 · 23 November 2026
+Guide edition 03 · 28 November 2026
 
 Purpose: teach current app navigation, one task per short clip. This is product help, not ministry curriculum.
 
@@ -21,6 +21,122 @@ START HERE
 3. Open Pulse OS Help whenever you need a reminder. Read any guide; work only in the sections your role permits.
 
 4. Before saving, check the person, service, class or file. Wait for the success message. Sign out when using a shared device.
+
+
+
+## Preparing to serve on Sunday
+
+Audience: Workers and assigned platform team
+
+Start: Pulse OS Help
+
+Confirm your duty, prepare for worship and follow the service cues.
+
+1. Confirm your assignment, arrival time and supervisor before Sunday.
+
+2. Wear clean, modest and practical clothing suited to your duty. Ask the lead about any uniform or platform dress guidance.
+
+3. If assigned a platform duty, prepare your contribution, check pronunciations and agree your time and closing cue.
+
+4. Ask permission before sharing a testimony and take sensitive matters to the responsible lead in private.
+
+5. After service, hand over any open tasks and agree follow-up with your supervisor.
+
+Check: Your lead confirms your duty and any rehearsal or follow-up.
+
+If something goes wrong: If you expect to arrive late or cannot serve, contact the coordinator so the backup can prepare.
+
+
+
+## Worker service check-in
+
+Audience: Pastor records arrivals; workers confirm details with their leader
+
+Start: Training → Worker service check-in
+
+Record an enrolled worker’s arrival for a scheduled service in Lagos time.
+
+1. Refresh Pulse OS, open Training and expand Worker service check-in.
+
+2. Choose the service and enrolled worker. If the worker list is empty, use Training administration to enrol the worker first.
+
+3. Enter the actual arrival time in Lagos time and an optional explanation or correction note.
+
+4. Choose Save worker check-in and wait for Check-in saved. Saving the same worker and service updates that entry.
+
+Check: Look for Check-in saved. Arrival times are recorded in Lagos time.
+
+If something goes wrong: If saving cannot be confirmed, retain the entries and retry the same worker and service. Ask the Pastor about a missing service or worker.
+
+
+
+## Mentors and supervised service
+
+Audience: Pastor, assigned mentors, supervisors and enrolled learners
+
+Start: Training → Mentoring and supervised service
+
+Connect learning with a named mentor, practical assignment and pastoral review.
+
+1. The Pastor chooses the learner, formation stage, mentor and service supervisor.
+
+2. Enter a practical assignment and review date, then choose Assign supervised service.
+
+3. The assigned mentor or supervisor opens the placement and records observed service and feedback. Write feedback suitable for the learner to read.
+
+4. The Pastor records a review outcome and agreed next step. Review the learner’s calling, character and practice when considering responsibility.
+
+Check: The saved placement, observations and reviews appear in the mentoring section.
+
+If something goes wrong: If no learners appear, enrol them through Training administration. If records are unavailable, refresh and ask the Pastor to check the assignment.
+
+
+
+## Foundation graduation and department intake
+
+Audience: Foundation teachers, Pastor, graduates and department leads
+
+Start: Training → Foundation School; Foundation School register
+
+Complete learning and review, then arrange graduation and supervised department service.
+
+1. Follow the four Sunday lessons and record actual participation in the Foundation School register. Arrange recovery teaching for missed sessions.
+
+2. Complete the knowledge check and the authorised attendance and practical review.
+
+3. Agree the graduate list and ceremony date with the Pastor. The proposed ceremony includes Scripture, certificates, pastoral prayer and introductions to department leads.
+
+4. Discuss gifts, availability and a preferred department. The Pastor and receiving lead agree a supervised assignment, induction and review date.
+
+5. Use Mentoring and supervised service to record the placement. The proposed first review follows four services. Complete role-specific approvals before duties begin.
+
+Check: Check lesson and review records and the receiving department’s agreed placement. The ceremony and four-service review are proposals for pastoral confirmation.
+
+If something goes wrong: Arrange catch-up for unfinished learning. Ask the receiving lead to confirm responsibilities before starting an assignment.
+
+
+
+## Children’s Church teacher training
+
+Audience: Children’s Church teachers and supervising leaders
+
+Start: Training → Children’s Church; Departments → Children’s Church
+
+Prepare one shared Bible lesson with activities suited to different ages.
+
+1. Open Children’s Church in Training. The revised course is a draft for pastoral review.
+
+2. Complete the shared teacher induction and rehearse a short lesson with the lead teacher. Follow the ministry’s approved child-protection and caregiver handover arrangements.
+
+3. Prepare one story, one truth, one short verse and one response. Use pictures and movement for ages 2–5, retelling for ages 6–8, and reading and discussion for ages 9–12.
+
+4. Use the eight-Sunday starter sequence in the lesson. Share one optional home conversation with caregivers.
+
+5. After the session, review what helped children learn and agree one improvement. Record supervised teacher feedback through the assigned placement.
+
+Check: The supervising leader confirms readiness and the next teaching assignment. Check the module’s approval status before using the revised teaching.
+
+If something goes wrong: Ask the lead teacher for support with age adaptations or staffing. Children under two need their caregiver or an approved separately staffed arrangement.
 
 
 
@@ -252,6 +368,82 @@ Storyboard: 0–5s title and task; 5–15s open workspace; middle show the liste
 
 
 
+## Past program contacts
+
+Audience: Pastor (owner account)
+
+Start: Follow-up → Past program contacts
+
+Find past ILPC and Mighty Turn Around registrants, see what Pulse OS knows about each one, and prepare a follow-up linked to them.
+
+1. Open Follow-up. Past program contacts is above Add a follow-up. Use Find a contact, Program, Ministry relationship and Attendance to narrow the list.
+
+2. Read each card: Worker account matched (with the department), Member confirmed, Membership unconfirmed or Needs review (with the reason), and the attendance. Unknown means not yet recorded, not absent.
+
+3. The list refreshes every minute and keeps showing the last results if a refresh fails. The message says whether to check your access or your connection.
+
+4. To follow someone up, choose Prepare follow-up. The form says it is linked and keeps the name fixed. Choose the reason, next contact date and worker, and confirm the person agreed to follow-up. Choose Add follow-up.
+
+5. Choose Remove link first if you want a separate follow-up that is not linked to this contact; the permission box clears so you confirm it again.
+
+6. Contacts who need review, already have an open follow-up or asked for no further contact have no Prepare follow-up button.
+
+Check: Follow-up created appears, and the contact's card shows Follow-up open with the next contact date. Closed follow-ups stay in the card's history.
+
+If something goes wrong: If a save is not confirmed, choose Add follow-up again with the same details; it cannot create a second follow-up. If the save is refused, the message explains why and the list refreshes. Appearing in this list is not permission to send newsletters or invitations.
+
+
+
+## Linking contacts to people
+
+Audience: Pastor (owner account)
+
+Start: Past program contacts → Link to a person; People
+
+Connect a program contact, their registrations and a member profile to one person, with the evidence recorded and every step reversible.
+
+1. On a contact card, choose Link to a person. Pulse OS suggests people with the same email, phone or name and shows why. It never chooses for you.
+
+2. Choose a suggested person or New person. Tick only the evidence you actually have, add a note if helpful, and tick I checked this is the same person. Choose Save link.
+
+3. A linked card shows Linked to and the person's name. Choose Show registrations to see Mighty Turn Around registrations with the same email. Link each one to the person only after checking it.
+
+4. In People, open the person to see their linked records and follow-ups, and their earlier details. Restore these details puts earlier details back; the details you replace are kept too.
+
+5. Reviewing a member profile in People also links it to the chosen person, and the person's earlier details are kept.
+
+6. If a link is wrong, choose Unlink and give a short reason. The person and the registration stay; the link is kept in history as removed. An unlinked member profile returns to the review queue.
+
+Check: The card shows Linked to and the person's name, and People shows the person with their linked records. People created from contacts show From program contacts · membership unconfirmed until a reviewed member profile confirms membership, and are not offered for Foundation School unless they asked for it.
+
+If something goes wrong: If a save is not confirmed, choose Save link again unchanged. If the contact was linked meanwhile, the list refreshes. Never link by name alone. Linking does not give permission to contact someone, membership or staff access.
+
+
+
+## Pastorate
+
+Audience: Lead Pastor approves; assigned pastors read their own assignment
+
+Start: Pastorate
+
+Give a pastor a written assignment with clear limits and a review date, and use the Sunday rehearsal steps.
+
+1. Open Pastorate. The Lead Pastor sees Pastoral access and assignments; an assigned pastor sees My pastoral assignments.
+
+2. Lead Pastor: enter the Pastor’s name, their Existing login email, the Responsibility, the Assignment and authority limits, and a Review date. Choose Approve pastoral assignment.
+
+3. Saving the same login again replaces that pastor’s assignment. The pastor must already have a Pulse OS login; this does not create one.
+
+4. To end an assignment, choose Revoke Pastorate access on it and wait for Pastorate access revoked.
+
+5. Before Sunday, work through Sunday rehearsal with the team. Record a trainee’s supervised service through Open training and placements.
+
+Check: Assignment saved appears and the assignment is listed as Active with its review date. The assigned pastor sees it under My pastoral assignments with their own login.
+
+If something goes wrong: If Assignment could not be saved appears, check the login email belongs to an existing account, then your access and connection. A Pastorate assignment does not enrol training, open Treasury or grant other department access.
+
+
+
 ## People intake
 
 Audience: Attendance and people-intake team; Pastor
@@ -416,13 +608,13 @@ Review submitted forms and update their review status.
 
 2. Read the submission within your authorized access.
 
-3. Choose pending, reviewed or contacted only when it accurately reflects the action taken.
+3. Choose pending, reviewed or contacted only when it accurately reflects the action taken. Wait while Saving… shows.
 
-4. Refresh to check that the status persisted. The current inbox can update the display before the server confirms the save.
+4. A status from another registration form, such as new, is shown as it is. Choose pending, reviewed or contacted once you have acted on it.
 
-Check: Check the saved status after refresh. A status change alone does not send a reply, create a member or assign a follow-up.
+Check: The chosen status stays after you refresh. A status change alone does not send a reply, create a member or assign a follow-up.
 
-If something goes wrong: If the status reverts or the submission is missing, check the connection and report it. Do not assume the person received a reply.
+If something goes wrong: If Status not saved appears, the previous status is put back. The message says whether to check your permission, your access or your connection; fix that and choose the status again. Do not assume the person received a reply.
 
 
 

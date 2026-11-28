@@ -4,7 +4,7 @@ export type PulseGuide = {
   steps: string[]; confirmation: string; recovery: string;
   seconds?: number; narration?: string;
 };
-export const guideEdition = "02 · 27 November 2026";
+export const guideEdition = "03 · 28 November 2026";
 export const startSteps = [
   "Sign in to HBG PulseOS with your own email and password. Use Create an account if you are new.",
   "Choose Sign in. Your member home or assigned staff workspace opens. A new account does not automatically receive department access.",
@@ -189,6 +189,47 @@ export const pulseGuides: PulseGuide[] = [
     narration: "Open Follow-up. Add the name, reason and next contact date, then confirm permission. The Pastor may assign a worker or leave the request unassigned. Save it and find it in the board. Open Record a contact or handoff, choose the outcome and add a brief factual note. Set the next date for an open request. For a handoff, select the next registered worker. Save and check the history. Completed requests and requests for no further contact stay closed.",
   },
   {
+    id: "program-contacts", title: "Past program contacts", audience: "Pastor (owner account)", where: "Follow-up → Past program contacts",
+    summary: "Find past ILPC and Mighty Turn Around registrants, see what Pulse OS knows about each one, and prepare a follow-up linked to them.",
+    steps: [
+      "Open Follow-up. Past program contacts is above Add a follow-up. Use Find a contact, Program, Ministry relationship and Attendance to narrow the list.",
+      "Read each card: Worker account matched (with the department), Member confirmed, Membership unconfirmed or Needs review (with the reason), and the attendance. Unknown means not yet recorded, not absent.",
+      "The list refreshes every minute and keeps showing the last results if a refresh fails. The message says whether to check your access or your connection.",
+      "To follow someone up, choose Prepare follow-up. The form says it is linked and keeps the name fixed. Choose the reason, next contact date and worker, and confirm the person agreed to follow-up. Choose Add follow-up.",
+      "Choose Remove link first if you want a separate follow-up that is not linked to this contact; the permission box clears so you confirm it again.",
+      "Contacts who need review, already have an open follow-up or asked for no further contact have no Prepare follow-up button.",
+    ],
+    confirmation: "Follow-up created appears, and the contact's card shows Follow-up open with the next contact date. Closed follow-ups stay in the card's history.",
+    recovery: "If a save is not confirmed, choose Add follow-up again with the same details; it cannot create a second follow-up. If the save is refused, the message explains why and the list refreshes. Appearing in this list is not permission to send newsletters or invitations.",
+  },
+  {
+    id: "person-links", title: "Linking contacts to people", audience: "Pastor (owner account)", where: "Past program contacts → Link to a person; People",
+    summary: "Connect a program contact, their registrations and a member profile to one person, with the evidence recorded and every step reversible.",
+    steps: [
+      "On a contact card, choose Link to a person. Pulse OS suggests people with the same email, phone or name and shows why. It never chooses for you.",
+      "Choose a suggested person or New person. Tick only the evidence you actually have, add a note if helpful, and tick I checked this is the same person. Choose Save link.",
+      "A linked card shows Linked to and the person's name. Choose Show registrations to see Mighty Turn Around registrations with the same email. Link each one to the person only after checking it.",
+      "In People, open the person to see their linked records and follow-ups, and their earlier details. Restore these details puts earlier details back; the details you replace are kept too.",
+      "Reviewing a member profile in People also links it to the chosen person, and the person's earlier details are kept.",
+      "If a link is wrong, choose Unlink and give a short reason. The person and the registration stay; the link is kept in history as removed. An unlinked member profile returns to the review queue.",
+    ],
+    confirmation: "The card shows Linked to and the person's name, and People shows the person with their linked records. People created from contacts show From program contacts · membership unconfirmed until a reviewed member profile confirms membership, and are not offered for Foundation School unless they asked for it.",
+    recovery: "If a save is not confirmed, choose Save link again unchanged. If the contact was linked meanwhile, the list refreshes. Never link by name alone. Linking does not give permission to contact someone, membership or staff access.",
+  },
+  {
+    id: "pastorate", title: "Pastorate", audience: "Lead Pastor approves; assigned pastors read their own assignment", where: "Pastorate",
+    summary: "Give a pastor a written assignment with clear limits and a review date, and use the Sunday rehearsal steps.",
+    steps: [
+      "Open Pastorate. The Lead Pastor sees Pastoral access and assignments; an assigned pastor sees My pastoral assignments.",
+      "Lead Pastor: enter the Pastor’s name, their Existing login email, the Responsibility, the Assignment and authority limits, and a Review date. Choose Approve pastoral assignment.",
+      "Saving the same login again replaces that pastor’s assignment. The pastor must already have a Pulse OS login; this does not create one.",
+      "To end an assignment, choose Revoke Pastorate access on it and wait for Pastorate access revoked.",
+      "Before Sunday, work through Sunday rehearsal with the team. Record a trainee’s supervised service through Open training and placements.",
+    ],
+    confirmation: "Assignment saved appears and the assignment is listed as Active with its review date. The assigned pastor sees it under My pastoral assignments with their own login.",
+    recovery: "If Assignment could not be saved appears, check the login email belongs to an existing account, then your access and connection. A Pastorate assignment does not enrol training, open Treasury or grant other department access.",
+  },
+  {
     id: "intake", title: "People intake", audience: "Attendance and people-intake team; Pastor", where: "Member or first-time visitor form",
     summary: "Record a person accurately without confusing intake with follow-up.",
     steps: [
@@ -247,8 +288,8 @@ export const pulseGuides: PulseGuide[] = [
   {
     id: "inquiries", title: "Intake Inbox", audience: "Pastor / authorized inbox reviewers", where: "Intake Inbox",
     summary: "Review submitted forms and update their review status.",
-    steps: ["Choose the relevant category, such as First-Timer Card or General Inquiry.", "Read the submission within your authorized access.", "Choose pending, reviewed or contacted only when it accurately reflects the action taken.", "Refresh to check that the status persisted. The current inbox can update the display before the server confirms the save."],
-    confirmation: "Check the saved status after refresh. A status change alone does not send a reply, create a member or assign a follow-up.", recovery: "If the status reverts or the submission is missing, check the connection and report it. Do not assume the person received a reply.",
+    steps: ["Choose the relevant category, such as First-Timer Card or General Inquiry.", "Read the submission within your authorized access.", "Choose pending, reviewed or contacted only when it accurately reflects the action taken. Wait while Saving… shows.", "A status from another registration form, such as new, is shown as it is. Choose pending, reviewed or contacted once you have acted on it."],
+    confirmation: "The chosen status stays after you refresh. A status change alone does not send a reply, create a member or assign a follow-up.", recovery: "If Status not saved appears, the previous status is put back. The message says whether to check your permission, your access or your connection; fix that and choose the status again. Do not assume the person received a reply.",
   },
   {
     id: "dailyword", title: "Daily Word", audience: "Pastor / authorized content editors", where: "Daily Word",
