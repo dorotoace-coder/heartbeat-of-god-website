@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import PastorStaffAccess from "./PastorStaffAccess";
 import StaffInvitations from "./StaffInvitations";
+import { useAccessFlags } from "@/lib/people/useAccessFlags";
 
 const areas = [
   { name: "Attendance", detail: "Service counts and first-time visitors", view: "attendance" },
@@ -29,6 +30,8 @@ type Counts = Record<TaskKey, number | null>;
 const emptyCounts: Counts = { collections: null, deposits: null, media: null, followups: null, school: null };
 
 export default function PastorOverview() {
+  const { treasurySeat } = useAccessFlags();
+  const visible = <T extends { view: string }>(items: readonly T[]) => items.filter(item => item.view !== "treasury" || treasurySeat !== false);
   const [counts, setCounts] = useState<Counts>(emptyCounts);
   const [loading, setLoading] = useState(true);
   const [partial, setPartial] = useState(false);
@@ -78,7 +81,7 @@ export default function PastorOverview() {
       </div>
       {partial && <p role="alert" className="mt-3 text-sm text-red-800">Some counts could not load. Open the department for its current records.</p>}
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {tasks.map(task => <Link key={task.key} href={`/admin?view=${task.view}`} className="rounded-2xl border border-purple-100 bg-[#faf8fc] p-5 transition hover:border-purple-400 hover:bg-purple-50">
+        {visible(tasks).map(task => <Link key={task.key} href={`/admin?view=${task.view}`} className="rounded-2xl border border-purple-100 bg-[#faf8fc] p-5 transition hover:border-purple-400 hover:bg-purple-50">
           <span className="text-3xl font-semibold tabular-nums text-[#2e1252]">{loading ? "…" : counts[task.key] ?? "—"}</span>
           <h3 className="mt-2 font-semibold text-slate-950">{task.label}</h3>
           <p className="mt-1 text-sm text-slate-600">{task.detail}</p>
@@ -90,7 +93,7 @@ export default function PastorOverview() {
     <PastorStaffAccess />
     <StaffInvitations />
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {areas.map(area => <Link key={area.view} href={`/admin?view=${area.view}`}
+      {visible(areas).map(area => <Link key={area.view} href={`/admin?view=${area.view}`}
         className="rounded-2xl border border-purple-100 bg-white p-5 text-slate-950 shadow-sm transition hover:border-purple-400 hover:shadow-md">
         <h2 className="font-semibold text-[#2e1252]">{area.name}</h2>
         <p className="mt-1 text-sm text-slate-600">{area.detail}</p>

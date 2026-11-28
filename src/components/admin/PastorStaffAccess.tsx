@@ -14,6 +14,7 @@ type Staff = {
 
 const labels: Record<string, string> = {
   pastor: "Pastor",
+  administrator: "Administrator (no Treasury)",
   treasury_leader: "Treasury Leader",
   service_lead: "Service Lead",
   attendance: "Attendance and people intake",
