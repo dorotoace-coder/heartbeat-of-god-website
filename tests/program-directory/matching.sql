@@ -20,7 +20,7 @@ create table public.mta_event_attendance(registration_id uuid, reversed boolean)
 create table public.program_outreach_directory(import_key text primary key, display_name text, email text, phone_original text,
  programs jsonb default '[]', review_flags jsonb default '[]', provenance jsonb default '[]', email_permission text default 'unknown', imported_at timestamptz default now());
 
-\ir ../../supabase/migrations/20261128060000_program_directory_review_evidence.sql
+\ir ../../supabase/migrations/20261128040716_program_directory_review_evidence.sql
 
 insert into auth.users values
  ('00000000-0000-0000-0000-0000000000a1','owner@example.test'),
