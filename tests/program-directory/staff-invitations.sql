@@ -33,7 +33,7 @@ grant execute on function auth.uid() to authenticated, anon;
 grant select on public.profiles, public.congregation_people to authenticated;
 
 \ir ../../supabase/migrations/20261128045844_person_source_links.sql
-\ir ../../supabase/migrations/20261128100000_staff_invitations.sql
+\ir ../../supabase/migrations/20261128061818_staff_invitations.sql
 
 create function public.t_check(label text, ok boolean) returns void language plpgsql as $$
 begin if ok is not true then raise exception 'FAIL: %', label; end if; raise notice 'PASS: %', label; end $$;
